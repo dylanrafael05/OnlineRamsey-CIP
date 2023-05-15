@@ -8,7 +8,9 @@ namespace Ramsey.Core
         public IReadOnlyList<Edge> Edges { get; }
 
         public void AddEdge(Edge edge)
-        {}
+        {
+            
+        }
 
         public void AddNode(Node node) 
         {}

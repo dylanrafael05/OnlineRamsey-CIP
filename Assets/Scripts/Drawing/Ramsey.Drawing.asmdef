@@ -1,0 +1,16 @@
+{
+    "name": "Ramsey.Drawing",
+    "rootNamespace": "",
+    "references": [
+        "GUID:c58bd5f28cca03b458f929ba936def48"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

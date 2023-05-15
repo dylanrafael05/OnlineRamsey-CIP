@@ -7,5 +7,7 @@ namespace Ramsey.Core
     public class Node
     {
         public IReadOnlyList<Edge> Edges { get; }
+
+        
     }
 }
