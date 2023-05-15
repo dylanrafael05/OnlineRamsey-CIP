@@ -1,11 +1,10 @@
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Ramsey.Core
 {
     public class GraphManager
     {
-        private long lastNodeID = 0;
-
         private List<Node> nodes = new List<Node>();
         private List<Edge> edges = new List<Edge>();
 
@@ -22,12 +21,22 @@ namespace Ramsey.Core
 
         public Node CreateNode() 
         {
-            var node = new Node(lastNodeID + 1);
+            var node = new Node(nodes.Count);
             nodes.Add(node);
 
-            lastNodeID++;
-
             return node;
+        }
+
+        internal void AddExistingNode(Node node) 
+        {
+            nodes.Add(node);
+        }
+
+        internal bool Empty => nodes.Count == 0 && edges.Count == 0;
+        internal void Clear()
+        {
+            nodes.Clear();
+            edges.Clear();
         }
     }
 }

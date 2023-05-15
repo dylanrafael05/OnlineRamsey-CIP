@@ -7,7 +7,7 @@ namespace Ramsey.Core
 {
     public class Node
     {
-        internal Node(long id) 
+        internal Node(int id) 
         {
             ID = id;
         }   
@@ -15,7 +15,7 @@ namespace Ramsey.Core
         private Dictionary<Node, Edge> edgesByOpposingID = new();
 
         public IEnumerable<Edge> Edges => edgesByOpposingID.Values;
-        public long ID { get; }
+        public int ID { get; }
 
         internal void AddEdge(Edge edge)
         {
