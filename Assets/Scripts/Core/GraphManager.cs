@@ -4,15 +4,30 @@ namespace Ramsey.Core
 {
     public class GraphManager
     {
-        public IReadOnlyList<Node> Nodes { get; }
-        public IReadOnlyList<Edge> Edges { get; }
+        private long lastNodeID = 0;
 
-        public void AddEdge(Edge edge)
+        private List<Node> nodes = new List<Node>();
+        private List<Edge> edges = new List<Edge>();
+
+        public IReadOnlyList<Node> Nodes => nodes;
+        public IReadOnlyList<Edge> Edges => edges;
+
+        public Edge CreateEdge(Node start, Node end, int type)
         {
-            
+            var edge = new Edge(start, end, type);
+            edges.Add(edge);
+
+            return edge;
         }
 
-        public void AddNode(Node node) 
-        {}
+        public Node CreateNode() 
+        {
+            var node = new Node(lastNodeID + 1);
+            nodes.Add(node);
+
+            lastNodeID++;
+
+            return node;
+        }
     }
 }

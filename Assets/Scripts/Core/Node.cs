@@ -6,8 +6,23 @@ namespace Ramsey.Core
 {
     public class Node
     {
-        public IReadOnlyList<Edge> Edges { get; }
+        internal Node(long id) 
+        {
+            ID = id;
+        }   
 
-        
+        private HashSet<Edge> edges = new HashSet<Edge>();
+
+        public IEnumerable<Edge> Edges => edges;
+        public long ID { get; }
+
+        internal void AddEdge(Edge edge)
+        {
+            edges.Add(edge);
+        }
+        internal void RemoveEdge(Edge edge)
+        {
+            edges.Add(edge);
+        }
     }
 }
