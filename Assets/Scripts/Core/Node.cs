@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Ramsey.Core
 {
@@ -11,18 +12,17 @@ namespace Ramsey.Core
             ID = id;
         }   
 
-        private HashSet<Edge> edges = new HashSet<Edge>();
+        private Dictionary<Node, Edge> edgesByOpposingID = new();
 
-        public IEnumerable<Edge> Edges => edges;
+        public IEnumerable<Edge> Edges => edgesByOpposingID.Values;
         public long ID { get; }
 
         internal void AddEdge(Edge edge)
         {
-            edges.Add(edge);
-        }
-        internal void RemoveEdge(Edge edge)
-        {
-            edges.Add(edge);
+            var oppositeNode = edge.NodeOpposite(this);
+            Assert.IsFalse(edgesByOpposingID.ContainsKey(oppositeNode), "Cannot connect an edge twice");
+
+            edgesByOpposingID[oppositeNode] = edge;
         }
     }
 }
