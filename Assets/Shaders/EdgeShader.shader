@@ -35,7 +35,7 @@ Shader "Unlit/GraphShaders/EdgeShader"
             {
                 vOut o;
 
-                o.vertex = mul(UNITY_MATRIX_VP, float4(0., 0., 0., 1.));//mul(Transforms[instanceID], v.vertex));
+                o.vertex = mul(UNITY_MATRIX_VP, mul(Transforms[instanceID], v.vertex));
 
                 return o;
             }

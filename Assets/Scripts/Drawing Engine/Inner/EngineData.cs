@@ -35,6 +35,7 @@ public class EngineData
     {
         EdgeTransforms = new();
         NodePositions = new();
+        EdgeTypes = new();
     }
 
     public List<Matrix4x4> EdgeTransforms { get; private set; }
