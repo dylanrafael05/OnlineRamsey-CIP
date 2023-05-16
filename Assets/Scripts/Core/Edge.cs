@@ -29,62 +29,72 @@ namespace Ramsey.Core
         }
     }
 
-    public class Path 
-    {
-        private Path(IEnumerable<Edge> edges, IEnumerable<Node> nodes) 
-        {
-            this.edges = edges.ToList();
-            this.nodes = nodes.ToList();
-        }
+    // public class Path 
+    // {
+    //     private Path(IEnumerable<Edge> edges, IEnumerable<Node> nodes) 
+    //     {
+    //         this.edges = edges.ToList();
+    //         this.nodes = nodes.ToList();
+    //     }
 
-        internal Path(Edge edge)
-        {
-            edges = new() {edge};
-            nodes = new() {edge.Start, edge.End};
-        }
+    //     internal Path(Edge edge)
+    //     {
+    //         edges = new() {edge};
+    //         nodes = new() {edge.Start, edge.End};
+    //     }
 
-        internal Path Append(Edge edge)
-        {
-            // Edge connects to start
-            if(edge.Start == nodes.First())
-            {
-                return new Path(edges.Prepend(edge), nodes.Prepend(edge.End));
-            }
+    //     internal Path Concat(Path other)
+    //     {
+    //         // start + start
+    //         if(other.Start == Start)
+    //         {
+    //             return new Path(
+    //                 other.edges.AsEnumerable().Reverse().Concat(edges),        // reverse other + this
+    //                 other.nodes.AsEnumerable().Reverse().Concat(nodes.Skip(1)) // reverse 
+    //             );
+    //         }
 
-            if(edge.End == nodes.First())
-            {
-                return new Path(edges.Prepend(edge), nodes.Prepend(edge.Start));
-            }
+    //         if(edge.End == nodes.First())
+    //         {
+    //             return new Path(edges.Prepend(edge), nodes.Prepend(edge.Start));
+    //         }
 
-            // Edge connects to end
-            if(edge.Start == nodes.Last())
-            {
-                return new Path(edges.Append(edge), nodes.Append(edge.End));
-            }
+    //         // Edge connects to end
+    //         if(edge.Start == nodes.Last())
+    //         {
+    //             return new Path(edges.Append(edge), nodes.Append(edge.End));
+    //         }
 
-            if(edge.End == nodes.Last())
-            {
-                return new Path(edges.Append(edge), nodes.Append(edge.Start));
-            }
+    //         if(edge.End == nodes.Last())
+    //         {
+    //             return new Path(edges.Append(edge), nodes.Append(edge.Start));
+    //         }
 
-            throw new InvalidOperationException("Cannot append an edge to a path which doesnt intersect it!");
-        }
+    //         throw new InvalidOperationException("Cannot append an edge to a path which doesnt intersect it!");
+    //     }
+    //     inte
 
-        //TODO: use better data structures here!
-        private List<Edge> edges;
-        private List<Node> nodes;
+    //     //TODO: use better data structures here!
+    //     private List<Edge> edges;
+    //     private List<Node> nodes;
 
-        internal bool IsEndpoint(Node node) 
-            => node == nodes.First() || node == nodes.Last();
+    //     public Node Start => nodes.First();
+    //     public Node End => nodes.Last();
 
-        internal IEnumerable<Path> SplitAgainst(Edge edge)
-        {
-            if(IsEndpoint(edge.Start))
-            {
-                yield return null;
-            }
-        }
+    //     public IEnumerable<Node> Nodes => nodes;
+    //     public IEnumerable<Edge> Edges => edges;
+
+    //     internal bool IsEndpoint(Node node) 
+    //         => node == nodes.First() || node == nodes.Last();
+
+    //     internal IEnumerable<Path> SplitAgainst(Edge edge)
+    //     {
+    //         if(IsEndpoint(edge.Start))
+    //         {
+    //             yield return null;
+    //         }
+    //     }
 
 
-    }
+    // }
 }
