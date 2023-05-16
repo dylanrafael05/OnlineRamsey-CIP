@@ -18,7 +18,7 @@ public class WritingInterface
 
     public void AddEdge(Edge e)
     {
-        data.EdgeIndices[e] = data.EdgeTypes.Count;
+        Assert.AreEqual(data.EdgeTransforms.Count, e.ID, "Edges must be added to renderer upon creation!");
 
         data.EdgeTransforms.Add(EngineTransformGenerator.GenerateEdgeTransform(e.Start.Position, e.End.Position, e.Type, preferences.edgeThickness));
         data.EdgeTypes.Add((float) e.Type);
@@ -47,12 +47,11 @@ public class WritingInterface
     }
     public void UpdateEdgeType(Edge e)
     {
-        data.EdgeTypes[data.EdgeIndices[e]] = e.Type;
+        data.EdgeTypes[e.ID] = e.Type;
     }
 
     public void Clear()
     {
-        data.EdgeIndices.Clear();
         data.NodePositions.Clear();
         data.EdgeTransforms.Clear();
         data.EdgeTypes.Clear();

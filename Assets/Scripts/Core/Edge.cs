@@ -7,18 +7,20 @@ namespace Ramsey.Core
 {
     public class Edge 
     {
-        internal Edge(Node start, Node end, int type)
+        internal Edge(Node start, Node end, int type, int id)
         {
             Assert.AreNotEqual(start, end, "Cannot create an edge which connects a node to itself");
 
             Start = start;
             End = end;
             Type = type;
+            ID = id;
         }
 
         public Node Start { get; }
         public Node End { get; }
         public int Type { get; internal set; }
+        public int ID { get;}
 
         internal Node NodeOpposite(Node node) 
         {

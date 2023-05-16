@@ -23,7 +23,7 @@ namespace Ramsey.Core
 
         public Edge CreateEdge(Node start, Node end, int type = -1)
         {
-            var edge = new Edge(start, end, type);
+            var edge = new Edge(start, end, type, edges.Count);
             edges.Add(edge);
 
             start.RegisterToEdge(edge);
@@ -47,7 +47,7 @@ namespace Ramsey.Core
         public void PaintEdge(Edge edge, int type)
         {
             Assert.AreEqual(edge.Type, -1, "Cannot change the color of a painted edge!");
-            
+
             edge.Type = type;
         }
         

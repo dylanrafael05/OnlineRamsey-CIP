@@ -34,13 +34,11 @@ public class EngineData
 
     public EngineData()
     {
-        EdgeIndices = new();
         EdgeTransforms = new();
         NodePositions = new();
         EdgeTypes = new();
     }
 
-    public Dictionary<Edge, int> EdgeIndices { get; private set; }
     public List<Matrix4x4> EdgeTransforms { get; private set; }
     public List<float> EdgeTypes { get; private set; }
     public List<float2> NodePositions { get; private set; }
