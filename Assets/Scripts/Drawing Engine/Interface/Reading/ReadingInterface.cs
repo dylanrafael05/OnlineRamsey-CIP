@@ -1,10 +1,10 @@
-public class EngineInterface
+public class ReadingInterface
 {
 
     //
     EngineDrawer drawer;
 
-    public EngineInterface(EngineDrawer drawer) => this.drawer = drawer;
+    public ReadingInterface(EngineDrawer drawer) => this.drawer = drawer;
 
     //
     public void Draw()

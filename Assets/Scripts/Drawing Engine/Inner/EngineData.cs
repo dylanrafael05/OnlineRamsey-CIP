@@ -38,6 +38,6 @@ public class EngineData
     }
 
     public List<Matrix4x4> EdgeTransforms { get; private set; }
-    public List<float2> NodePositions { get; set; } //UNEXPOSE SET
+    public List<float2> NodePositions { get; private set; }
 
 }
