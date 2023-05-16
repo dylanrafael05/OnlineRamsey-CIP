@@ -50,7 +50,7 @@ public class EngineDrawer
         argsBufferNode = new(MAXMESHCOUNT, sizeof(uint), ComputeBufferType.IndirectArguments);
 
         edgeTransformBuffer = new (MAXMESHCOUNT, Marshal.SizeOf<Matrix4x4>());
-        edgeTypeBuffer = new(MAXMESHCOUNT, sizeof(int));
+        edgeTypeBuffer = new(MAXMESHCOUNT, sizeof(float));
 
         nodePositionBuffer = new (MAXMESHCOUNT, Marshal.SizeOf<float2>());
 
