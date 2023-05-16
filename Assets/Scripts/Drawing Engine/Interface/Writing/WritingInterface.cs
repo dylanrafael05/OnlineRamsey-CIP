@@ -10,6 +10,7 @@ public class WritingInterface
     {
         this.data = data;
         this.preferences = preferences;
+        this.drawer = drawer;
     }
 
     public void AddEdge(Edge e)

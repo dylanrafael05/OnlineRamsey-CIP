@@ -58,6 +58,8 @@ public class EngineDrawer
 
         //Link To Shader
         EnginePreferences.EdgeMaterial.SetBuffer(Shader.PropertyToID("Transforms"), edgeTransformBuffer);
+        EnginePreferences.EdgeMaterial.SetBuffer(Shader.PropertyToID("Types"), edgeTypeBuffer);
+
         EnginePreferences.NodeMaterial.SetBuffer(Shader.PropertyToID("Positions"), nodePositionBuffer);
 
         //
