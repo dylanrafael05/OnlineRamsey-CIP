@@ -3,7 +3,8 @@
 public class EngineManager
 {
 
-    public EngineInterface Interface { get; private set; }
+    public ReadingInterface ReadingInterface { get; private set; }
+    public WritingInterface WritingInterface { get; private set; }
 
     EngineData data;
     EngineDrawer drawer;
@@ -14,7 +15,8 @@ public class EngineManager
         data = new();
         drawer = new(data, preferences, camera);
 
-        Interface = new(drawer);
+        ReadingInterface = new(drawer);
+        WritingInterface = new(data, preferences, drawer);
 
     }
 

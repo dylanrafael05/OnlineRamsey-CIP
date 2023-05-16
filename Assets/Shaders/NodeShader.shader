@@ -9,8 +9,11 @@ Shader "Unlit/GraphShaders/NodeShader"
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags { "RenderType"="Transparent" "Queue" = "Transparent" "IgnoreProjector"="True" }
         LOD 100
+        Blend SrcAlpha OneMinusSrcAlpha
+        ZWrite Off
+        Cull Off
 
         Pass
         {
@@ -48,7 +51,7 @@ Shader "Unlit/GraphShaders/NodeShader"
 
             fixed4 frag (vOut i) : SV_Target
             {
-                return float4(0.2, 0.2, 0.2, step(length(i.uv), _Radius));
+                return float4(0.0, 0.0, 0.0, step(length(i.uv), _Radius));
             }
 
             ENDCG

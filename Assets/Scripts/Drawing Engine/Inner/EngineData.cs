@@ -20,7 +20,7 @@ public class EngineData
         triangles = new int[]
         {
             0, 1, 3,
-            0, 2, 3
+            0, 3, 2
         },
         uv = new Vector2[]
         {
@@ -31,7 +31,14 @@ public class EngineData
         }
     };
 
+    public EngineData()
+    {
+        EdgeTransforms = new();
+        NodePositions = new();
+    }
+
     public List<Matrix4x4> EdgeTransforms { get; private set; }
+    public List<int> EdgeTypes { get; private set; }
     public List<float2> NodePositions { get; private set; }
 
 }
