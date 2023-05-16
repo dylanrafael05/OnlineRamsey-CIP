@@ -18,6 +18,8 @@ public class WritingInterface
 
     public void AddEdge(Edge e)
     {
+        data.EdgeIndices[e] = data.EdgeTypes.Count;
+
         data.EdgeTransforms.Add(EngineTransformGenerator.GenerateEdgeTransform(e.Start.Position, e.End.Position, e.Type, preferences.edgeThickness));
         data.EdgeTypes.Add((float) e.Type);
 
@@ -34,18 +36,23 @@ public class WritingInterface
         drawer.UpdateArgsBuffers();
     }
 
-    public void UpdateNodePosition(Node n, float2 position)
+    public void UpdateNodePosition(Node n)
     {
         Assert.IsTrue(data.NodePositions.Count > n.ID, "Nodes must be added to renderer upon creation!");
 
-        data.NodePositions[n.ID] = position;
+        data.NodePositions[n.ID] = n.Position;
         
         drawer.UpdateNodeBuffer();
         drawer.UpdateArgsBuffers();
     }
+    public void UpdateEdgeType(Edge e)
+    {
+        data.EdgeTypes[data.EdgeIndices[e]] = e.Type;
+    }
 
     public void Clear()
     {
+        data.EdgeIndices.Clear();
         data.NodePositions.Clear();
         data.EdgeTransforms.Clear();
         data.EdgeTypes.Clear();

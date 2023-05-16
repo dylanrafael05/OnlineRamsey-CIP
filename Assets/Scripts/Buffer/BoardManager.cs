@@ -34,10 +34,15 @@ public class BoardManager
         return e;
     }
 
-    public void SetNodePosition(Node node, float2 position)
+    public void MoveNode(Node node, float2 position)
     {
         graphManager.MoveNode(node, position);
-        renderManager.WritingInterface.UpdateNodePosition(node, position);
+        renderManager.WritingInterface.UpdateNodePosition(node);
+    }
+    public void PaintEdge(Edge edge, int type)
+    {
+        graphManager.PaintEdge(edge, type);
+        renderManager.WritingInterface.UpdateEdgeType(edge);
     }
 
     public void Clear()

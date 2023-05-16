@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using Unity.Mathematics;
+using Ramsey.Core;
 
 public class EngineData
 {
 
     //
-    public static Mesh QuadMesh => quadMesh;
+    // public static Mesh QuadMesh => quadMesh;
     public static readonly Bounds Bounds = new Bounds(Vector3.zero, Vector3.one * 100f); //temp
-    static readonly Mesh quadMesh = new Mesh()
+    public static Mesh QuadMesh { get; } = new Mesh()
     {
         vertices = new Vector3[]
         {
@@ -33,13 +34,13 @@ public class EngineData
 
     public EngineData()
     {
+        EdgeIndices = new();
         EdgeTransforms = new();
-        EdgeTypes = new();
-
         NodePositions = new();
         EdgeTypes = new();
     }
 
+    public Dictionary<Edge, int> EdgeIndices { get; private set; }
     public List<Matrix4x4> EdgeTransforms { get; private set; }
     public List<float> EdgeTypes { get; private set; }
     public List<float2> NodePositions { get; private set; }
