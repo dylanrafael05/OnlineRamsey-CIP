@@ -50,7 +50,7 @@ public class EngineDrawer
         argsBufferNode = new(MAXMESHCOUNT, sizeof(uint), ComputeBufferType.IndirectArguments);
 
         edgeTransformBuffer = new (MAXMESHCOUNT, Marshal.SizeOf<Matrix4x4>());
-        edgeTypeBuffer = new(MAXMESHCOUNT, sizeof(float));
+        edgeTypeBuffer = new(MAXMESHCOUNT, Marshal.SizeOf<float4>());
 
         nodePositionBuffer = new (MAXMESHCOUNT, Marshal.SizeOf<float2>());
 
@@ -81,7 +81,7 @@ public class EngineDrawer
         argsBufferNode.SetData(argsArrayNode);
 
     }
-    public void UpdateEdgeBuffer() { edgeTransformBuffer.SetData(storage.EdgeTransforms); edgeTypeBuffer.SetData(storage.EdgeTypes); Debug.Log(string.Join(", ", storage.EdgeTypes.Select(x => x.ToString()))); }
+    public void UpdateEdgeBuffer() { edgeTransformBuffer.SetData(storage.EdgeTransforms); edgeTypeBuffer.SetData(storage.EdgeColors); Debug.Log(string.Join(", ", storage.EdgeColors.Select(x => x.ToString()))); }
     public void UpdateNodeBuffer() => nodePositionBuffer.SetData(storage.NodePositions);
 
     public void Draw()
