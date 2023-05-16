@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
+using Unity.Mathematics;
 
 namespace Ramsey.Core
 {
@@ -16,6 +17,7 @@ namespace Ramsey.Core
 
         public IEnumerable<Edge> Edges => edgesByOpposingID.Values;
         public int ID { get; }
+        public float2 Position { get; set; }
 
         internal void AddEdge(Edge edge)
         {
