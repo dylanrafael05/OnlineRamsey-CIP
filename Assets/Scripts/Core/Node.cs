@@ -17,7 +17,7 @@ namespace Ramsey.Core
 
         public IEnumerable<Edge> Edges => edgesByOpposingID.Values;
         public int ID { get; }
-        public float2 Position { get; set; }
+        public float2 Position { get; internal set; }
 
         internal void AddEdge(Edge edge)
         {

@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Unity.Mathematics;
 
 namespace Ramsey.Core
 {
-    public class GraphManager
+    public class GraphManager : IGraphView
     {
-        private List<Node> nodes = new List<Node>();
-        private List<Edge> edges = new List<Edge>();
+        private readonly List<Node> nodes = new();
+        private readonly List<Edge> edges = new();
 
         public IReadOnlyList<Node> Nodes => nodes;
         public IReadOnlyList<Edge> Edges => edges;
@@ -28,6 +29,11 @@ namespace Ramsey.Core
             nodes.Add(node);
 
             return node;
+        }
+
+        public void SetNodePosition(Node node, float2 position)
+        {
+            node.Position = position;
         }
 
         internal void AddExistingNode(Node node) 
