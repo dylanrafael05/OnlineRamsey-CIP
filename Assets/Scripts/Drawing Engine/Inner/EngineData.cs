@@ -35,7 +35,6 @@ public class EngineData
     {
         EdgeTransforms = new();
         EdgeColors = new();
-
         NodePositions = new();
     }
 
