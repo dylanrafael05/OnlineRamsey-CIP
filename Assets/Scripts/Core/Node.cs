@@ -26,5 +26,7 @@ namespace Ramsey.Core
 
             edgesByOpposingID[oppositeNode] = edge;
         }
+        internal IEnumerable<Node> Neighbors 
+            => edgesByOpposingID.Keys;
     }
 }
