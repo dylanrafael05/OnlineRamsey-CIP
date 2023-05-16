@@ -20,25 +20,5 @@ namespace Ramsey.Core
         {
             return JsonConvert.DeserializeObject<GraphManager>(contents, settings);
         }
-
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        public static void OnStart()
-        {
-            var graph = new GraphManager();
-
-            var a = graph.CreateNode();
-            var b = graph.CreateNode();
-
-            var e = graph.CreateEdge(a, b, 0);
-
-            var str = GraphSerialization.SaveToString(graph);
-
-            Debug.Log(str);
-
-            graph = GraphSerialization.LoadFromString(str);
-            str = GraphSerialization.SaveToString(graph);
-            
-            Debug.Log(str);
-        }
     }
 }

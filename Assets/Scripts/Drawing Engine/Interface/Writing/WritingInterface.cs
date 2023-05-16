@@ -44,4 +44,10 @@ public class WritingInterface
         drawer.UpdateArgsBuffers();
     }
 
+    public void Clear()
+    {
+        data.NodePositions.Clear();
+        data.EdgeTransforms.Clear();
+        data.EdgeTypes.Clear();
+    }
 }

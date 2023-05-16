@@ -18,7 +18,7 @@ namespace Ramsey.Core
 
         public Node Start { get; }
         public Node End { get; }
-        public int Type { get; }
+        public int Type { get; internal set; }
 
         internal Node NodeOpposite(Node node) 
         {
