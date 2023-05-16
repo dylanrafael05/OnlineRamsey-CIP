@@ -83,9 +83,7 @@ public class EngineDrawer
 
     public void Draw()
     {
-        UpdateArgsBuffers();
-        UpdateNodeBuffer();
-        //Graphics.DrawMeshInstancedIndirect(EngineData.QuadMesh, 0, EnginePreferences.EdgeMaterial, EngineData.Bounds, argsBufferEdge, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Default"));
+        Graphics.DrawMeshInstancedIndirect(EngineData.QuadMesh, 0, EnginePreferences.EdgeMaterial, EngineData.Bounds, argsBufferEdge, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Default"));
         Graphics.DrawMeshInstancedIndirect(EngineData.QuadMesh, 0, EnginePreferences.NodeMaterial, EngineData.Bounds, argsBufferNode, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Default"));
     }
 
