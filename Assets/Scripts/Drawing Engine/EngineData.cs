@@ -2,12 +2,13 @@
 using UnityEngine;
 using Unity.Mathematics;
 
-public class EngineStorage
+public class EngineData
 {
 
     //
     public static Mesh QuadMesh => quadMesh;
-    static Mesh quadMesh = new Mesh()
+    public static readonly Bounds Bounds = new Bounds(Vector3.zero, Vector3.one * 100f); //temp
+    static readonly Mesh quadMesh = new Mesh()
     {
         vertices = new Vector3[]
         {
@@ -29,5 +30,8 @@ public class EngineStorage
             new (1f, 1f)
         }
     };
+
+    public List<Matrix4x4> EdgeTransforms { get; private set; }
+    public List<float2> NodePositions { get; private set; }
 
 }
