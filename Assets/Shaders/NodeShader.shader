@@ -1,10 +1,10 @@
-Shader "Unlit/NodeShader"
+Shader "Unlit/GraphShaders/NodeShader"
 {
     Properties
     {
 
         [HideInInspector]
-        _Radius ("Radius", Float) = 1
+        _Radius ("Radius", Float) = 1 //[0, 1] to avoid cutting
 
     }
     SubShader
@@ -44,9 +44,11 @@ Shader "Unlit/NodeShader"
                 return o;
             }
 
+            float _Radius;
+
             fixed4 frag (vOut i) : SV_Target
             {
-                return float4(0.2, 0.2, 0.2, 1.);
+                return float4(0.2, 0.2, 0.2, step(length(i.uv), _Radius));
             }
 
             ENDCG

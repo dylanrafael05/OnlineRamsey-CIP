@@ -57,8 +57,6 @@ public class EngineDrawer
 
     }
 
-    
-
     public void UpdateArgsBuffers()
     {
 
