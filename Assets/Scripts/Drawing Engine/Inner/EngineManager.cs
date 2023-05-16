@@ -5,7 +5,7 @@ public class EngineManager
 
     public EngineInterface Interface { get; private set; }
 
-    EngineData data;
+    public EngineData data { get; private set; } //UNEXPOSE
     EngineDrawer drawer;
 
     public EngineManager(Camera camera, EnginePreferences preferences)

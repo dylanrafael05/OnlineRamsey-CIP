@@ -1,6 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Diagnostics;
 
 public class EngineDrawer
 {
@@ -41,7 +42,7 @@ public class EngineDrawer
             EngineData.QuadMesh.GetBaseVertex(0),
             0
         };
-        argsArrayEdge.CopyTo(argsArrayNode, 0);
+        argsArrayNode = new uint[5]; argsArrayEdge.CopyTo(argsArrayNode, 0);
 
         argsBufferEdge = new(MAXMESHCOUNT, sizeof(uint), ComputeBufferType.IndirectArguments);
         argsBufferNode = new(MAXMESHCOUNT, sizeof(uint), ComputeBufferType.IndirectArguments);
@@ -54,6 +55,11 @@ public class EngineDrawer
         //Link To Shader
         EnginePreferences.EdgeMaterial.SetBuffer(Shader.PropertyToID("Transforms"), edgeTransformBuffer);
         EnginePreferences.NodeMaterial.SetBuffer(Shader.PropertyToID("Positions"), nodePositionBuffer);
+
+        //
+        UpdateArgsBuffers();
+        UpdateEdgeBuffer();
+        UpdateNodeBuffer();
 
     }
 
@@ -73,8 +79,18 @@ public class EngineDrawer
 
     public void Draw()
     {
-        Graphics.DrawMeshInstancedIndirect(EngineData.QuadMesh, 0, EnginePreferences.EdgeMaterial, EngineData.Bounds, argsBufferEdge, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Default"));
+        UpdateArgsBuffers();
+        UpdateNodeBuffer();
+        //Graphics.DrawMeshInstancedIndirect(EngineData.QuadMesh, 0, EnginePreferences.EdgeMaterial, EngineData.Bounds, argsBufferEdge, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Default"));
         Graphics.DrawMeshInstancedIndirect(EngineData.QuadMesh, 0, EnginePreferences.NodeMaterial, EngineData.Bounds, argsBufferNode, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Default"));
+    }
+
+    public void Cleanup()
+    {
+        argsBufferEdge.Dispose();
+        argsBufferNode.Dispose();
+        edgeTransformBuffer.Dispose();
+        nodePositionBuffer.Dispose();
     }
 
 }

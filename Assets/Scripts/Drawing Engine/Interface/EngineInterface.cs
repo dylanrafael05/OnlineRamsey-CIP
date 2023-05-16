@@ -17,4 +17,7 @@ public class EngineInterface
 
     }
 
+    public void Cleanup()
+        => drawer.Cleanup();
+
 }
