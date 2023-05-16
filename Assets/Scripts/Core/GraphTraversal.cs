@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using UnityEngine;
 
 namespace Ramsey.Core
 {
@@ -8,7 +10,7 @@ namespace Ramsey.Core
         internal static HashSet<Node> BestPathStartingAt(Node startpoint, int type, HashSet<Node> existing = null)
         {
             if(existing is null)
-                existing = new();
+                existing = new() {startpoint};
 
             var best = existing;
 

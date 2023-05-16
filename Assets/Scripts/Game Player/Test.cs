@@ -4,6 +4,7 @@ using Ramsey.Core;
 using UnityEngine;
 using Unity.Mathematics;
 using System.Linq;
+using System.Diagnostics;
 
 public class Test : MonoBehaviour
 {
@@ -22,23 +23,25 @@ public class Test : MonoBehaviour
             nodeRadius = 0.3f,
         });
 
-        for(var i = 0; i < 100; i++)
+        const int NodeCount = 100;
+
+        for(var i = 0; i < NodeCount; i++)
         {
             var n = graph.CreateNode();
-            n.Position = new(i / 10, i % 10);
+            n.Position = new(i / Mathf.FloorToInt(Mathf.Sqrt(NodeCount)), i % Mathf.FloorToInt(Mathf.Sqrt(NodeCount)));
         }
 
-        for(var i = 0; i < 500; i++)
+        for(var i = 0; i < NodeCount; i++)
         {
-            var nodeA = UnityEngine.Random.Range(0, 100);
-            var nodeB = UnityEngine.Random.Range(0, 100);
+            var nodeA = UnityEngine.Random.Range(0, NodeCount);
+            var nodeB = UnityEngine.Random.Range(0, NodeCount);
 
             var nodes = new[] {nodeA, nodeB};
 
             while(nodeA == nodeB || graph.Edges.Any(e => nodes.Contains(e.Start.ID) && nodes.Contains(e.End.ID)))
             {
-                nodeA = UnityEngine.Random.Range(0, 100);
-                nodeB = UnityEngine.Random.Range(0, 100);
+                nodeA = UnityEngine.Random.Range(0, NodeCount);
+                nodeB = UnityEngine.Random.Range(0, NodeCount);
 
                 nodes = new[] {nodeA, nodeB};
             }
@@ -58,6 +61,15 @@ public class Test : MonoBehaviour
         {
             engine.WritingInterface.AddEdge(edge);
         }
+        
+        // var stopwatch = new Stopwatch();
+        // stopwatch.Start();
+        // var (x, _) = GraphTraversal.BestPath(graph);
+        // stopwatch.Stop();
+
+        // UnityEngine.Debug.Log("Finding longest path for 10x10 took " + stopwatch.ElapsedMilliseconds + " milliseconds");
+        // UnityEngine.Debug.Log("Found path of length " + x.Count());
+        
     }
 
     // Update is called once per frame

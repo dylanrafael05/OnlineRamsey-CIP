@@ -16,6 +16,9 @@ namespace Ramsey.Core
             var edge = new Edge(start, end, type);
             edges.Add(edge);
 
+            start.AddEdge(edge);
+            end.AddEdge(edge);
+
             return edge;
         }
 
