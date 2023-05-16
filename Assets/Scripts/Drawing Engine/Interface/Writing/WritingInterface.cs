@@ -15,6 +15,7 @@ public class WritingInterface
     public void AddEdge(Edge e)
     {
         data.EdgeTransforms.Add(EngineTransformGenerator.GenerateEdgeTransform(e.Start.Position, e.End.Position, preferences.edgeThickness));
+        data.EdgeTypes.Add(e.Type);
 
         drawer.UpdateEdgeBuffer();
         drawer.UpdateArgsBuffers();

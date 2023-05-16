@@ -34,12 +34,12 @@ public class TestBehavior : MonoBehaviour
 
     private void Update()
     {
-        drawingEngine.Interface.Draw();
+        drawingEngine.ReadingInterface.Draw();
     }
 
     private void OnDestroy()
     {
-        drawingEngine.Interface.Cleanup();
+        drawingEngine.ReadingInterface.Cleanup();
     }
 
 

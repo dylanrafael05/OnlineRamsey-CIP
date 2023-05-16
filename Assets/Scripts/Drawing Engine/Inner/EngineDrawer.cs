@@ -22,6 +22,7 @@ public class EngineDrawer
     //
     int edgeCount;
     ComputeBuffer edgeTransformBuffer;
+    ComputeBuffer edgeTypeBuffer;
 
     //
     int nodeCount;
@@ -46,7 +47,10 @@ public class EngineDrawer
 
         argsBufferEdge = new(MAXMESHCOUNT, sizeof(uint), ComputeBufferType.IndirectArguments);
         argsBufferNode = new(MAXMESHCOUNT, sizeof(uint), ComputeBufferType.IndirectArguments);
+
         edgeTransformBuffer = new (MAXMESHCOUNT, Marshal.SizeOf<Matrix4x4>());
+        edgeTypeBuffer = new(MAXMESHCOUNT, sizeof(int));
+
         nodePositionBuffer = new (MAXMESHCOUNT, Marshal.SizeOf<float2>());
 
         //Uniforms Prefs
@@ -74,7 +78,7 @@ public class EngineDrawer
         argsBufferNode.SetData(argsArrayNode);
 
     }
-    public void UpdateEdgeBuffer() => edgeTransformBuffer.SetData(storage.EdgeTransforms);
+    public void UpdateEdgeBuffer() { edgeTransformBuffer.SetData(storage.EdgeTransforms); edgeTypeBuffer.SetData(storage.EdgeTypes); }
     public void UpdateNodeBuffer() => nodePositionBuffer.SetData(storage.NodePositions);
 
     public void Draw()

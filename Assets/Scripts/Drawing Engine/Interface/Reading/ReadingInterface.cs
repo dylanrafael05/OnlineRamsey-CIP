@@ -2,19 +2,14 @@ public class ReadingInterface
 {
 
     //
-    EngineDrawer drawer;
+    readonly EngineDrawer drawer;
 
     public ReadingInterface(EngineDrawer drawer) => this.drawer = drawer;
 
     //
     public void Draw()
     {
-
-        //thikn baout when the buffers should be updated and how that should interact with graph computations
-        //but not updaetd for now
-
         drawer.Draw();
-
     }
 
     public void Cleanup()
