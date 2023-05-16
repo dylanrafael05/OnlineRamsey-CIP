@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Linq;
+using System.Runtime.InteropServices;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Diagnostics;
@@ -80,7 +81,7 @@ public class EngineDrawer
         argsBufferNode.SetData(argsArrayNode);
 
     }
-    public void UpdateEdgeBuffer() { edgeTransformBuffer.SetData(storage.EdgeTransforms); edgeTypeBuffer.SetData(storage.EdgeTypes); }
+    public void UpdateEdgeBuffer() { edgeTransformBuffer.SetData(storage.EdgeTransforms); edgeTypeBuffer.SetData(storage.EdgeTypes); Debug.Log(string.Join(", ", storage.EdgeTypes.Select(x => x.ToString()))); }
     public void UpdateNodeBuffer() => nodePositionBuffer.SetData(storage.NodePositions);
 
     public void Draw()

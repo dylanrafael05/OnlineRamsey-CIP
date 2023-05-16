@@ -61,7 +61,7 @@ public class Test : MonoBehaviour
         {
             engine.WritingInterface.AddEdge(edge);
         }
-        
+
         // var stopwatch = new Stopwatch();
         // stopwatch.Start();
         // var (x, _) = GraphTraversal.BestPath(graph);
@@ -69,6 +69,8 @@ public class Test : MonoBehaviour
 
         // UnityEngine.Debug.Log("Finding longest path for 10x10 took " + stopwatch.ElapsedMilliseconds + " milliseconds");
         // UnityEngine.Debug.Log("Found path of length " + x.Count());
+
+        UnityEngine.Debug.Log(GraphSerialization.SaveToString(graph));
         
     }
 
