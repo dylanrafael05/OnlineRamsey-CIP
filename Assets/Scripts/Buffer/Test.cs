@@ -15,6 +15,7 @@ public class Test : MonoBehaviour
     {
         board = new BoardManager(Camera.current, new EnginePreferences
         {
+            blackColor = Color.cyan,
             blueColor = Color.blue,
             redColor = Color.red,
             edgeThickness = 0.15f,

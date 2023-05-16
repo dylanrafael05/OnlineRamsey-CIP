@@ -47,7 +47,7 @@ public class WritingInterface
     }
     public void UpdateEdgeType(Edge e)
     {
-        data.EdgeColors[e.ID] = e.Type;
+        data.EdgeColors[e.ID] = preferences.TypeToColor(e.Type);
     }
 
     public void Clear()

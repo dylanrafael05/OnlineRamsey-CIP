@@ -81,7 +81,7 @@ public class EngineDrawer
         argsBufferNode.SetData(argsArrayNode);
 
     }
-    public void UpdateEdgeBuffer() { edgeTransformBuffer.SetData(storage.EdgeTransforms); edgeTypeBuffer.SetData(storage.EdgeColors); Debug.Log(string.Join(", ", storage.EdgeColors.Select(x => x.ToString()))); }
+    public void UpdateEdgeBuffer() { edgeTransformBuffer.SetData(storage.EdgeTransforms); edgeTypeBuffer.SetData(storage.EdgeColors); }
     public void UpdateNodeBuffer() => nodePositionBuffer.SetData(storage.NodePositions);
 
     public void Draw()
