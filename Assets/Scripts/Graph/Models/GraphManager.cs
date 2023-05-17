@@ -66,12 +66,12 @@ namespace Ramsey.Core
 
         public void Clear()
         {
-            throw new NotImplementedException();
+            graph.Clear();
         }
 
         public bool IsValidEdge(Node start, Node end)
         {
-            throw new NotImplementedException();
+            return graph.IsValidEdge(start, end);
         }
     }
 
