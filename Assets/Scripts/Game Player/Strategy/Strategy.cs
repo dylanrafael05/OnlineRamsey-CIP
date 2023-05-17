@@ -3,12 +3,12 @@ using UnityEngine.Assertions;
 
 public interface IBuilder
 {
-    BuilderMove GetMove(IGraphView gameState);
+    BuilderMove GetMove(GameState gameState);
 }
 
 public interface IPainter
 {
-    PainterMove GetMove(IGraphView gameState);
+    PainterMove GetMove(GameState gameState);
 }
 
 public class BuilderMove
@@ -31,11 +31,4 @@ public class PainterMove
 
     public void MakeMove(BoardManager board)
         => board.PaintEdge(edge, type);
-}
-
-public static class GameAlgorithms
-{
-
-    //Methods take in IGraphView return a bool or something
-
 }

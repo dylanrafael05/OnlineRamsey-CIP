@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Ramsey.Core;
 using UnityEngine;
 using Unity.Mathematics;
+using System;
+using JetBrains.Annotations;
 
 public class BoardManager
 {
@@ -70,5 +72,10 @@ public class BoardManager
         {
             renderManager.WritingInterface.AddEdge(edge);
         }
+    }
+
+    public void IterateThroughNodes(Action<Node> action)
+    {
+        Graph.Nodes.Foreach(action);
     }
 }

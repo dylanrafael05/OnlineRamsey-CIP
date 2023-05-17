@@ -13,3 +13,17 @@ public static class UserPlayer
     }
 
 }
+
+public static class UserInteraction
+{
+
+    static BoardManager currentBoard;
+
+    public static void DoInput(float2 mouse, bool lmbp)
+    {
+
+
+
+    }
+
+}
