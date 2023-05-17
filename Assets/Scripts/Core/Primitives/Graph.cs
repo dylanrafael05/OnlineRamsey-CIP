@@ -7,7 +7,6 @@ namespace Ramsey.Core
 {
     public class Graph : IGraphView
     {
-
         private readonly List<Node> nodes = new();
         private readonly List<Edge> edges = new();
 

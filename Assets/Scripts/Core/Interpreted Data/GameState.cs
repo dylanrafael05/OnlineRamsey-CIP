@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace Ramsey.Core
 {
-
     public class GameState
     {
 
@@ -17,8 +16,5 @@ namespace Ramsey.Core
 
         public int LongestPath(int type)
             => bestPaths[type].Length;
-
     }
-    
-
 }
