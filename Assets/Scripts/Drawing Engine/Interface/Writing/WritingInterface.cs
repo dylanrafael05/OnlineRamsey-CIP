@@ -47,13 +47,13 @@ public class WritingInterface
     }
     public void UpdateEdgeType(Edge e)
     {
-        data.EdgeTypes[e.ID] = e.Type;
+        data.EdgeColors[e.ID] = e.Type;
     }
 
     public void Clear()
     {
         data.NodePositions.Clear();
         data.EdgeTransforms.Clear();
-        data.EdgeTypes.Clear();
+        data.EdgeColors.Clear();
     }
 }
