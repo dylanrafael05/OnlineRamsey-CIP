@@ -6,16 +6,19 @@ using Unity.Mathematics;
 using System;
 using JetBrains.Annotations;
 
-public class BoardManager
+public class BoardManager : IGraph
 {
     private EngineManager renderManager;
-    private Graph graphManager;
+    private GraphManager graphManager;
 
     public ReadingInterface RenderAPI => renderManager.ReadingInterface;
 
     public IReadOnlyGraph Graph => graphManager;
 
-    private BoardManager(Camera camera, EnginePreferences prefs, Graph graphManager) 
+    public IReadOnlyList<Node> Nodes => graphManager.Nodes;
+    public IReadOnlyList<Edge> Edges => graphManager.Edges;
+
+    private BoardManager(Camera camera, EnginePreferences prefs, GraphManager graphManager) 
     {
         this.graphManager = graphManager;
         renderManager = new(camera, prefs);
@@ -57,25 +60,13 @@ public class BoardManager
         renderManager.WritingInterface.Clear();
     }
 
-    public void LoadFromString(string source)
-    {
-        graphManager = GraphSerialization.LoadFromString(source);
-
-        renderManager.WritingInterface.Clear();
-
-        foreach(var node in graphManager.Nodes)
-        {
-            renderManager.WritingInterface.AddNode(node);
-        }
-
-        foreach(var edge in graphManager.Edges)
-        {
-            renderManager.WritingInterface.AddEdge(edge);
-        }
-    }
-
     public void IterateThroughNodes(Action<Node> action)
     {
         Graph.Nodes.Foreach(action);
+    }
+
+    public bool IsValidEdge(Node start, Node end)
+    {
+        return graphManager.IsValidEdge(start, end);
     }
 }
