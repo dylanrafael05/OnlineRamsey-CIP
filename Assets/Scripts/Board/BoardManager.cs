@@ -4,27 +4,25 @@ using Ramsey.Core;
 using UnityEngine;
 using Unity.Mathematics;
 using System;
-using JetBrains.Annotations;
 
-public class BoardManager : IGraph
+public class BoardManager
 {
     private EngineManager renderManager;
-    private GraphManager graphManager;
+    private Graph graphManager;
 
     public ReadingInterface RenderAPI => renderManager.ReadingInterface;
 
     public IReadOnlyGraph Graph => graphManager;
 
-    public IReadOnlyList<Node> Nodes => graphManager.Nodes;
-    public IReadOnlyList<Edge> Edges => graphManager.Edges;
+    public BoardPreferences Preferences { get; private set; }
 
-    private BoardManager(Camera camera, EnginePreferences prefs, GraphManager graphManager) 
+    private BoardManager(Camera camera, DrawingPreferences prefs, Graph graphManager) 
     {
         this.graphManager = graphManager;
         renderManager = new(camera, prefs);
     }
 
-    public BoardManager(Camera camera, EnginePreferences prefs) : this(camera, prefs, new())
+    public BoardManager(Camera camera, DrawingPreferences prefs) : this(camera, prefs, new())
     {}
 
     public Node CreateNode(float2 position = default)
@@ -63,10 +61,5 @@ public class BoardManager : IGraph
     public void IterateThroughNodes(Action<Node> action)
     {
         Graph.Nodes.Foreach(action);
-    }
-
-    public bool IsValidEdge(Node start, Node end)
-    {
-        return graphManager.IsValidEdge(start, end);
     }
 }

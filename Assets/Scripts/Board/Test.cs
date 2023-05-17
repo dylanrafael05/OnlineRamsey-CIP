@@ -13,7 +13,7 @@ public class Test : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        board = new BoardManager(Camera.current, new EnginePreferences
+        board = new BoardManager(Camera.current, new DrawingPreferences
         {
             blackColor = Color.cyan,
             blueColor = Color.blue,
