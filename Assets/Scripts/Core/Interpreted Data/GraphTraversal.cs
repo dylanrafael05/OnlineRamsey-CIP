@@ -144,7 +144,7 @@ namespace Ramsey.Core
             return best;
         }
 
-        public static (IEnumerable<Node> path, int color) BestPath(GraphManager graph)
+        public static (IEnumerable<Node> path, int color) BestPath(Graph graph)
         {
             HashSet<Node> best = null;
             int color = 0;

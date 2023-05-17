@@ -7,13 +7,13 @@ using Unity.Mathematics;
 public class BoardManager
 {
     private EngineManager renderManager;
-    private GraphManager graphManager;
+    private Graph graphManager;
 
     public ReadingInterface RenderAPI => renderManager.ReadingInterface;
 
     public IGraphView Graph => graphManager;
 
-    private BoardManager(Camera camera, EnginePreferences prefs, GraphManager graphManager) 
+    private BoardManager(Camera camera, EnginePreferences prefs, Graph graphManager) 
     {
         this.graphManager = graphManager;
         renderManager = new(camera, prefs);

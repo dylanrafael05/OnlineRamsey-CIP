@@ -11,14 +11,14 @@ namespace Ramsey.Core
             Converters = new[] {new GraphJsonConverter()}
         };
 
-        public static string SaveToString(GraphManager graph)
+        public static string SaveToString(Graph graph)
         {
             return JsonConvert.SerializeObject(graph, settings);
         }
 
-        public static GraphManager LoadFromString(string contents)
+        public static Graph LoadFromString(string contents)
         {
-            return JsonConvert.DeserializeObject<GraphManager>(contents, settings);
+            return JsonConvert.DeserializeObject<Graph>(contents, settings);
         }
     }
 }
