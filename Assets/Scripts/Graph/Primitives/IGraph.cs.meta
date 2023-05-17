@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Scripts/Graph/Primitives/IGraphView.cs.meta
+guid: 1adabcfc53911ac458609092f309c0d7
+========
+guid: 260a1a82feb4247498d3a82e9364ab8e
+>>>>>>>> d0e78a867cabfff6e1e9bf291948d36e5c3c972e:Assets/Scripts/Graph/Primitives/IGraph.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
