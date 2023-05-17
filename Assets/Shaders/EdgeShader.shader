@@ -19,7 +19,7 @@ Shader "Unlit/GraphShaders/EdgeShader"
             #include "UnityCG.cginc"
 
             StructuredBuffer<float4x4> Transforms;
-            StructuredBuffer<int> Types;
+            StructuredBuffer<float> Types;
 
             struct vIn
             {
@@ -45,7 +45,7 @@ Shader "Unlit/GraphShaders/EdgeShader"
 
             fixed4 frag (vOut i, uint instanceID : SV_InstanceID) : SV_Target
             {
-                return lerp(_BlueColor, _RedColor, float(Types[instanceID]));
+                return lerp(_BlueColor, _RedColor, Types[instanceID]);
             }
             ENDCG
         }
