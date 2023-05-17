@@ -57,11 +57,6 @@ namespace Ramsey.Core
             edges.Clear();
         }
 
-        internal void AddExistingNode(Node node) 
-        {
-            nodes.Add(node);
-        }
-
         internal bool Empty => nodes.Count == 0 && edges.Count == 0;
     }
 }

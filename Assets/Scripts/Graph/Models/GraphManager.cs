@@ -16,19 +16,24 @@ namespace Ramsey.Core
         public IReadOnlyList<Node> Nodes => graph.Nodes;
         public IReadOnlyList<Edge> Edges => graph.Edges;
 
-        private Graph graph;
-        private IncrementalPathFinder pathFinder;
-        private GameState gameState;
+        internal readonly Graph graph;
+        internal readonly IncrementalPathFinder pathFinder;
+        private readonly GameState gameState;
 
-        public GraphManager()
+        internal GraphManager(Graph graph, IncrementalPathFinder pathFinder)
         {
-            graph = new Graph();
-            pathFinder = new IncrementalPathFinder();
-            gameState = new GameState
+            this.graph = graph;
+            this.pathFinder = pathFinder;
+
+            gameState = new()
             {
-                Graph = graph
+                Graph = graph,
+                MaxLengthPath = pathFinder.MaxLengthPath
             };
         }
+
+        public GraphManager() : this(new(), new())
+        {}
 
         public Node CreateNode(float2 position = default)
         {

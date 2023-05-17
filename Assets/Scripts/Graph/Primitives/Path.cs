@@ -4,6 +4,14 @@ namespace Ramsey.Core
 {
     public class Path 
     {
+        internal Path(HashSet<Node> nodes, Node end, int type)
+        {
+            this.nodes = nodes;
+            
+            End = end;
+            Type = type;
+        }
+
         private Path(Path path) 
         {
             nodes = new HashSet<Node>(path.nodes);

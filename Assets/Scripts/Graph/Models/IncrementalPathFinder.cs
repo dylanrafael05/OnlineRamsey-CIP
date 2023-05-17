@@ -6,33 +6,44 @@ namespace Ramsey.Core
 {
     public class IncrementalPathFinder
     {
-        private Dictionary<Node, List<Path>> nodesByTerminatingPaths;
-        private Path maximumLength = null;
+        internal IEnumerable<Path> AllPaths => NodesByTerminatingPaths.Values.Merge();
 
-        public Path MaxLengthPath => maximumLength;
+        internal Dictionary<Node, List<Path>> NodesByTerminatingPaths { get; private set; }
+        public Path MaxLengthPath { get; private set; }
 
         public IncrementalPathFinder()
         {
-            nodesByTerminatingPaths = new();
+            NodesByTerminatingPaths = new();
+        }
+        internal IncrementalPathFinder(Dictionary<Node, List<Path>> nodesByTerminatingPaths, Path maxLengthPath)
+        {
+            NodesByTerminatingPaths = nodesByTerminatingPaths;
+            MaxLengthPath = maxLengthPath;
         }
 
         public void HandleNodeAddition(Node node) 
         {
             // TODO: figure out how to add for each color specifid by user settings!
-            nodesByTerminatingPaths.Add(node, new() {new Path(node, 0), new Path(node, 1)});
+            NodesByTerminatingPaths.Add(node, new() {new Path(node, 0), new Path(node, 1)});
         }
 
         public void HandlePaintedEdge(Edge edge)
         {
             Assert.AreEqual(edge.Type, -1, "Cannot add a non-painted edge to an incremental path finder!");
 
-            foreach(var path in nodesByTerminatingPaths[edge.Start])
+            foreach(var path in NodesByTerminatingPaths[edge.Start])
                 ExpandPath(path);
-            foreach(var path in nodesByTerminatingPaths[edge.End])
+            foreach(var path in NodesByTerminatingPaths[edge.End])
                 ExpandPath(path);
 
-            nodesByTerminatingPaths[edge.Start].Clear();
-            nodesByTerminatingPaths[edge.End].Clear();
+            NodesByTerminatingPaths[edge.Start].Clear();
+            NodesByTerminatingPaths[edge.End].Clear();
+        }
+
+        internal void Clear()
+        {
+            MaxLengthPath = null;
+            NodesByTerminatingPaths.Clear();
         }
 
         private void ExpandPath(Path path) 
@@ -59,11 +70,11 @@ namespace Ramsey.Core
 
             if(!any)
             {
-                nodesByTerminatingPaths[path.End].Add(path);
+                NodesByTerminatingPaths[path.End].Add(path);
 
-                if(path.Length > maximumLength.Length)
+                if(path.Length > MaxLengthPath.Length)
                 {
-                    maximumLength = path;
+                    MaxLengthPath = path;
                 }
             }
         }

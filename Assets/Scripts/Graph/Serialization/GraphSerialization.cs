@@ -1,63 +1,45 @@
-using System.Collections.Generic;
 using System.IO;
-using Unity.Mathematics;
 using Unity.Plastic.Newtonsoft.Json;
 using UnityEngine;
 
 namespace Ramsey.Core
 {
-    internal struct SerializedPath
+    public static class GraphSerialization 
     {
-        public int[] Nodes { get; set; }
-        public int LastNode { get; set; }
-        public int Type { get; set; }
-        public int ID { get; set; }
-    }
-    internal struct SerializedEdge
-    {
-        public int Start { get; set; }
-        public int End { get; set; }
-        public int Type { get; set; }
-    }
-    internal struct SerializedGraph
-    {
-        public int NodeCount { get; set; }
-        public float2[] Positions { get; set; }
-        public SerializedEdge[] Edges { get; set; }
-    }
-    internal struct SerializedPathFinder
-    {
-        public SerializedPath[] Paths { get; set; }
-        public Dictionary<int, int[]> NodesByTerminatingPaths { get; set; }
-        public int MaxLengthPath { get; set; }
-    }
-    internal struct SerializedGraphManager
-    {
-        public SerializedGraph Graph { get; set; }
-        public SerializedPathFinder PathFinder { get; set; }
-    }
-
-    public static class GraphSerialization
-    {
-        private static SerializedGraph Serialize(Graph graph)
+        public static string SaveGraphToString(Graph graph)
         {
-            SerializedGraph output = default;
+            return JsonConvert.SerializeObject(GraphSerializationAlgorithms.Serialize(graph));
+        }
+        public static Graph LoadGraphFromString(string json)
+        {
+            var ser = JsonConvert.DeserializeObject<SerializedGraph>(json);
+            return GraphSerializationAlgorithms.DeserializeGraph(ser);
         }
 
-
-        private static JsonSerializerSettings settings = new() 
+        public static string SavePathFinderToString(IncrementalPathFinder pathFinder)
         {
-            Converters = new[] {new GraphJsonConverter()}
-        };
-
-        public static string SaveToString(Graph graph)
+            return JsonConvert.SerializeObject(GraphSerializationAlgorithms.Serialize(pathFinder));
+        }
+        public static IncrementalPathFinder LoadGraphFinderFromString(string json, Graph associatedGraph)
         {
-            return JsonConvert.SerializeObject(graph, settings);
+            var ser = JsonConvert.DeserializeObject<SerializedPathFinder>(json);
+
+            return GraphSerializationAlgorithms.DeserializePathFinder(ser, associatedGraph);
         }
 
-        public static Graph LoadFromString(string contents)
+        public static string SaveManagerToString(GraphManager manager)
         {
-            return JsonConvert.DeserializeObject<Graph>(contents, settings);
+            return JsonConvert.SerializeObject(GraphSerializationAlgorithms.Serialize(manager));
+        }
+
+        public static GraphManager LoadManagerFromString(string json)
+        {
+            var ser = JsonConvert.DeserializeObject<SerializedGraphManager>(json);
+
+            var graph = GraphSerializationAlgorithms.DeserializeGraph(ser.Graph);
+            var ipf = GraphSerializationAlgorithms.DeserializePathFinder(ser.PathFinder, graph);
+
+            return new GraphManager(graph, ipf);
         }
     }
 }
