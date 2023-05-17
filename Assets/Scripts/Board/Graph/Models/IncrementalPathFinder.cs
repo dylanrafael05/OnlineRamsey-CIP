@@ -30,11 +30,11 @@ namespace Ramsey.Graph
 
         public void HandlePaintedEdge(Edge edge)
         {
-            Assert.AreEqual(edge.Type, -1, "Cannot add a non-painted edge to an incremental path finder!");
+            Assert.AreNotEqual(edge.Type, Edge.NullType, "Cannot add a non-painted edge to an incremental path finder!");
 
-            foreach(var path in NodesByTerminatingPaths[edge.Start])
+            foreach(var path in NodesByTerminatingPaths[edge.Start].ToList())
                 ExpandPath(path);
-            foreach(var path in NodesByTerminatingPaths[edge.End])
+            foreach(var path in NodesByTerminatingPaths[edge.End].ToList())
                 ExpandPath(path);
 
             NodesByTerminatingPaths[edge.Start].Clear();
@@ -73,7 +73,7 @@ namespace Ramsey.Graph
             {
                 NodesByTerminatingPaths[path.End].Add(path);
 
-                if(path.Length > MaxLengthPath.Length)
+                if(MaxLengthPath == null || path.Length > MaxLengthPath.Length)
                 {
                     MaxLengthPath = path;
                 }
