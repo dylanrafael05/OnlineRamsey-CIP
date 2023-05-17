@@ -59,7 +59,7 @@ public class EngineDrawer
 
         //Link To Shader
         EnginePreferences.EdgeMaterial.SetBuffer(Shader.PropertyToID("Transforms"), edgeTransformBuffer);
-        EnginePreferences.EdgeMaterial.SetBuffer(Shader.PropertyToID("Types"), edgeTypeBuffer);
+        EnginePreferences.EdgeMaterial.SetBuffer(Shader.PropertyToID("Colors"), edgeTypeBuffer);
 
         EnginePreferences.NodeMaterial.SetBuffer(Shader.PropertyToID("Positions"), nodePositionBuffer);
 
@@ -94,6 +94,7 @@ public class EngineDrawer
     {
         argsBufferEdge.Dispose();
         argsBufferNode.Dispose();
+        edgeTypeBuffer.Dispose();
         edgeTransformBuffer.Dispose();
         nodePositionBuffer.Dispose();
     }
