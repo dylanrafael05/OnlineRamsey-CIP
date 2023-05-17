@@ -19,7 +19,7 @@ public class WritingInterface
     public void AddEdge(Edge e)
     {
         data.EdgeTransforms.Add(EngineTransformGenerator.GenerateEdgeTransform(e.Start.Position, e.End.Position, e.Type, preferences.edgeThickness));
-        data.EdgeTypes.Add((float) e.Type);
+        data.EdgeColors.Add(e.Type == -1 ? preferences.blackColor : e.Type == 0 ? preferences.blueColor : preferences.redColor);
 
         drawer.UpdateEdgeBuffer();
         drawer.UpdateArgsBuffers();

@@ -3,6 +3,7 @@
 public struct EnginePreferences
 {
 
+    public Color blackColor;
     public Color redColor;
     public Color blueColor;
 
@@ -11,9 +12,6 @@ public struct EnginePreferences
 
     public void UniformPreferences()
     {
-        EdgeMaterial.SetColor(Shader.PropertyToID("_RedColor"), redColor);
-        EdgeMaterial.SetColor(Shader.PropertyToID("_BlueColor"), blueColor);
-
         NodeMaterial.SetFloat(Shader.PropertyToID("_Radius"), nodeRadius);
     }
 

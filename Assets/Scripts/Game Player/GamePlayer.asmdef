@@ -1,5 +1,5 @@
 {
-    "name": "UserPlayer",
+    "name": "GamePlayer",
     "rootNamespace": "",
     "references": [
         "GUID:c58bd5f28cca03b458f929ba936def48",
