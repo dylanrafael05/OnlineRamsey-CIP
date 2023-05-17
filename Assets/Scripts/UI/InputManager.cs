@@ -1,13 +1,20 @@
 using Unity.Mathematics;
 using UnityEngine;
 using Ramsey.Utilities;
+using Ramsey.Screen;
 
 public static class InputManager
 {
 
     //Later change to input struct?
     public static (float2 mouse, bool lmbp, bool rmbp) GetInput()
-        => (((float3)Camera.main.ScreenToWorldPoint(Input.mousePosition)).xy, Input.GetMouseButtonDown(0), Input.GetMouseButtonDown(1));
-    
+        => (((float3) CameraManager.BoardCamera.ScreenToWorldPoint(Input.mousePosition)).xy, Input.GetMouseButtonDown(0), Input.GetMouseButtonDown(1));
+
+}
+
+public struct InputStruct
+{
+
+
 
 }

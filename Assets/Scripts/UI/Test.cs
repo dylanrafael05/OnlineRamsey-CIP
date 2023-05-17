@@ -9,16 +9,22 @@ using Ramsey.Board;
 using Ramsey.Drawing;
 using Ramsey.UI;
 using Ramsey.Gameplayer;
+using Ramsey.Screen;
 
 public class Test : MonoBehaviour
 {
     BoardManager board;
     TurnManager turns;
 
+    [SerializeField] Camera boardCamera;
+    [SerializeField] Camera screenCamera;
+
     // Start is called before the first frame update
     void Start()
     {
-        board = new BoardManager(Camera.current, new BoardPreferences() 
+        new CameraManager(boardCamera, screenCamera);
+
+        board = new BoardManager(CameraManager.BoardCamera, new BoardPreferences() 
         {
             drawingPreferences = new DrawingPreferences
             {

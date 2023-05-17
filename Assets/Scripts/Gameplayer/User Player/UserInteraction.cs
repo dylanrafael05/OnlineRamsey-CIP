@@ -7,7 +7,7 @@ using Ramsey.Drawing;
 
 namespace Ramsey.Gameplayer
 {
-    public class UserInteraction
+    public class UserInteraction //generalize like node being hovered and stuff and helper methods like that put the specific clicking stuff in UserPlayer
     {
 
         //

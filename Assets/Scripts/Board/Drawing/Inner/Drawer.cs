@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Diagnostics;
+using Ramsey.Screen;
 
 namespace Ramsey.Drawing
 {
@@ -94,8 +95,8 @@ namespace Ramsey.Drawing
 
         public void Draw()
         {
-            Graphics.DrawMeshInstancedIndirect(DrawingData.QuadMesh, 0, DrawingPreferences.EdgeMaterial, DrawingData.Bounds, argsBufferEdge, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Default"));
-            Graphics.DrawMeshInstancedIndirect(DrawingData.QuadMesh, 0, DrawingPreferences.NodeMaterial, DrawingData.Bounds, argsBufferNode, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Default"));
+            Graphics.DrawMeshInstancedIndirect(DrawingData.QuadMesh, 0, DrawingPreferences.EdgeMaterial, DrawingData.Bounds, argsBufferEdge, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
+            Graphics.DrawMeshInstancedIndirect(DrawingData.QuadMesh, 0, DrawingPreferences.NodeMaterial, DrawingData.Bounds, argsBufferNode, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
         }
 
         public void Cleanup()
