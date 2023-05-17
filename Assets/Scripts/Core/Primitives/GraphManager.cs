@@ -7,6 +7,11 @@ namespace Ramsey.Core
 {
     public class GraphManager : IGraphView
     {
+        //Higher Level Data (u can delete or change if u want)
+        public IGraphView GraphView { get; private set; }
+        public IncrementalPathFinder PathFinder { get; private set; }
+        public GameState GameState { get; private set; }
+
         private readonly List<Node> nodes = new();
         private readonly List<Edge> edges = new();
 
