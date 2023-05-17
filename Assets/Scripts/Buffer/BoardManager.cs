@@ -9,6 +9,10 @@ public class BoardManager
     private EngineManager renderManager;
     private GraphManager graphManager;
 
+    public ReadingInterface RenderAPI => renderManager.ReadingInterface;
+
+    public IGraphView Graph => graphManager;
+
     private BoardManager(Camera camera, EnginePreferences prefs, GraphManager graphManager) 
     {
         this.graphManager = graphManager;
@@ -54,6 +58,8 @@ public class BoardManager
     public void LoadFromString(string source)
     {
         graphManager = GraphSerialization.LoadFromString(source);
+
+        renderManager.WritingInterface.Clear();
 
         foreach(var node in graphManager.Nodes)
         {

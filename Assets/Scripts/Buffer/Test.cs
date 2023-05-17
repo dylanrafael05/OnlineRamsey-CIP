@@ -8,14 +8,12 @@ using System.Diagnostics;
 
 public class Test : MonoBehaviour
 {
-    GraphManager graph; 
-    EngineManager engine; 
+    BoardManager board;
 
     // Start is called before the first frame update
     void Start()
     {
-        graph = new GraphManager();
-        engine = new EngineManager(Camera.current, new EnginePreferences
+        board = new BoardManager(Camera.current, new EnginePreferences
         {
             blueColor = Color.blue,
             redColor = Color.red,
@@ -27,8 +25,7 @@ public class Test : MonoBehaviour
 
         for(var i = 0; i < NodeCount; i++)
         {
-            var n = graph.CreateNode();
-            n.Position = new(i / Mathf.FloorToInt(Mathf.Sqrt(NodeCount)), i % Mathf.FloorToInt(Mathf.Sqrt(NodeCount)));
+            var n = board.CreateNode(new(i / Mathf.FloorToInt(Mathf.Sqrt(NodeCount)), i % Mathf.FloorToInt(Mathf.Sqrt(NodeCount))));
         }
 
         for(var i = 0; i < NodeCount; i++)
@@ -38,7 +35,7 @@ public class Test : MonoBehaviour
 
             var nodes = new[] {nodeA, nodeB};
 
-            while(nodeA == nodeB || graph.Edges.Any(e => nodes.Contains(e.Start.ID) && nodes.Contains(e.End.ID)))
+            while(nodeA == nodeB || board.Graph.Edges.Any(e => nodes.Contains(e.Start.ID) && nodes.Contains(e.End.ID)))
             {
                 nodeA = UnityEngine.Random.Range(0, NodeCount);
                 nodeB = UnityEngine.Random.Range(0, NodeCount);
@@ -46,20 +43,11 @@ public class Test : MonoBehaviour
                 nodes = new[] {nodeA, nodeB};
             }
 
-            graph.CreateEdge(
-                graph.Nodes[nodeA], 
-                graph.Nodes[nodeB], 
+            board.CreateEdge(
+                board.Graph.Nodes[nodeA], 
+                board.Graph.Nodes[nodeB], 
                 UnityEngine.Random.Range(0, 2)
             );
-        }
-
-        foreach(var node in graph.Nodes)
-        {
-            engine.WritingInterface.AddNode(node);
-        }
-        foreach(var edge in graph.Edges)
-        {
-            engine.WritingInterface.AddEdge(edge);
         }
 
         // var stopwatch = new Stopwatch();
@@ -70,18 +58,18 @@ public class Test : MonoBehaviour
         // UnityEngine.Debug.Log("Finding longest path for 10x10 took " + stopwatch.ElapsedMilliseconds + " milliseconds");
         // UnityEngine.Debug.Log("Found path of length " + x.Count());
 
-        UnityEngine.Debug.Log(GraphSerialization.SaveToString(graph));
+        // UnityEngine.Debug.Log(board.Graph);
         
     }
 
     // Update is called once per frame
     void Update()
     {
-        engine.ReadingInterface.Draw();
+        board.RenderAPI.Draw();
     }
 
     void OnDestroy() 
     {
-        engine.ReadingInterface.Cleanup();
+        board.RenderAPI.Cleanup();
     }
 }
