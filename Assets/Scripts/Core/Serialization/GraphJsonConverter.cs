@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Ramsey.Core
 {
-    internal class GraphJsonConverter : JsonConverter<GraphManager>
+    internal class GraphJsonConverter : JsonConverter<Graph>
     {
         public const string NodeCount = "nodecount";
         public const string Edges = "edges";
@@ -14,9 +14,9 @@ namespace Ramsey.Core
         public const string End = "end";
         public const string Type = "type";
 
-        public override GraphManager ReadJson(JsonReader reader, Type objectType, GraphManager existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override Graph ReadJson(JsonReader reader, Type objectType, Graph existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
-            existingValue = new GraphManager();
+            existingValue = new Graph();
 
             var token = JToken.ReadFrom(reader);
 
@@ -70,7 +70,7 @@ namespace Ramsey.Core
             return existingValue;
         }
 
-        public override void WriteJson(JsonWriter writer, GraphManager value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, Graph value, JsonSerializer serializer)
         {
             writer.WriteStartObject();
 

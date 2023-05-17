@@ -5,8 +5,9 @@ using UnityEngine.Assertions;
 
 namespace Ramsey.Core
 {
-    public class GraphManager : IGraphView
+    public class Graph : IGraphView
     {
+
         private readonly List<Node> nodes = new();
         private readonly List<Edge> edges = new();
 
