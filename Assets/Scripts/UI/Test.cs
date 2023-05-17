@@ -22,7 +22,7 @@ public class Test : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        new CameraManager(boardCamera, screenCamera);
+        new CameraManager(screenCamera, boardCamera);
 
         board = new BoardManager(CameraManager.BoardCamera, new BoardPreferences() 
         {

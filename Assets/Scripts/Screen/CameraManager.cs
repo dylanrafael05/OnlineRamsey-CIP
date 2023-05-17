@@ -28,9 +28,9 @@ namespace Ramsey.Screen
             boardCamera.targetTexture = renderTexture;
 
             //
-            Material m = new Material(Shader.Find("Unlit/Texture"));//new Material(Shader.Find("Unlit/Fullscreen/Vignette"));
+            Material m = new Material(Shader.Find("Unlit/Fullscreen/Vignette"));
             GameObject.Find("Board Plane").GetComponent<MeshRenderer>().material = m;
-            m.SetTexture(Shader.PropertyToID("_MainTex"), renderTexture);
+            m.SetTexture(Shader.PropertyToID("_ScreenTexture"), renderTexture);
         }
 
     }
