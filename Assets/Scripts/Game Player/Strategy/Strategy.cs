@@ -11,7 +11,7 @@ public interface IPainter
     PainterMove GetMove(GameState gameState);
 }
 
-public class BuilderMove
+public struct BuilderMove
 {
 
     Node n1; Node n2;
@@ -23,7 +23,7 @@ public class BuilderMove
 
 }
 
-public class PainterMove
+public struct PainterMove
 {
     Edge edge; int type;
     public PainterMove(Edge edge, int type)

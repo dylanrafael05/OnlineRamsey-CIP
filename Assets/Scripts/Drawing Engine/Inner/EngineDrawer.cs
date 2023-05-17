@@ -8,6 +8,9 @@ public class EngineDrawer
 {
 
     //
+    Camera camera;
+
+    //
     EngineData storage;
 
     //
@@ -31,6 +34,9 @@ public class EngineDrawer
 
     public EngineDrawer(EngineData storage, EnginePreferences preferences, Camera camera)
     {
+
+        //
+        this.camera = camera;
 
         //
         this.storage = storage;

@@ -1,17 +1,16 @@
 ﻿using UnityEngine;
 
-public struct EnginePreferences
+public struct DrawingPreferences
 {
 
-    public Color blackColor;
-    public Color redColor;
-    public Color blueColor;
+    public Color nullColor;
+    public Color[] colors;
 
     public float edgeThickness;
     public float nodeRadius;
 
     public Color TypeToColor(int type)
-        => type == -1 ? blackColor : type == 0 ? blueColor : redColor;
+        => type == -1 ? nullColor : colors[type];
 
     public void UniformPreferences()
     {

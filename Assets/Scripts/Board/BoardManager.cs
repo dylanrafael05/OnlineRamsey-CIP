@@ -4,7 +4,6 @@ using Ramsey.Core;
 using UnityEngine;
 using Unity.Mathematics;
 using System;
-using JetBrains.Annotations;
 
 public class BoardManager
 {
@@ -15,13 +14,15 @@ public class BoardManager
 
     public IReadOnlyGraph Graph => graphManager;
 
-    private BoardManager(Camera camera, EnginePreferences prefs, Graph graphManager) 
+    public BoardPreferences Preferences { get; private set; }
+
+    private BoardManager(Camera camera, DrawingPreferences prefs, Graph graphManager) 
     {
         this.graphManager = graphManager;
         renderManager = new(camera, prefs);
     }
 
-    public BoardManager(Camera camera, EnginePreferences prefs) : this(camera, prefs, new())
+    public BoardManager(Camera camera, DrawingPreferences prefs) : this(camera, prefs, new())
     {}
 
     public Node CreateNode(float2 position = default)
@@ -55,23 +56,6 @@ public class BoardManager
     {
         graphManager.Clear();
         renderManager.WritingInterface.Clear();
-    }
-
-    public void LoadFromString(string source)
-    {
-        graphManager = GraphSerialization.LoadFromString(source);
-
-        renderManager.WritingInterface.Clear();
-
-        foreach(var node in graphManager.Nodes)
-        {
-            renderManager.WritingInterface.AddNode(node);
-        }
-
-        foreach(var edge in graphManager.Edges)
-        {
-            renderManager.WritingInterface.AddEdge(edge);
-        }
     }
 
     public void IterateThroughNodes(Action<Node> action)

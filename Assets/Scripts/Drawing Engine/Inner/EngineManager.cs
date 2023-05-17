@@ -9,7 +9,7 @@ public class EngineManager
     EngineData data;
     EngineDrawer drawer;
 
-    public EngineManager(Camera camera, EnginePreferences preferences)
+    public EngineManager(Camera camera, DrawingPreferences preferences)
     {
 
         data = new();

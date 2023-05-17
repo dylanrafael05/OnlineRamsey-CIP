@@ -7,10 +7,10 @@ public class WritingInterface
 {
 
     EngineData data;
-    EnginePreferences preferences;
+    DrawingPreferences preferences;
     EngineDrawer drawer;
 
-    public WritingInterface(EngineData data, EnginePreferences preferences, EngineDrawer drawer)
+    public WritingInterface(EngineData data, DrawingPreferences preferences, EngineDrawer drawer)
     {
         this.data = data;
         this.preferences = preferences;
