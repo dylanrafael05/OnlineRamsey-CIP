@@ -4,9 +4,9 @@ using Ramsey.Utilities;
 
 namespace Ramsey.Gameplayer
 {
-    public class UserBuilder : IBuilder
+    public class UserBuilder : Builder
     {
-        public async Task<BuilderMove> GetMove(GameState gameState)
+        public override async Task<BuilderMove> GetMove(GameState gameState)
         {
             await Utils.WaitUntil(() => UserInteraction.Ins.CurrNode != null && UserInteraction.Ins.PrevNode != null, 10);
 
@@ -15,14 +15,13 @@ namespace Ramsey.Gameplayer
 
     }
 
-    public class UserPainter : IPainter
+    public class UserPainter : Painter
     {
-        public async Task<PainterMove> GetMove(GameState gameState)
+        public override async Task<PainterMove> GetMove(GameState gameState)
         {
             await Utils.WaitUntil(() => UserInteraction.Ins.CurrEdge != null, 10);
 
             return new PainterMove(UserInteraction.Ins.CurrEdge, UserInteraction.Ins.CurrEdgeType);
         }
     }
-
 }

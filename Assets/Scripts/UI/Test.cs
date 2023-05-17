@@ -7,10 +7,13 @@ using System.Linq;
 using System.Diagnostics;
 using Ramsey.Board;
 using Ramsey.Drawing;
+using Ramsey.UI;
+using Ramsey.Gameplayer;
 
 public class Test : MonoBehaviour
 {
     BoardManager board;
+    TurnManager turns;
 
     // Start is called before the first frame update
     void Start()
@@ -26,6 +29,10 @@ public class Test : MonoBehaviour
             }
         });
 
+        turns = new TurnManager(board, new UserBuilder(), new UserPainter());
+
+        new UserInteraction(board);
+
         const int NodeCount = 100;
 
         for(var i = 0; i < NodeCount; i++)
@@ -33,27 +40,27 @@ public class Test : MonoBehaviour
             var n = board.CreateNode(new(i / Mathf.FloorToInt(Mathf.Sqrt(NodeCount)), i % Mathf.FloorToInt(Mathf.Sqrt(NodeCount))));
         }
 
-        for(var i = 0; i < NodeCount; i++)
-        {
-            var nodeA = UnityEngine.Random.Range(0, NodeCount);
-            var nodeB = UnityEngine.Random.Range(0, NodeCount);
+        // for(var i = 0; i < NodeCount; i++)
+        // {
+        //     var nodeA = UnityEngine.Random.Range(0, NodeCount);
+        //     var nodeB = UnityEngine.Random.Range(0, NodeCount);
 
-            var nodes = new[] {nodeA, nodeB};
+        //     var nodes = new[] {nodeA, nodeB};
 
-            while(nodeA == nodeB || board.Graph.Edges.Any(e => nodes.Contains(e.Start.ID) && nodes.Contains(e.End.ID)))
-            {
-                nodeA = UnityEngine.Random.Range(0, NodeCount);
-                nodeB = UnityEngine.Random.Range(0, NodeCount);
+        //     while(nodeA == nodeB || board.Graph.Edges.Any(e => nodes.Contains(e.Start.ID) && nodes.Contains(e.End.ID)))
+        //     {
+        //         nodeA = UnityEngine.Random.Range(0, NodeCount);
+        //         nodeB = UnityEngine.Random.Range(0, NodeCount);
 
-                nodes = new[] {nodeA, nodeB};
-            }
+        //         nodes = new[] {nodeA, nodeB};
+        //     }
 
-            board.CreateEdge(
-                board.Graph.Nodes[nodeA], 
-                board.Graph.Nodes[nodeB], 
-                UnityEngine.Random.Range(0, 2)
-            );
-        }
+        //     board.CreateEdge(
+        //         board.Graph.Nodes[nodeA], 
+        //         board.Graph.Nodes[nodeB], 
+        //         UnityEngine.Random.Range(0, 2)
+        //     );
+        // }
 
         // var stopwatch = new Stopwatch();
         // stopwatch.Start();
@@ -70,6 +77,10 @@ public class Test : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        var (mouse, l, r) = InputManager.GetInput();
+        UserInteraction.Ins.DoInput(mouse, l, r);
+
+        turns.Update();
         board.RenderAPI.Draw();
     }
 

@@ -46,11 +46,12 @@ namespace Ramsey.Drawing
             data.NodePositions[n.ID] = n.Position;
 
             drawer.UpdateNodeBuffer();
-            drawer.UpdateArgsBuffers();
         }
         public void UpdateEdgeType(Edge e)
         {
             data.EdgeColors[e.ID] = preferences.TypeToColor(e.Type);
+            
+            drawer.UpdateEdgeBuffer();
         }
 
         public void Clear()

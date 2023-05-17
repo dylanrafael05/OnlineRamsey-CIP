@@ -15,7 +15,7 @@ namespace Ramsey.Gameplayer
 
         BoardManager board;
 
-        public UserInteraction(BoardManager board, DrawingManager drawer)
+        public UserInteraction(BoardManager board)
         {
             this.board = board;
 
@@ -41,17 +41,34 @@ namespace Ramsey.Gameplayer
 
         public void DoInput(float2 mouse, bool lmbp, bool rmbp)
         {
+            var nodeCur = board.Nodes.FirstOrDefault(n => CollideNode(mouse, n));
+            var edgeCur = board.Edges.FirstOrDefault(e => CollideEdge(mouse, e));
 
             if (lmbp)
             {
-                PrevNode = CurrNode ?? PrevNode;
-                CurrNode = board.Nodes.FirstOrDefault(n => CollideNode(mouse, n));
+                if(nodeCur != null)
+                {
+                    PrevNode = CurrNode ?? PrevNode;
+                    CurrNode = nodeCur;
+                }
+                else 
+                {
+                    PrevNode = null;
+                    CurrNode = null;
+                }
             }
 
             if (lmbp || rmbp)
             {
-                CurrEdge = board.Edges.FirstOrDefault(e => CollideEdge(mouse, e));
-                CurrEdgeType = rmbp ? 0 : 1;
+                if(nodeCur == null)
+                {
+                    CurrEdge = edgeCur;
+                    CurrEdgeType = rmbp ? 0 : 1;
+                }
+                else 
+                {
+                    CurrEdge = null;
+                }
             }
 
         }

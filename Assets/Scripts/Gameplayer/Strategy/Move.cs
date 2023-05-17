@@ -3,7 +3,12 @@ using Ramsey.Graph;
 
 namespace Ramsey.Gameplayer
 {
-    public readonly struct BuilderMove
+    public interface IMove
+    {
+        bool MakeMove(BoardManager board);
+    }
+
+    public readonly struct BuilderMove : IMove
     {
         private readonly Node n1;
         private readonly Node n2;
@@ -25,7 +30,7 @@ namespace Ramsey.Gameplayer
 
     }
 
-    public readonly struct PainterMove
+    public readonly struct PainterMove : IMove
     {
         private readonly Edge edge;
         private readonly int type;
