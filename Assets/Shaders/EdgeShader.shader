@@ -30,6 +30,7 @@ Shader "Unlit/GraphShaders/EdgeShader"
             struct vOut
             {
                 float4 vertex : SV_POSITION;
+                float type : TEXCOORD0;
             };
 
             vOut vert (vIn v, uint instanceID : SV_InstanceID)
@@ -37,6 +38,7 @@ Shader "Unlit/GraphShaders/EdgeShader"
                 vOut o;
 
                 o.vertex = mul(UNITY_MATRIX_VP, mul(Transforms[instanceID], v.vertex));
+                o.type = Types[instanceID];
 
                 return o;
             }
@@ -46,7 +48,7 @@ Shader "Unlit/GraphShaders/EdgeShader"
 
             fixed4 frag (vOut i, uint instanceID : SV_InstanceID) : SV_Target
             {
-                return lerp(_BlueColor, _RedColor, Types[instanceID]);
+                return lerp(_BlueColor, _RedColor, i.type);
             }
             ENDCG
         }
