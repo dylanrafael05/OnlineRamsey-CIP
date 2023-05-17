@@ -3,12 +3,12 @@ using UnityEngine.Assertions;
 
 public interface IBuilder
 {
-    BuilderMove GetMove(IGraphView gameState);
+    BuilderMove GetMove(IReadOnlyGraph gameState);
 }
 
 public interface IPainter
 {
-    PainterMove GetMove(IGraphView gameState);
+    PainterMove GetMove(IReadOnlyGraph gameState);
 }
 
 public class BuilderMove
