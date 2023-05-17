@@ -13,7 +13,7 @@ public class BoardManager
 
     public ReadingInterface RenderAPI => renderManager.ReadingInterface;
 
-    public IGraphView Graph => graphManager;
+    public IReadOnlyGraph Graph => graphManager;
 
     private BoardManager(Camera camera, EnginePreferences prefs, Graph graphManager) 
     {

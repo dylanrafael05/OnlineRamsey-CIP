@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.Assertions;
 
 namespace Ramsey.Core
 {
@@ -8,18 +9,23 @@ namespace Ramsey.Core
         private Dictionary<Node, List<Path>> nodesByTerminatingPaths;
         private Path maximumLength = null;
 
+        public Path MaxLengthPath => maximumLength;
+
         public IncrementalPathFinder()
         {
             nodesByTerminatingPaths = new();
         }
 
-        public void AddNode(Node node) 
+        public void HandleNodeAddition(Node node) 
         {
+            // TODO: figure out how to add for each color specifid by user settings!
             nodesByTerminatingPaths.Add(node, new() {new Path(node, 0), new Path(node, 1)});
         }
 
-        public void AddEdge(Edge edge)
+        public void HandlePaintedEdge(Edge edge)
         {
+            Assert.AreEqual(edge.Type, -1, "Cannot add a non-painted edge to an incremental path finder!");
+
             foreach(var path in nodesByTerminatingPaths[edge.Start])
                 ExpandPath(path);
             foreach(var path in nodesByTerminatingPaths[edge.End])

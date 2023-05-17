@@ -7,6 +7,8 @@ namespace Ramsey.Core
 {
     public class Edge 
     {
+        public const int NullType = -1;
+
         internal Edge(Node start, Node end, int type, int id)
         {
             Assert.AreNotEqual(start, end, "Cannot create an edge which connects a node to itself");
