@@ -10,6 +10,9 @@ public struct EnginePreferences
     public float edgeThickness;
     public float nodeRadius;
 
+    public Color TypeToColor(int type)
+        => type == -1 ? blackColor : type == 0 ? blueColor : redColor;
+
     public void UniformPreferences()
     {
         NodeMaterial.SetFloat(Shader.PropertyToID("_Radius"), nodeRadius);
