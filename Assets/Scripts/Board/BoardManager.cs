@@ -5,10 +5,10 @@ using UnityEngine;
 using Unity.Mathematics;
 using System;
 
-public class BoardManager
+public class BoardManager : IGraph
 {
     private EngineManager renderManager;
-    private Graph graphManager;
+    private GraphManager graphManager;
 
     public ReadingInterface RenderAPI => renderManager.ReadingInterface;
 
@@ -16,13 +16,18 @@ public class BoardManager
 
     public BoardPreferences Preferences { get; private set; }
 
-    private BoardManager(Camera camera, DrawingPreferences prefs, Graph graphManager) 
+    public IReadOnlyList<Node> Nodes => graphManager.Nodes;
+    public IReadOnlyList<Edge> Edges => graphManager.Edges;
+
+    private BoardManager(Camera camera, BoardPreferences prefs, GraphManager graphManager) 
     {
         this.graphManager = graphManager;
-        renderManager = new(camera, prefs);
+        renderManager = new(camera, prefs.drawingPreferences);
+
+        this.Preferences = prefs;
     }
 
-    public BoardManager(Camera camera, DrawingPreferences prefs) : this(camera, prefs, new())
+    public BoardManager(Camera camera, BoardPreferences prefs) : this(camera, prefs, new())
     {}
 
     public Node CreateNode(float2 position = default)
@@ -61,5 +66,10 @@ public class BoardManager
     public void IterateThroughNodes(Action<Node> action)
     {
         Graph.Nodes.Foreach(action);
+    }
+
+    public bool IsValidEdge(Node start, Node end)
+    {
+        return graphManager.IsValidEdge(start, end);
     }
 }
