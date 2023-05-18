@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Unity.Mathematics;
+using UnityEngine;
 
 namespace Ramsey.Utilities
 {
@@ -31,10 +33,16 @@ namespace Ramsey.Utilities
         {
             return self.Select((x, i) => (x, i));
         }
+
         public static Dictionary<T, int> AssignUniqueIDs<T>(this IEnumerable<T> self)
         {
             return self.Enumerate().ToDictionary(k => k.item, k => k.index);
         }
+
+        public static float2 xy(this float3 v)
+            => new float2(v.x, v.y);
+        public static float2 xy(this Vector3 v)
+            => xy((float3)v);
 
     }
 }
