@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
-using Ramsey.Core;
+using Ramsey.Graph;
 using UnityEngine;
 using Unity.Mathematics;
 using System.Linq;
 using System.Diagnostics;
+using Ramsey.Board;
+using Ramsey.Drawing;
 
 public class Test : MonoBehaviour
 {
@@ -13,13 +15,15 @@ public class Test : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        board = new BoardManager(Camera.current, new DrawingPreferences
+        board = new BoardManager(Camera.current, new BoardPreferences() 
         {
-            blackColor = Color.cyan,
-            blueColor = Color.blue,
-            redColor = Color.red,
-            edgeThickness = 0.15f,
-            nodeRadius = 0.3f,
+            drawingPreferences = new DrawingPreferences
+            {
+                nullColor = Color.cyan,
+                colors = new[] { Color.blue, Color.red },
+                edgeThickness = 0.15f,
+                nodeRadius = 0.3f,
+            }
         });
 
         const int NodeCount = 100;

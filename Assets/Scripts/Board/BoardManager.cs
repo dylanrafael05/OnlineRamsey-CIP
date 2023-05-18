@@ -1,75 +1,81 @@
 using System.Collections;
 using System.Collections.Generic;
-using Ramsey.Core;
+using Ramsey.Graph;
 using UnityEngine;
 using Unity.Mathematics;
 using System;
+using Ramsey.Drawing;
+using Ramsey.Utilities;
 
-public class BoardManager : IGraph
+namespace Ramsey.Board
 {
-    private EngineManager renderManager;
-    private GraphManager graphManager;
-
-    public ReadingInterface RenderAPI => renderManager.ReadingInterface;
-
-    public IReadOnlyGraph Graph => graphManager;
-
-    public BoardPreferences Preferences { get; private set; }
-
-    public IReadOnlyList<Node> Nodes => graphManager.Nodes;
-    public IReadOnlyList<Edge> Edges => graphManager.Edges;
-
-    private BoardManager(Camera camera, BoardPreferences prefs, GraphManager graphManager) 
+    public class BoardManager : IGraph
     {
-        this.graphManager = graphManager;
-        renderManager = new(camera, prefs.drawingPreferences);
+        private DrawingManager renderManager;
+        private GraphManager graphManager;
 
-        this.Preferences = prefs;
-    }
+        public DrawingActionInterface RenderAPI => renderManager.ReadingInterface;
 
-    public BoardManager(Camera camera, BoardPreferences prefs) : this(camera, prefs, new())
-    {}
+        public IReadOnlyGraph Graph => graphManager;
+        public GameState GameState => graphManager.State;
 
-    public Node CreateNode(float2 position = default)
-    {
-        var n = graphManager.CreateNode(position);
+        public BoardPreferences Preferences { get; private set; }
 
-        renderManager.WritingInterface.AddNode(n);
+        public IReadOnlyList<Node> Nodes => graphManager.Nodes;
+        public IReadOnlyList<Edge> Edges => graphManager.Edges;
 
-        return n;
-    }
-    public Edge CreateEdge(Node start, Node end, int type)
-    {
-        var e = graphManager.CreateEdge(start, end, type);
-        renderManager.WritingInterface.AddEdge(e);
+        private BoardManager(Camera camera, BoardPreferences prefs, GraphManager graphManager)
+        {
+            this.graphManager = graphManager;
+            renderManager = new(camera, prefs.drawingPreferences);
 
-        return e;
-    }
+            Preferences = prefs;
+        }
 
-    public void MoveNode(Node node, float2 position)
-    {
-        graphManager.MoveNode(node, position);
-        renderManager.WritingInterface.UpdateNodePosition(node);
-    }
-    public void PaintEdge(Edge edge, int type)
-    {
-        graphManager.PaintEdge(edge, type);
-        renderManager.WritingInterface.UpdateEdgeType(edge);
-    }
+        public BoardManager(Camera camera, BoardPreferences prefs) : this(camera, prefs, new())
+        { }
 
-    public void Clear()
-    {
-        graphManager.Clear();
-        renderManager.WritingInterface.Clear();
-    }
+        public Node CreateNode(float2 position = default)
+        {
+            var n = graphManager.CreateNode(position);
 
-    public void IterateThroughNodes(Action<Node> action)
-    {
-        Graph.Nodes.Foreach(action);
-    }
+            renderManager.WritingInterface.AddNode(n);
 
-    public bool IsValidEdge(Node start, Node end)
-    {
-        return graphManager.IsValidEdge(start, end);
+            return n;
+        }
+        public Edge CreateEdge(Node start, Node end, int type)
+        {
+            var e = graphManager.CreateEdge(start, end, type);
+            renderManager.WritingInterface.AddEdge(e);
+
+            return e;
+        }
+
+        public void MoveNode(Node node, float2 position)
+        {
+            graphManager.MoveNode(node, position);
+            renderManager.WritingInterface.UpdateNodePosition(node);
+        }
+        public void PaintEdge(Edge edge, int type)
+        {
+            graphManager.PaintEdge(edge, type);
+            renderManager.WritingInterface.UpdateEdgeType(edge);
+        }
+
+        public void Clear()
+        {
+            graphManager.Clear();
+            renderManager.WritingInterface.Clear();
+        }
+
+        public void IterateThroughNodes(Action<Node> action)
+        {
+            Graph.Nodes.Foreach(action);
+        }
+
+        public bool IsValidEdge(Node start, Node end)
+        {
+            return graphManager.IsValidEdge(start, end);
+        }
     }
 }

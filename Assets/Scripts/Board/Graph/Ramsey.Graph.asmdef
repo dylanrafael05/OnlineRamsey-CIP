@@ -1,0 +1,17 @@
+{
+    "name": "Ramsey.Graph",
+    "rootNamespace": "Ramsey.Graph",
+    "references": [
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:6b2779fa5936ef34caa0d3d85618fc03"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

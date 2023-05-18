@@ -1,9 +1,13 @@
-﻿using System.Collections;
+﻿using Ramsey.Drawing;
+using System.Collections;
 using UnityEngine;
 
-public struct BoardPreferences
+namespace Ramsey.Board
 {
+    public struct BoardPreferences
+    {
 
-    public DrawingPreferences drawingPreferences;
+        public DrawingPreferences drawingPreferences;
 
+    }
 }
