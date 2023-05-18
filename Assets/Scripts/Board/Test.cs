@@ -7,6 +7,7 @@ using System.Linq;
 using System.Diagnostics;
 using Ramsey.Board;
 using Ramsey.Drawing;
+using Ramsey.Screen;
 
 public class Test : MonoBehaviour
 {
@@ -15,7 +16,7 @@ public class Test : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        board = new BoardManager(Camera.current, new BoardPreferences() 
+        board = new BoardManager(CameraManager.BoardCamera, new BoardPreferences() 
         {
             drawingPreferences = new DrawingPreferences
             {

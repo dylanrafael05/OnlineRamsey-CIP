@@ -1,11 +1,7 @@
 {
-    "name": "Ramsey.DrawingEngine",
-    "rootNamespace": "",
-    "references": [
-        "GUID:c58bd5f28cca03b458f929ba936def48",
-        "GUID:d8b63aba1907145bea998dd612889d6b",
-        "GUID:69aa0a07f6932ba43928a91ef87433bd"
-    ],
+    "name": "Ramsey.Screen",
+    "rootNamespace": "Ramsey.Screen",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
