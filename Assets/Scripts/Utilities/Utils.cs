@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Unity.Mathematics;
+using static Unity.Mathematics.math;
 using UnityEngine;
 
 namespace Ramsey.Utilities
@@ -38,11 +39,13 @@ namespace Ramsey.Utilities
         {
             return self.Enumerate().ToDictionary(k => k.item, k => k.index);
         }
+    }
 
-        public static float2 xy(this float3 v)
-            => new float2(v.x, v.y);
-        public static float2 xy(this Vector3 v)
-            => xy((float3)v);
-
+    public static class MathUtils
+    {
+        public static float3 xyz(this float2 v) 
+            => float3(v.x, v.y, 0);
+        public static float4 xyzw(this float3 v) 
+            => float4(v.x, v.y, v.z, 0);
     }
 }
