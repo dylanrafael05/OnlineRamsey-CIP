@@ -31,7 +31,7 @@ namespace Ramsey.Gameplayer
                 if(prevNode != null) board.UnhighlightNode(prevNode);
 
                 prevNode = currNode;
-                currNode = board.Nodes.FirstOrDefault(n => CollideNode(input.mouse, n, board));
+                currNode = input.collidingNodes.FirstOrDefault();
 
                 if(currNode != null) board.HighlightNode(currNode);
                 else
@@ -71,7 +71,7 @@ namespace Ramsey.Gameplayer
         {
             if(input.rmbp || input.lmbp)
             {
-                currEdge = board.Edges.FirstOrDefault(e => CollideEdge(input.mouse, e, board));
+                currEdge = input.collidingEdges.FirstOrDefault();
                 currEdgeType = input.lmbp ? 0 : 1;
             }
         }
