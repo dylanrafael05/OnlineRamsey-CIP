@@ -86,7 +86,7 @@ public class Test : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        var input = InputManager.GetInput();
+        var input = InputManager.Update();
         UserModeHandler.Update(input);
 
         turns.Update();

@@ -22,9 +22,7 @@ namespace Ramsey.Gameplayer
         //
         Node prevNode;
         Node currNode;
-        bool CollideNode(float2 mouse, Node n, BoardManager board)
-            => math.length(mouse - n.Position) <= board.Preferences.drawingPreferences.nodeRadius;
-
+        
         public void Init(BoardManager board) => prevNode = currNode = null;
         public void Update(InputData input, BoardManager board)
         {
@@ -67,12 +65,6 @@ namespace Ramsey.Gameplayer
         //
         Edge currEdge;
         int currEdgeType;
-        bool CollideEdge(float2 mouse, Edge e, BoardManager board)
-        {
-            float2 StartToEnd = e.End.Position - e.Start.Position; float2 lp = mouse - .5f * (e.Start.Position + e.End.Position); float2 dir = normalize(StartToEnd);
-            lp = new float2(dot(lp, dir), length(cross(float3(lp, 0f), float3(dir, 0f)))); lp.x = abs(lp.x);
-            return lp.x <= length(StartToEnd) * .5f && lp.y <= board.Preferences.drawingPreferences.edgeThickness * .5f;
-        }
 
         public void Init(BoardManager board) => currEdge = null;
         public void Update(InputData input, BoardManager board)
