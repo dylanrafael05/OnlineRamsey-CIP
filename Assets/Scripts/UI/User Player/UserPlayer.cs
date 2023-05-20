@@ -13,7 +13,7 @@ namespace Ramsey.Gameplayer
         public override async Task<BuilderMove> GetMove(GameState gameState)
         {
             UserModeHandler.AddMode(this);
-            await Utils.WaitUntil(() => currNode != null && prevNode != null, 10);
+            await Utils.WaitUntil(() => currNode != null && prevNode != null);
             UserModeHandler.DelMode(this);
 
             return new BuilderMove(currNode, prevNode);
@@ -25,16 +25,31 @@ namespace Ramsey.Gameplayer
         bool CollideNode(float2 mouse, Node n, BoardManager board)
             => math.length(mouse - n.Position) <= board.Preferences.drawingPreferences.nodeRadius;
 
-        public void Init() => prevNode = currNode = null;
+        public void Init(BoardManager board) => prevNode = currNode = null;
         public void Update(InputData input, BoardManager board)
         {
             if (input.lmbp)
             {
+                if(prevNode != null) board.UnhighlightNode(prevNode);
+
                 prevNode = currNode;
                 currNode = board.Nodes.FirstOrDefault(n => CollideNode(input.mouse, n, board));
+
+                if(currNode != null) board.HighlightNode(currNode);
+                else
+                {
+                    if(prevNode != null) board.UnhighlightNode(prevNode);
+                    prevNode = null;
+                }
             }
         }
-        public void End() { }
+        public void End(BoardManager board) 
+        { 
+            if(prevNode != null)
+                board.UnhighlightNode(prevNode);
+            if(currNode != null)
+                board.UnhighlightNode(currNode);
+        }
 
     }
 
@@ -43,7 +58,7 @@ namespace Ramsey.Gameplayer
         public override async Task<PainterMove> GetMove(GameState gameState)
         {
             UserModeHandler.AddMode(this);
-            await Utils.WaitUntil(() => currEdge != null, 10);
+            await Utils.WaitUntil(() => currEdge != null);
             UserModeHandler.DelMode(this);
 
             return new PainterMove(currEdge, currEdgeType);
@@ -59,7 +74,7 @@ namespace Ramsey.Gameplayer
             return lp.x <= length(StartToEnd) * .5f && lp.y <= board.Preferences.drawingPreferences.edgeThickness * .5f;
         }
 
-        public void Init() => currEdge = null;
+        public void Init(BoardManager board) => currEdge = null;
         public void Update(InputData input, BoardManager board)
         {
             if(input.rmbp || input.lmbp)
@@ -68,6 +83,6 @@ namespace Ramsey.Gameplayer
                 currEdgeType = input.lmbp ? 0 : 1;
             }
         }
-        public void End() { }
+        public void End(BoardManager board) { }
     }
 }

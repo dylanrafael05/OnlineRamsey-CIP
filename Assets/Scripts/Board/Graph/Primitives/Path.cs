@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Ramsey.Graph
 {
@@ -31,7 +32,7 @@ namespace Ramsey.Graph
         public int Type { get; }
 
         public IReadOnlyCollection<Node> Nodes => nodes;
-        public int Length => nodes.Count;
+        public int Length => nodes.Count - 1;
 
         public Node End { get; private set; }
 
@@ -56,5 +57,8 @@ namespace Ramsey.Graph
 
             return other;
         }
+
+        public override string ToString()
+            => $"{{Length = {Length}, Type = {Type}, Nodes = [{string.Join(", ", Nodes.Select(n => n.ID))}]}}";
     }
 }

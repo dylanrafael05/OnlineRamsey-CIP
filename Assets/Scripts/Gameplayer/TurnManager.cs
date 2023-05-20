@@ -50,6 +50,8 @@ namespace Ramsey.UI
                     {
                         OnMoveFailure.Invoke(move);
                     }
+
+                    Debug.Log("Longest path = " + (board.GameState.MaxLengthPath?.ToString() ?? "none"));
                 }
             }
             else 

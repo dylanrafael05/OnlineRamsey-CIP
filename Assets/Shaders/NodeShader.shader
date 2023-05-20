@@ -87,7 +87,7 @@ Shader "Unlit/GraphShaders/NodeShader"
                 float rtheta = atan2(i.uv.y, i.uv.x);
                 float theta = rtheta + _Time.y;
 
-                float hiRad = _HighlightRadius * i.highlighted * (sin(theta * 10.0) * 0.05 + 0.95);
+                float hiRad = _HighlightRadius * (sin(theta * 10.0) * 0.05 + 0.95);
 
                 return step(len, _Radius) * lerp(_HighlightColor, float4(0., 0., 0., 1), smoothstep(_Radius, hiRad, len));*/
 
@@ -104,7 +104,6 @@ Shader "Unlit/GraphShaders/NodeShader"
 
                 //Composite
                 return lerp(col, _HighlightColor, isHighlight);
-                
             }
 
             ENDCG

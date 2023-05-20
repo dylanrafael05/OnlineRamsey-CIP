@@ -51,6 +51,7 @@ namespace Ramsey.Drawing
             }
 
             drawer.UpdateNodeBuffer();
+            drawer.UpdateEdgeBuffer();
         }
 
         public void HighlightNode(Node n)
@@ -58,12 +59,14 @@ namespace Ramsey.Drawing
             Assert.IsTrue(data.NodePositions.Count >= n.ID, "Nodes must be added to renderer before they are highlighted!");
 
             data.NodeHighlights[n.ID] = 1;
+            drawer.UpdateNodeBuffer();
         }
         public void UnhighlightNode(Node n)
         {
             Assert.IsTrue(data.NodePositions.Count >= n.ID, "Nodes must be added to renderer before they are highlighted!");
 
             data.NodeHighlights[n.ID] = 0;
+            drawer.UpdateNodeBuffer();
         }
 
         internal void UpdateEdgeTransform(Edge e)

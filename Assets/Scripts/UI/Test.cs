@@ -39,14 +39,14 @@ public class Test : MonoBehaviour
 
         turns = new TurnManager(board, new UserBuilder(), new UserPainter());
 
-        new UserInteraction(board);
+        UserModeHandler.Create(board);
 
         const int NodeCount = 100;
 
         for(var i = 0; i < NodeCount; i++)
         {
             var n = board.CreateNode(new(i / Mathf.FloorToInt(Mathf.Sqrt(NodeCount)), i % Mathf.FloorToInt(Mathf.Sqrt(NodeCount))));
-            board.HighlightNode(n);
+            // board.HighlightNode(n);
         }
 
         // for(var i = 0; i < NodeCount; i++)
@@ -86,8 +86,8 @@ public class Test : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        var (mouse, l, r) = InputManager.GetInput();
-        UserInteraction.Ins.DoInput(mouse, l, r);
+        var input = InputManager.GetInput();
+        UserModeHandler.Update(input);
 
         turns.Update();
         board.RenderAPI.Draw();
