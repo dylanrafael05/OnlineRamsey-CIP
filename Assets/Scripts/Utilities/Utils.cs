@@ -54,6 +54,8 @@ namespace Ramsey.Utilities
     {
         public static float3 xyz(this float2 v) 
             => float3(v.x, v.y, 0);
+        public static float4 xyzw(this float2 v)
+            => float4(v.x, v.y, 0, 0);
         public static float4 xyzw(this float3 v) 
             => float4(v.x, v.y, v.z, 0);
         

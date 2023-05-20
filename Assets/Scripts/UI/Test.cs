@@ -31,8 +31,10 @@ public class Test : MonoBehaviour
                 nullColor = Color.cyan,
                 colors = new[] { Color.blue, Color.red },
                 edgeThickness = 0.15f,
+                highlightThickness = .1f,
+                nodeColor = Color.black,
                 nodeRadius = 0.3f,
-                highlightRadius = 0.2f,
+                highlightRadius = 0.4f,
                 highlightColor = Color.green
             }
         });

@@ -1,3 +1,5 @@
+using Unity.Mathematics;
+
 namespace Ramsey.Drawing
 {
     public class DrawingActionInterface
