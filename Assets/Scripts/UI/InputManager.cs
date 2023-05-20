@@ -35,17 +35,20 @@ public static class InputManager
     private static readonly InputData data = new();
     public static InputData Update()
     {
-        data.rawMouse = GetScreenMousePosition().xy / CameraManager.ScreenSize * 2 - 1;
+        data.rawMouse = (GetScreenMousePosition().xy / CameraManager.ScreenSize * 2 - 1);//* new float2(CameraManager.ScreenSize.y/CameraManager.ScreenSize.x, 1f);
         data.mouse = GetWorldMousePosition();
 
         data.lmb  = Input.GetMouseButton(0);
         data.lmbp = Input.GetMouseButtonDown(0);
+        data.lmbu = Input.GetMouseButtonUp(0);
         
         data.mmb  = Input.GetMouseButton(2);
         data.mmbp = Input.GetMouseButtonDown(2);
+        data.mmbu = Input.GetMouseButtonUp(2);
         
         data.rmb  = Input.GetMouseButton(1);
         data.rmbp = Input.GetMouseButtonDown(1);
+        data.rmbu = Input.GetMouseButtonUp(1);
 
         data.collidingNodes = board.Nodes.Where(n => CollideNode(data.mouse, n)).ToHashSet();
         data.collidingEdges = board.Edges.Where(e => CollideEdge(data.mouse, e)).ToHashSet();
@@ -65,6 +68,7 @@ public class InputData
 
     public bool lmb; public bool rmb; public bool mmb;
     public bool lmbp; public bool rmbp; public bool mmbp;
+    public bool lmbu; public bool rmbu; public bool mmbu;
 
     public bool alt; public bool shift;
 

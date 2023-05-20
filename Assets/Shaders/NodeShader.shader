@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 Shader "Unlit/GraphShaders/NodeShader"
 {
     Properties
@@ -57,7 +59,10 @@ Shader "Unlit/GraphShaders/NodeShader"
                 o.vertex = mul(UNITY_MATRIX_VP, float4(v.vertex.xy + Positions[instanceID], 0., 1.));
                 o.uv = v.uv;
                 o.highlighted = IsHighlighted[instanceID];
-                o.mouse = (float2(_Mouse.x, -_Mouse.y) - o.vertex) * 10.;
+                
+                o.mouse = (float2(_Mouse.x, -_Mouse.y) - UnityObjectToClipPos(float4(Positions[instanceID], 0., 1.))) * 8.; 
+                o.mouse.y = -o.mouse.y;
+                //TODO: 8 is a random ass number which might not work in other circumstances
 
                 return o;
             }
@@ -82,6 +87,8 @@ Shader "Unlit/GraphShaders/NodeShader"
 
             fixed4 frag (vOut i) : SV_Target
             {
+                // return float4(i.mouse.x, i.mouse.y, 0., 1.);
+
                 /*
                 float len = length(i.uv);
 
@@ -97,7 +104,7 @@ Shader "Unlit/GraphShaders/NodeShader"
 
                 //Highlight
                 float o = atan2(i.uv.y, i.uv.x);
-                isHighlight = step(abs(r - _HighlightRadius+sin(o*10. + _Time.y)*.05) - _HighlightThickness*.5, 0.) * i.highlighted;
+                isHighlight = step(abs(length(warpPoint(i.uv, i.mouse)) - (1. + warpFactor(i.uv, i.mouse)) * _HighlightRadius+sin(o*10. + _Time.y)*.05) - _HighlightThickness*.5, 0.) * i.highlighted;
 
                 //Node 
                 float d = length(warpPoint(i.uv, i.mouse)) - (_Radius * (1. + warpFactor(i.uv, i.mouse)));

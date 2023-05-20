@@ -28,11 +28,12 @@ public class Test : MonoBehaviour
         {
             drawingPreferences = new DrawingPreferences
             {
-                nullColor = Color.cyan,
+                nullColor = Color.black,
                 colors = new[] { Color.blue, Color.red },
                 edgeThickness = 0.15f,
                 highlightThickness = .1f,
-                nodeColor = Color.black,
+
+                nodeColor = Color.white,
                 nodeRadius = 0.3f,
                 highlightRadius = 0.4f,
                 highlightColor = Color.green
@@ -44,13 +45,15 @@ public class Test : MonoBehaviour
         UserModeHandler.Create(board);
         InputManager.Create(board);
 
-        const int NodeCount = 100;
+        UserModeHandler.AddMode(new NodeEditingMode());
 
-        for(var i = 0; i < NodeCount; i++)
-        {
-            var n = board.CreateNode(new(i / Mathf.FloorToInt(Mathf.Sqrt(NodeCount)), i % Mathf.FloorToInt(Mathf.Sqrt(NodeCount))));
-            // board.HighlightNode(n);
-        }
+        // const int NodeCount = 100;
+
+        // for(var i = 0; i < NodeCount; i++)
+        // {
+        //     var n = board.CreateNode(new(i / Mathf.FloorToInt(Mathf.Sqrt(NodeCount)), i % Mathf.FloorToInt(Mathf.Sqrt(NodeCount))));
+        //     // board.HighlightNode(n);
+        // }
 
         // for(var i = 0; i < NodeCount; i++)
         // {

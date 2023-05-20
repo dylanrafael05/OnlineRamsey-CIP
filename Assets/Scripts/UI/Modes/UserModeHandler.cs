@@ -1,7 +1,5 @@
 ﻿using Ramsey.Board;
-using Ramsey.Graph;
 using System.Collections.Generic;
-using Unity.Mathematics;
 
 public class UserModeHandler
 {
@@ -36,26 +34,4 @@ public interface IUserMode
     void Init(BoardManager board);
     void Update(InputData input, BoardManager board);
     void End(BoardManager board);
-}
-
-public class NodeEditingMode : IUserMode
-{
-    private Node selection;
-
-    public void Init(BoardManager board)
-    {
-        selection = null;
-    }
-    
-    bool CollideNode(float2 mouse, Node n, BoardManager board)
-        => math.length(mouse - n.Position) <= board.Preferences.drawingPreferences.nodeRadius;
-
-    public void Update(InputData input, BoardManager board)
-    {
-    }
-
-    public void End(BoardManager board)
-    {
-        throw new System.NotImplementedException();
-    }
 }

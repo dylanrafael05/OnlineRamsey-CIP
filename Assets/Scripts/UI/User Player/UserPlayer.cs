@@ -26,7 +26,7 @@ namespace Ramsey.Gameplayer
         public void Init(BoardManager board) => prevNode = currNode = null;
         public void Update(InputData input, BoardManager board)
         {
-            if (input.lmbp)
+            if (!input.shift && input.lmbp)
             {
                 if(prevNode != null) board.UnhighlightNode(prevNode);
 
