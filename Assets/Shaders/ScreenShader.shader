@@ -36,13 +36,14 @@ Shader "Unlit/Fullscreen/Vignette"
                 vOut o;
 
                 o.vertex = UnityObjectToClipPos(v.vertex);
+                o.uv = v.uv;
 
                 return o;
             }
 
             fixed4 frag (vOut i) : SV_Target
             {
-                return tex2D(_ScreenTexture, i.uv);
+                return tex2D(_ScreenTexture, 1 - i.uv);
             }
             ENDCG
         }

@@ -5,13 +5,28 @@ using UnityEngine.Assertions;
 
 namespace Ramsey.Gameplayer
 {
-    public interface IBuilder
+    public interface IPlayer
     {
-        Task<BuilderMove> GetMove(GameState gameState);
+        Task<IMove> GetMove(GameState gameState);
     }
 
-    public interface IPainter
+    public abstract class Builder : IPlayer
     {
-        Task<PainterMove> GetMove(GameState gameState);
+        async Task<IMove> IPlayer.GetMove(GameState gameState)
+        {
+            return await GetMove(gameState);
+        }
+
+        public abstract Task<BuilderMove> GetMove(GameState gameState);
+    }
+
+    public abstract class Painter : IPlayer
+    {
+        async Task<IMove> IPlayer.GetMove(GameState gameState)
+        {
+            return await GetMove(gameState);
+        }
+
+        public abstract Task<PainterMove> GetMove(GameState gameState);
     }
 }

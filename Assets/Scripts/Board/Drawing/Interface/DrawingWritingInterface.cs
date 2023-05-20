@@ -44,13 +44,26 @@ namespace Ramsey.Drawing
             Assert.IsTrue(data.NodePositions.Count > n.ID, "Nodes must be added to renderer upon creation!");
 
             data.NodePositions[n.ID] = n.Position;
+            foreach(var e in n.Edges)
+            {
+                UpdateEdgeTransform(e);
+            }
 
             drawer.UpdateNodeBuffer();
-            drawer.UpdateArgsBuffers();
         }
+
+        internal void UpdateEdgeTransform(Edge e)
+        {
+            Assert.IsTrue(e.ID <= data.EdgeTransforms.Count, "Cannot update an edge transform for an edge which has not yet been added.");
+
+            data.EdgeTransforms[e.ID] = DrawingTransformGenerator.GenerateEdgeTransform(e.Start, e.End, e.Type, preferences.edgeThickness);
+        }
+
         public void UpdateEdgeType(Edge e)
         {
             data.EdgeColors[e.ID] = preferences.TypeToColor(e.Type);
+            
+            drawer.UpdateEdgeBuffer();
         }
 
         public void Clear()

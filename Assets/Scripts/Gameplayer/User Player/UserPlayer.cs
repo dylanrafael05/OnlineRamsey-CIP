@@ -8,9 +8,9 @@ using static Unity.Mathematics.math;
 
 namespace Ramsey.Gameplayer
 {
-    public class UserBuilder : IBuilder, IUserMode
+    public class UserBuilder : IBuilder, IUserModea
     {
-        public async Task<BuilderMove> GetMove(GameState gameState)
+        public override async Task<BuilderMove> GetMove(GameState gameState)
         {
             UserModeHandler.AddMode(this);
             await Utils.WaitUntil(() => currNode != null && prevNode != null, 10);
@@ -40,7 +40,7 @@ namespace Ramsey.Gameplayer
 
     public class UserPainter : IPainter, IUserMode
     {
-        public async Task<PainterMove> GetMove(GameState gameState)
+        public override async Task<PainterMove> GetMove(GameState gameState)
         {
             UserModeHandler.AddMode(this);
             await Utils.WaitUntil(() => currEdge != null, 10);
@@ -70,5 +70,4 @@ namespace Ramsey.Gameplayer
         }
         public void End() { }
     }
-
 }
