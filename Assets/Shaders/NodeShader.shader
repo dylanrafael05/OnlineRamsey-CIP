@@ -5,6 +5,10 @@ Shader "Unlit/GraphShaders/NodeShader"
 
         [HideInInspector]
         _Radius ("Radius", Float) = 1 //[0, 1] to avoid cutting
+        [HideInInspector]
+        _HighlightRadius ("Highlight Radius", Float) = 0.5
+
+        _HighlightColor ("Highlight Color", Color) = (1., 1., 1., 1.)
 
     }
     SubShader
@@ -34,9 +38,11 @@ Shader "Unlit/GraphShaders/NodeShader"
             {
                 float4 vertex : SV_POSITION;
                 float2 uv : TEXCOORD0;
+                float highlighted : TEXCOORD1;
             };
 
             StructuredBuffer<float2> Positions;
+            StructuredBuffer<float> IsHighlighted;
 
             vOut vert (vIn v, uint instanceID : SV_InstanceID)
             {
@@ -44,15 +50,25 @@ Shader "Unlit/GraphShaders/NodeShader"
 
                 o.vertex = mul(UNITY_MATRIX_VP, float4(v.vertex.xy + Positions[instanceID], 0., 1.));
                 o.uv = v.uv;
+                o.highlighted = IsHighlighted[instanceID];
 
                 return o;
             }
 
             float _Radius;
+            float _HighlightRadius;
+            float4 _HighlightColor;
 
             fixed4 frag (vOut i) : SV_Target
             {
-                return float4(0.0, 0.0, 0.0, step(length(i.uv), _Radius));
+                float len = length(i.uv);
+
+                float rtheta = atan2(i.uv.y, i.uv.x);
+                float theta = rtheta + _Time.y;
+
+                float hiRad = _HighlightRadius * i.highlighted * (sin(theta * 10.0) * 0.05 + 0.95);
+
+                return step(len, _Radius) * lerp(_HighlightColor, float4(0., 0., 0., 1), smoothstep(_Radius, hiRad, len));
             }
 
             ENDCG

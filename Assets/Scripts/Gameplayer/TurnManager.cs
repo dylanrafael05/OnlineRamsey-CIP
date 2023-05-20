@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Ramsey.Board;
 using Ramsey.Gameplayer;
@@ -18,6 +19,8 @@ namespace Ramsey.UI
 
         private Task<IMove> awaitingTask;
 
+        public event Action<IMove> OnMoveFailure;
+
         public TurnManager(BoardManager board, Builder builder, Painter painter)
         {
             this.board = board;
@@ -34,29 +37,34 @@ namespace Ramsey.UI
             {
                 if(awaitingTask.IsCompleted)
                 {
-                    // Assert.IsFalse(awaitingTask.IsFaulted, "Move producers cannot fail! " + awaitingTask.);
-
                     var move = awaitingTask.Result;
-                    move.MakeMove(board);
 
-                    awaitingTask = null;
-                    isAwaitingTask = false;
+                    if(move.MakeMove(board))
+                    {
+                        awaitingTask = null;
+                        isAwaitingTask = false;
+
+                        isBuilderTurn = !isBuilderTurn;
+                    }
+                    else 
+                    {
+                        OnMoveFailure.Invoke(move);
+                    }
                 }
             }
             else 
             {
-                Debug.Log(isBuilderTurn ? "Builder time" : "Paint babyyy");
-                
                 if(isBuilderTurn)
                 {
+                    Debug.Log("Getting builder move . . .");
                     awaitingTask = (builder as IPlayer).GetMove(board.GameState);
                 }
                 else 
                 {
+                    Debug.Log("Getting painter move . . .");
                     awaitingTask = (painter as IPlayer).GetMove(board.GameState);
                 }
 
-                isBuilderTurn = !isBuilderTurn;
                 isAwaitingTask = true;
             }
         }

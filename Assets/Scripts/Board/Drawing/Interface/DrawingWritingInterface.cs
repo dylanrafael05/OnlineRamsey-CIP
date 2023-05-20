@@ -34,6 +34,7 @@ namespace Ramsey.Drawing
             Assert.AreEqual(data.NodePositions.Count, n.ID, "Nodes must be added to renderer upon creation!");
 
             data.NodePositions.Add(n.Position);
+            data.NodeHighlights.Add(0);
 
             drawer.UpdateNodeBuffer();
             drawer.UpdateArgsBuffers();
@@ -50,6 +51,19 @@ namespace Ramsey.Drawing
             }
 
             drawer.UpdateNodeBuffer();
+        }
+
+        public void HighlightNode(Node n)
+        {
+            Assert.IsTrue(data.NodePositions.Count >= n.ID, "Nodes must be added to renderer before they are highlighted!");
+
+            data.NodeHighlights[n.ID] = 1;
+        }
+        public void UnhighlightNode(Node n)
+        {
+            Assert.IsTrue(data.NodePositions.Count >= n.ID, "Nodes must be added to renderer before they are highlighted!");
+
+            data.NodeHighlights[n.ID] = 0;
         }
 
         internal void UpdateEdgeTransform(Edge e)

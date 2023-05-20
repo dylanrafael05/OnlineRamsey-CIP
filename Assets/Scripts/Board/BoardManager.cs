@@ -62,6 +62,15 @@ namespace Ramsey.Board
             renderManager.WritingInterface.UpdateEdgeType(edge);
         }
 
+        public void HighlightNode(Node n)
+        {
+            renderManager.WritingInterface.HighlightNode(n);
+        }
+        public void UnhighlightNode(Node n)
+        {
+            renderManager.WritingInterface.UnhighlightNode(n);
+        }
+
         public void Clear()
         {
             graphManager.Clear();

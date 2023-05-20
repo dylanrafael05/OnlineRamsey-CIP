@@ -34,6 +34,7 @@ namespace Ramsey.Drawing
         //
         int nodeCount;
         ComputeBuffer nodePositionBuffer;
+        ComputeBuffer nodeHighlightBuffer;
 
         public Drawer(DrawingData storage, DrawingPreferences preferences, Camera camera)
         {
@@ -47,11 +48,11 @@ namespace Ramsey.Drawing
             //
             argsArrayEdge = new uint[5]
             {
-            DrawingData.QuadMesh.GetIndexCount(0),
-            0,
-            DrawingData.QuadMesh.GetIndexStart(0),
-            DrawingData.QuadMesh.GetBaseVertex(0),
-            0
+                DrawingData.QuadMesh.GetIndexCount(0),
+                0,
+                DrawingData.QuadMesh.GetIndexStart(0),
+                DrawingData.QuadMesh.GetBaseVertex(0),
+                0
             };
             argsArrayNode = new uint[5]; argsArrayEdge.CopyTo(argsArrayNode, 0);
 
@@ -62,6 +63,7 @@ namespace Ramsey.Drawing
             edgeTypeBuffer = new(MAXMESHCOUNT, Marshal.SizeOf<float4>());
 
             nodePositionBuffer = new(MAXMESHCOUNT, Marshal.SizeOf<float2>());
+            nodeHighlightBuffer = new(MAXMESHCOUNT, Marshal.SizeOf<float>());
 
             //Uniforms Prefs
             preferences.UniformPreferences();
@@ -71,6 +73,7 @@ namespace Ramsey.Drawing
             DrawingPreferences.EdgeMaterial.SetBuffer(Shader.PropertyToID("Colors"), edgeTypeBuffer);
 
             DrawingPreferences.NodeMaterial.SetBuffer(Shader.PropertyToID("Positions"), nodePositionBuffer);
+            DrawingPreferences.NodeMaterial.SetBuffer(Shader.PropertyToID("IsHighlighted"), nodeHighlightBuffer);
 
             //
             UpdateArgsBuffers();
@@ -91,7 +94,7 @@ namespace Ramsey.Drawing
 
         }
         public void UpdateEdgeBuffer() { edgeTransformBuffer.SetData(storage.EdgeTransforms); edgeTypeBuffer.SetData(storage.EdgeColors); }
-        public void UpdateNodeBuffer() => nodePositionBuffer.SetData(storage.NodePositions);
+        public void UpdateNodeBuffer() { nodePositionBuffer.SetData(storage.NodePositions); nodeHighlightBuffer.SetData(storage.NodeHighlights); }
 
         public void Draw()
         {
@@ -103,9 +106,12 @@ namespace Ramsey.Drawing
         {
             argsBufferEdge.Dispose();
             argsBufferNode.Dispose();
+            
             edgeTypeBuffer.Dispose();
             edgeTransformBuffer.Dispose();
+
             nodePositionBuffer.Dispose();
+            nodeHighlightBuffer.Dispose();
         }
 
     }

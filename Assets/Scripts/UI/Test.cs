@@ -32,6 +32,8 @@ public class Test : MonoBehaviour
                 colors = new[] { Color.blue, Color.red },
                 edgeThickness = 0.15f,
                 nodeRadius = 0.3f,
+                highlightRadius = 0.2f,
+                highlightColor = Color.green
             }
         });
 
@@ -44,6 +46,7 @@ public class Test : MonoBehaviour
         for(var i = 0; i < NodeCount; i++)
         {
             var n = board.CreateNode(new(i / Mathf.FloorToInt(Mathf.Sqrt(NodeCount)), i % Mathf.FloorToInt(Mathf.Sqrt(NodeCount))));
+            board.HighlightNode(n);
         }
 
         // for(var i = 0; i < NodeCount; i++)
