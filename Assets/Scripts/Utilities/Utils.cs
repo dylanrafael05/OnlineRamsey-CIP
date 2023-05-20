@@ -17,10 +17,19 @@ namespace Ramsey.Utilities
                 action(elem);
         }
 
-        public static async Task WaitUntil(Func<bool> func, int milliDelay)
+        public static async Task WaitUntil(Func<bool> func, int milliDelay = 10)
         {
             while (!func.Invoke())
             {
+                await Task.Delay(milliDelay);
+            }
+        }
+
+        public static async Task WaitUntil(Func<bool> func, Action action, int milliDelay = 10)
+        {
+            while(!func.Invoke())
+            {
+                action();
                 await Task.Delay(milliDelay);
             }
         }

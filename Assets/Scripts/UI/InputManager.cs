@@ -17,9 +17,11 @@ public static class InputManager
 
 }
 
-public struct InputStruct
+public class InputData
 {
 
-
+    public float2 mouse;
+    public bool lmb; public bool rmb; public bool mmb;
+    public bool lmbp; public bool rmbp; public bool mmbp;
 
 }
