@@ -42,6 +42,7 @@ public class Test : MonoBehaviour
         turns = new TurnManager(board, new UserBuilder(), new UserPainter());
 
         UserModeHandler.Create(board);
+        InputManager.Create(board);
 
         const int NodeCount = 100;
 

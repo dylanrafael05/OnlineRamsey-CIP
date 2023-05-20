@@ -35,7 +35,7 @@ public static class InputManager
     private static readonly InputData data = new();
     public static InputData Update()
     {
-        data.rawMouse = GetScreenMousePosition().xy;
+        data.rawMouse = GetScreenMousePosition().xy / CameraManager.ScreenSize * 2 - 1;
         data.mouse = GetWorldMousePosition();
 
         data.lmb  = Input.GetMouseButton(0);
@@ -50,6 +50,9 @@ public static class InputManager
         data.collidingNodes = board.Nodes.Where(n => CollideNode(data.mouse, n)).ToHashSet();
         data.collidingEdges = board.Edges.Where(e => CollideEdge(data.mouse, e)).ToHashSet();
 
+        data.alt   = Input.GetKey(KeyCode.LeftAlt)   || Input.GetKey(KeyCode.RightAlt);
+        data.shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+
         board.SetMousePosition(data.rawMouse);
 
         return data;
@@ -59,9 +62,11 @@ public static class InputManager
 public class InputData
 {
     public float2 rawMouse; public float2 mouse;
-    
+
     public bool lmb; public bool rmb; public bool mmb;
     public bool lmbp; public bool rmbp; public bool mmbp;
+
+    public bool alt; public bool shift;
 
     public ISet<Node> collidingNodes;
     public ISet<Edge> collidingEdges;
