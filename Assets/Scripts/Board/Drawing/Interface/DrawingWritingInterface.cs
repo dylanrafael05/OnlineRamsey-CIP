@@ -2,6 +2,8 @@ using Ramsey.Graph;
 using UnityEngine.Assertions;
 using Unity.Mathematics;
 using UnityEngine;
+using Ramsey.Utilities;
+using System.Data.SqlTypes;
 
 namespace Ramsey.Drawing
 {
@@ -80,6 +82,14 @@ namespace Ramsey.Drawing
         {
             data.EdgeColors[e.ID] = preferences.TypeToColor(e.Type);
             
+            drawer.UpdateEdgeBuffer();
+        }
+
+        public void SetHighlightedPath(Path path) //will unhighlight everything not inside this path
+        {
+            data.EdgeHighlights.ForEach(f => f = 0f); //this might be dumb for 2 reasons feel free to fix or maybe add something to utils
+            path.Edges.Foreach(e => data.EdgeHighlights[e.ID] = 1.0f);
+
             drawer.UpdateEdgeBuffer();
         }
 

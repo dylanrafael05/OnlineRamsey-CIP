@@ -29,6 +29,8 @@ namespace Ramsey.Drawing
 
             NodeMaterial.SetColor(Shader.PropertyToID("_NodeColor"), nodeColor);
             NodeMaterial.SetColor(Shader.PropertyToID("_HighlightColor"), highlightColor);
+
+            EdgeMaterial.SetColor(Shader.PropertyToID("_HighlightColor"), nodeColor); //think setting it to be nodecolor would be cool
         }
 
         public static readonly Material EdgeMaterial = new(Shader.Find("Unlit/GraphShaders/EdgeShader"));

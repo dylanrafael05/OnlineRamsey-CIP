@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Ramsey.Board;
 using Ramsey.Gameplayer;
+using Ramsey.Graph;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -20,6 +22,8 @@ namespace Ramsey.UI
 
         private Task<IMove> awaitingTask;
 
+        private List<GameState> gameStates; //for recording
+
         public TurnManager(BoardManager board, Builder builder, Painter painter)
         {
             this.board = board;
@@ -28,6 +32,8 @@ namespace Ramsey.UI
             this.painter = painter;
 
             isBuilderTurn = true;
+
+            gameStates = new() { board.GameState };
         }
 
         public void Update() 
@@ -41,6 +47,7 @@ namespace Ramsey.UI
                     if(move.MakeMove(board))
                     {
                         isBuilderTurn = !isBuilderTurn;
+                        gameStates.Add(board.GameState);
                     }
                     
                     awaitingTask = null;

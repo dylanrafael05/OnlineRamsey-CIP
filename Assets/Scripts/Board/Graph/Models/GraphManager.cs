@@ -26,11 +26,7 @@ namespace Ramsey.Graph
             this.graph = graph;
             this.pathFinder = pathFinder;
 
-            gameState = new()
-            {
-                Graph = graph,
-                MaxLengthPath = pathFinder.MaxLengthPath
-            };
+            gameState = new(graph, pathFinder.MaxLengthPath);
         }
 
         public GraphManager() : this(new(), new())

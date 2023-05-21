@@ -31,6 +31,7 @@ namespace Ramsey.Drawing
         int edgeCount;
         ComputeBuffer edgeTransformBuffer;
         ComputeBuffer edgeTypeBuffer;
+        ComputeBuffer edgeHighlightBuffer;
 
         //
         int nodeCount;
@@ -62,6 +63,7 @@ namespace Ramsey.Drawing
 
             edgeTransformBuffer = new(MAXMESHCOUNT, Marshal.SizeOf<Matrix4x4>());
             edgeTypeBuffer = new(MAXMESHCOUNT, Marshal.SizeOf<float4>());
+            edgeHighlightBuffer = new(MAXMESHCOUNT, sizeof(float));
 
             nodePositionBuffer = new(MAXMESHCOUNT, Marshal.SizeOf<float2>());
             nodeHighlightBuffer = new(MAXMESHCOUNT, Marshal.SizeOf<float>());
@@ -72,6 +74,7 @@ namespace Ramsey.Drawing
             //Link To Shader
             DrawingPreferences.EdgeMaterial.SetBuffer(Shader.PropertyToID("Transforms"), edgeTransformBuffer);
             DrawingPreferences.EdgeMaterial.SetBuffer(Shader.PropertyToID("Colors"), edgeTypeBuffer);
+            DrawingPreferences.EdgeMaterial.SetBuffer(Shader.PropertyToID("IsHighlighted"), edgeHighlightBuffer);
 
             DrawingPreferences.NodeMaterial.SetBuffer(Shader.PropertyToID("Positions"), nodePositionBuffer);
             DrawingPreferences.NodeMaterial.SetBuffer(Shader.PropertyToID("IsHighlighted"), nodeHighlightBuffer);
@@ -94,7 +97,7 @@ namespace Ramsey.Drawing
             argsBufferNode.SetData(argsArrayNode);
 
         }
-        public void UpdateEdgeBuffer() { edgeTransformBuffer.SetData(storage.EdgeTransforms); edgeTypeBuffer.SetData(storage.EdgeColors); }
+        public void UpdateEdgeBuffer() { edgeTransformBuffer.SetData(storage.EdgeTransforms); edgeTypeBuffer.SetData(storage.EdgeColors); edgeHighlightBuffer.SetData(storage.EdgeHighlights); } //last 1 mabe should be separate?
         public void UpdateNodeBuffer() { nodePositionBuffer.SetData(storage.NodePositions); nodeHighlightBuffer.SetData(storage.NodeHighlights); }
 
         public float2 MouseRaw { get; set; }
@@ -113,6 +116,7 @@ namespace Ramsey.Drawing
             
             edgeTypeBuffer.Dispose();
             edgeTransformBuffer.Dispose();
+            edgeHighlightBuffer.Dispose();
 
             nodePositionBuffer.Dispose();
             nodeHighlightBuffer.Dispose();

@@ -58,6 +58,9 @@ namespace Ramsey.Graph
             return other;
         }
 
+        public IEnumerable<Edge> Edges
+            => throw new System.Exception("not implemented mabe do the node calcs or simply have edges entered inside the path but prolly not since memory allocation");
+
         public override string ToString()
             => $"{{Length = {Length}, Type = {Type}, Nodes = [{string.Join(", ", Nodes.Select(n => n.ID))}]}}";
     }

@@ -44,6 +44,8 @@ namespace Ramsey.Drawing
 
         public List<Matrix4x4> EdgeTransforms { get; private set; }
         public List<Color> EdgeColors { get; private set; }
+        public List<float> EdgeHighlights { get; private set; }
+
         public List<float2> NodePositions { get; private set; }
         public List<float> NodeHighlights { get; private set; }
 
