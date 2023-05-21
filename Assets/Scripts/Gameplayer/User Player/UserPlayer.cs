@@ -8,7 +8,7 @@ using static Unity.Mathematics.math;
 
 namespace Ramsey.Gameplayer
 {
-    public class UserBuilder : IBuilder, IUserModea
+    public class UserBuilder : Builder, IUserMode
     {
         public override async Task<BuilderMove> GetMove(GameState gameState)
         {
@@ -38,7 +38,7 @@ namespace Ramsey.Gameplayer
 
     }
 
-    public class UserPainter : IPainter, IUserMode
+    public class UserPainter : Painter, IUserMode
     {
         public override async Task<PainterMove> GetMove(GameState gameState)
         {

@@ -3,12 +3,15 @@ Shader "Unlit/GraphShaders/NodeShader"
     Properties
     {
 
-        [HideInInspector]
-        _Radius ("Radius", Float) = 1 //[0, 1] to avoid cutting
-        [HideInInspector]
-        _HighlightRadius ("Highlight Radius", Float) = 0.5
+        
+        [HideInInspector] _Radius ("Radius", Float) = 1 //[0, 1] to avoid cutting
+        [HideInInspector] _HighlightRadius ("Highlight Radius", Float) = 0.5
+        [HideInInspector] _HighlightThickness ("HighlightThickness", Float) = 0.1
 
-        _HighlightColor ("Highlight Color", Color) = (1., 1., 1., 1.)
+        [HideInInspector] _NodeColor ("Node Color", Color) = (0., 0., 0., 1.)
+        [HideInInspector] _HighlightColor ("Highlight Color", Color) = (1., 1., 1., 1.)
+
+        [HideInInspector] _Mouse ("Mouse", Vector) = (0., 0., 0., 0.)
 
     }
     SubShader
@@ -56,11 +59,29 @@ Shader "Unlit/GraphShaders/NodeShader"
             }
 
             float _Radius;
+            float _HighlightThickness;
             float _HighlightRadius;
+
+            float4 _NodeColor;
             float4 _HighlightColor;
+
+            float2 _Mouse;
+
+            const float e = 2.71828;
+
+            float warpFactor(float2 pnt, float2 towards)
+            {
+                return pow(pow(e, (-pow(length(pnt - towards),2.))), 2.) * .2;
+            }
+
+            float warpPoint(float2 pnt, float2 towards)
+            {
+                return pnt + (pnt - towards) * warpFactor(pnt, towards);
+            }
 
             fixed4 frag (vOut i) : SV_Target
             {
+                /*
                 float len = length(i.uv);
 
                 float rtheta = atan2(i.uv.y, i.uv.x);
@@ -68,7 +89,22 @@ Shader "Unlit/GraphShaders/NodeShader"
 
                 float hiRad = _HighlightRadius * i.highlighted * (sin(theta * 10.0) * 0.05 + 0.95);
 
-                return step(len, _Radius) * lerp(_HighlightColor, float4(0., 0., 0., 1), smoothstep(_Radius, hiRad, len));
+                return step(len, _Radius) * lerp(_HighlightColor, float4(0., 0., 0., 1), smoothstep(_Radius, hiRad, len));*/
+
+                float r = length(i.uv);
+                float isHighlight = 0.0;
+
+                //Highlight
+                float o = atan2(i.uv.y, i.uv.x);
+                isHighlight = step(abs(r - _HighlightRadius+sin(o)*.05) - _HighlightThickness*.5, 0.) * i.highlighted;
+
+                //Node 
+                float d = length(warpPoint(i.uv, _Mouse)) - (_Radius * (1. + warpFactor(i.uv, _Mouse)));
+                float4 col = step(d, 0.) * _NodeColor;
+
+                //Composite
+                return lerp(col, _HighlightColor, isHighlight);
+                
             }
 
             ENDCG
