@@ -17,12 +17,12 @@ public class Test : MonoBehaviour
     TurnManager turns;
 
     [SerializeField] Camera boardCamera;
-    //[SerializeField] Camera screenCamera;
+    [SerializeField] Camera screenCamera;
 
     // Start is called before the first frame update
     void Start()
     {
-        //new CameraManager(screenCamera, boardCamera);
+        new CameraManager(screenCamera, boardCamera);
 
         board = new BoardManager(CameraManager.BoardCamera, new BoardPreferences() 
         {
@@ -31,11 +31,11 @@ public class Test : MonoBehaviour
                 nullColor = Color.black,
                 colors = new[] { Color.blue, Color.red },
                 edgeThickness = 0.15f,
-                highlightThickness = .1f,
+                highlightThickness = 0.1f,
 
                 nodeColor = Color.white,
                 nodeRadius = 0.3f,
-                highlightRadius = 0.4f,
+                highlightRadius = 0.5f,
                 highlightColor = Color.green
             }
         });

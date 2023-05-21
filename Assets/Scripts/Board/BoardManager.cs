@@ -23,6 +23,7 @@ namespace Ramsey.Board
 
         public IReadOnlyList<Node> Nodes => graphManager.Nodes;
         public IReadOnlyList<Edge> Edges => graphManager.Edges;
+        public IEnumerable<Path> Paths => graphManager.Paths;
 
         private BoardManager(Camera camera, BoardPreferences prefs, GraphManager graphManager)
         {

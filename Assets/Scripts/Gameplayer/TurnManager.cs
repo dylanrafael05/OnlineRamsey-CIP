@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Ramsey.Board;
 using Ramsey.Gameplayer;
@@ -46,6 +47,9 @@ namespace Ramsey.UI
                     isAwaitingTask = false;
 
                     Debug.Log("Longest path = " + (board.GameState.MaxLengthPath?.ToString() ?? "none"));
+                    Debug.Log("Paths found = " + board.Paths.Count());
+                    
+                    // Debug.Log("All paths \n" + string.Join("\n", board.Paths.Select(t => t.ToString())));
                 }
             }
             else 

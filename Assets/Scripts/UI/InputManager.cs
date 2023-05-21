@@ -35,7 +35,7 @@ public static class InputManager
     private static readonly InputData data = new();
     public static InputData Update()
     {
-        data.rawMouse = (GetScreenMousePosition().xy / CameraManager.ScreenSize * 2 - 1);//* new float2(CameraManager.ScreenSize.y/CameraManager.ScreenSize.x, 1f);
+        data.rawMouse = GetScreenMousePosition().xy / CameraManager.ScreenSize * 2 - 1;//* new float2(CameraManager.ScreenSize.y/CameraManager.ScreenSize.x, 1f);
         data.mouse = GetWorldMousePosition();
 
         data.lmb  = Input.GetMouseButton(0);
