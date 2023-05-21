@@ -47,7 +47,7 @@ namespace Ramsey.UI
                     if(move.MakeMove(board))
                     {
                         isBuilderTurn = !isBuilderTurn;
-                        gameStates.Add(board.GameState);
+                        gameStates.Add(board.GameStateClone);
                     }
                     
                     awaitingTask = null;

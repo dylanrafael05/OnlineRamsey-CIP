@@ -31,10 +31,13 @@ namespace Ramsey.Drawing
             NodeMaterial.SetColor(Shader.PropertyToID("_HighlightColor"), highlightColor);
 
             EdgeMaterial.SetColor(Shader.PropertyToID("_HighlightColor"), nodeColor); //think setting it to be nodecolor would be cool
+
+            RecordingMaterial.SetColor(Shader.PropertyToID("_Color"), Color.white);
         }
 
         public static readonly Material EdgeMaterial = new(Shader.Find("Unlit/GraphShaders/EdgeShader"));
         public static readonly Material NodeMaterial = new(Shader.Find("Unlit/GraphShaders/NodeShader"));
+        public static readonly Material RecordingMaterial = new(Shader.Find("Unlit/GraphShaders/RecordingShader"));
 
     }
 }

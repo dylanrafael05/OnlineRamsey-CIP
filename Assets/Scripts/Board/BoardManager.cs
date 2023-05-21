@@ -18,6 +18,7 @@ namespace Ramsey.Board
 
         public IReadOnlyGraph Graph => graphManager;
         public GameState GameState => graphManager.State;
+        public GameState GameStateClone => graphManager.State.Clone();
 
         public BoardPreferences Preferences { get; private set; }
 

@@ -1,13 +1,19 @@
-Shader "Unlit/RecordingShader"
+Shader "Unlit/GraphShaders/RecordingShader"
 {
     Properties
     {
         _Color ("Color", Color) = (1., 1., 1., 1.)
+
+        _PrickAmount ("Prick Amount", Float) = 1.
+        _PrickSelectID ("Prick Select ID", Float) = 0.
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags { "RenderType" = "Transparent" "Queue" = "Transparent" "IgnoreProjector" = "True" }
         LOD 100
+        Blend SrcAlpha OneMinusSrcAlpha
+        ZWrite Off
+        Cull Off
 
         Pass
         {
@@ -29,14 +35,19 @@ Shader "Unlit/RecordingShader"
                 float2 uv : TEXCOORD0;
             };
 
+            float4 _Color;
+
             //Everything is init space [-1, 1]
 
-            float2 _TriX; //[Bottom X, Top X]
-            float _TriHeight;
+            float2 _TriX = float2(.7, .9); //[Bottom X, Top X]
+            float _TriHeight = .8;
 
-            float _BarThickness; //[0, 2]
+            float _BarThickness = 1.; //[0, 2]
 
-            float2 _PrickDim; //dimensions - is there a better name for this
+            float2 _PrickDim = float2(.08, 1.8); //dimensions - is there a better name for this
+            float _PrickZoneX = .67;
+            float _PrickAmount;
+            float _PrickSelectID;
 
             vOut vert (vIn v)
             {
@@ -71,9 +82,16 @@ Shader "Unlit/RecordingShader"
                 float isBar = step(abs(p.y), _BarThickness * .5) * step(abs(p.x), _TriX.x);
 
                 //Pricks
-                //float2 pp = later
+                float2 pp = p;
+                pp.x = pp.x / _PrickZoneX; float isPrick = step(abs(pp.x), 1.);
+                pp.x = mod(pp.x + 1., 2. / (_PrickAmount)) - 1. / (_PrickAmount); float id = ((p.x / _PrickZoneX) - pp.x) * _PrickAmount; //do later
+                pp.y = abs(pp.y);
+                isPrick *= step(pp.x, _PrickDim.x * .5) * step(pp.y, _PrickDim.y * .5);
+                
+                //Composite
+                float exist = 1. - (1. - isPrick) * (1. - isBar) * (1. - isTri);
 
-                return float4(1., 1., 1., 1.);
+                return exist * _Color;
             }
             ENDCG
         }
