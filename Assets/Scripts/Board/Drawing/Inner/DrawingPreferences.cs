@@ -11,6 +11,10 @@ namespace Ramsey.Drawing
         public float edgeThickness;
         public float nodeRadius;
         public float highlightRadius;
+
+        public float highlightThickness;
+
+        public Color nodeColor;
         public Color highlightColor;
 
         public Color TypeToColor(int type)
@@ -20,6 +24,10 @@ namespace Ramsey.Drawing
         {
             NodeMaterial.SetFloat(Shader.PropertyToID("_Radius"), nodeRadius);
             NodeMaterial.SetFloat(Shader.PropertyToID("_HighlightRadius"), highlightRadius);
+
+            NodeMaterial.SetFloat(Shader.PropertyToID("_HighlightThickness"), highlightThickness);
+
+            NodeMaterial.SetColor(Shader.PropertyToID("_NodeColor"), nodeColor);
             NodeMaterial.SetColor(Shader.PropertyToID("_HighlightColor"), highlightColor);
         }
 

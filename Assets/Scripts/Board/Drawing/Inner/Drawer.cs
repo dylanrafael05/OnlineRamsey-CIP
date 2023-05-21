@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Diagnostics;
 using Ramsey.Screen;
+using Ramsey.Utilities;
 
 namespace Ramsey.Drawing
 {
@@ -96,8 +97,11 @@ namespace Ramsey.Drawing
         public void UpdateEdgeBuffer() { edgeTransformBuffer.SetData(storage.EdgeTransforms); edgeTypeBuffer.SetData(storage.EdgeColors); }
         public void UpdateNodeBuffer() { nodePositionBuffer.SetData(storage.NodePositions); nodeHighlightBuffer.SetData(storage.NodeHighlights); }
 
+        public float2 MouseRaw { get; set; }
+
         public void Draw()
         {
+            DrawingPreferences.NodeMaterial.SetVector(Shader.PropertyToID("_Mouse"), MouseRaw.xyzw());
             Graphics.DrawMeshInstancedIndirect(DrawingData.QuadMesh, 0, DrawingPreferences.EdgeMaterial, DrawingData.Bounds, argsBufferEdge, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
             Graphics.DrawMeshInstancedIndirect(DrawingData.QuadMesh, 0, DrawingPreferences.NodeMaterial, DrawingData.Bounds, argsBufferNode, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
         }
