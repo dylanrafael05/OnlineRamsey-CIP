@@ -29,6 +29,7 @@ public static class InputManager
         data.rmb  = Input.GetMouseButton(1);
         data.rmbp = Input.GetMouseButtonDown(1);
 
+
         return data;
     }   
 }

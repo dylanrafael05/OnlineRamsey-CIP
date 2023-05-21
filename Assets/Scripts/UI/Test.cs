@@ -17,12 +17,12 @@ public class Test : MonoBehaviour
     TurnManager turns;
 
     [SerializeField] Camera boardCamera;
-    [SerializeField] Camera screenCamera;
+    //[SerializeField] Camera screenCamera;
 
     // Start is called before the first frame update
     void Start()
     {
-        new CameraManager(screenCamera, boardCamera);
+        //new CameraManager(screenCamera, boardCamera);
 
         board = new BoardManager(CameraManager.BoardCamera, new BoardPreferences() 
         {
