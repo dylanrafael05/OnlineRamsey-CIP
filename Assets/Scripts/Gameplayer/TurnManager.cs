@@ -19,8 +19,6 @@ namespace Ramsey.UI
 
         private Task<IMove> awaitingTask;
 
-        public event Action<IMove> OnMoveFailure;
-
         public TurnManager(BoardManager board, Builder builder, Painter painter)
         {
             this.board = board;
@@ -41,15 +39,11 @@ namespace Ramsey.UI
 
                     if(move.MakeMove(board))
                     {
-                        awaitingTask = null;
-                        isAwaitingTask = false;
-
                         isBuilderTurn = !isBuilderTurn;
                     }
-                    else 
-                    {
-                        OnMoveFailure.Invoke(move);
-                    }
+                    
+                    awaitingTask = null;
+                    isAwaitingTask = false;
 
                     Debug.Log("Longest path = " + (board.GameState.MaxLengthPath?.ToString() ?? "none"));
                 }

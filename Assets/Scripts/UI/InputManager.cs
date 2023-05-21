@@ -2,22 +2,40 @@ using Unity.Mathematics;
 using UnityEngine;
 using Ramsey.Utilities;
 using Ramsey.Screen;
+using Ramsey.Graph;
+using Ramsey.Board;
+using static Unity.Mathematics.math;
+using System.Collections.Generic;
+using System.Linq;
 
 public static class InputManager
 {
+    private static BoardManager board;
+
+    public static void Create(BoardManager board)
+    {
+        InputManager.board = board;
+    }
+
     public static float3 GetScreenMousePosition()
         => Input.mousePosition;
 
     public static float2 GetWorldMousePosition()
         => (Vector2)CameraManager.BoardCamera.ScreenToWorldPoint(GetScreenMousePosition().rescale(CameraManager.ScreenSize, CameraManager.BoardSize));
 
-    //Later change to input struct?
-    // public static (float2 mouse, bool lmbp, bool rmbp) GetInput()
-    //     => (GetWorldMousePosition(), Input.GetMouseButtonDown(0), Input.GetMouseButtonDown(1));
+    public static bool CollideNode(float2 mouse, Node node)
+        => length(mouse - node.Position) <= board.Preferences.drawingPreferences.nodeRadius;
+    public static bool CollideEdge(float2 mouse, Edge e)
+    {
+        float2 StartToEnd = e.End.Position - e.Start.Position; float2 lp = mouse - .5f * (e.Start.Position + e.End.Position); float2 dir = normalize(StartToEnd);
+        lp = new float2(dot(lp, dir), length(cross(float3(lp, 0f), float3(dir, 0f)))); lp.x = abs(lp.x);
+        return lp.x <= length(StartToEnd) * .5f && lp.y <= board.Preferences.drawingPreferences.edgeThickness * .5f;
+    }
 
     private static readonly InputData data = new();
-    public static InputData GetInput()
+    public static InputData Update()
     {
+        data.rawMouse = GetScreenMousePosition().xy / CameraManager.ScreenSize * 2 - 1;
         data.mouse = GetWorldMousePosition();
 
         data.lmb  = Input.GetMouseButton(0);
@@ -28,7 +46,13 @@ public static class InputManager
         
         data.rmb  = Input.GetMouseButton(1);
         data.rmbp = Input.GetMouseButtonDown(1);
+        data.collidingNodes = board.Nodes.Where(n => CollideNode(data.mouse, n)).ToHashSet();
+        data.collidingEdges = board.Edges.Where(e => CollideEdge(data.mouse, e)).ToHashSet();
 
+        data.alt   = Input.GetKey(KeyCode.LeftAlt)   || Input.GetKey(KeyCode.RightAlt);
+        data.shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+
+        board.SetMousePosition(data.rawMouse);
 
         return data;
     }   
@@ -36,9 +60,13 @@ public static class InputManager
 
 public class InputData
 {
+    public float2 rawMouse; public float2 mouse;
 
-    public float2 mouse;
     public bool lmb; public bool rmb; public bool mmb;
     public bool lmbp; public bool rmbp; public bool mmbp;
 
+    public bool alt; public bool shift;
+
+    public ISet<Node> collidingNodes;
+    public ISet<Edge> collidingEdges;
 }

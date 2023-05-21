@@ -42,6 +42,7 @@ public class Test : MonoBehaviour
         turns = new TurnManager(board, new UserBuilder(), new UserPainter());
 
         UserModeHandler.Create(board);
+        InputManager.Create(board);
 
         const int NodeCount = 100;
 
@@ -88,7 +89,7 @@ public class Test : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        var input = InputManager.GetInput();
+        var input = InputManager.Update();
         UserModeHandler.Update(input);
 
         turns.Update();

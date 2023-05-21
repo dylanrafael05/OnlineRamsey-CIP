@@ -86,5 +86,10 @@ namespace Ramsey.Board
         {
             return graphManager.IsValidEdge(start, end);
         }
+
+        public void SetMousePosition(float2 position)
+        {
+            renderManager.WritingInterface.SetMousePosition(position);
+        }
     }
 }

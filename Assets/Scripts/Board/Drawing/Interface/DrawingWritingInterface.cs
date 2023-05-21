@@ -83,6 +83,11 @@ namespace Ramsey.Drawing
             drawer.UpdateEdgeBuffer();
         }
 
+        public void SetMousePosition(float2 position)
+        {
+            drawer.MouseRaw = position;
+        }
+
         public void Clear()
         {
             data.NodePositions.Clear();

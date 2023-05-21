@@ -42,10 +42,13 @@ Shader "Unlit/GraphShaders/NodeShader"
                 float4 vertex : SV_POSITION;
                 float2 uv : TEXCOORD0;
                 float highlighted : TEXCOORD1;
+                float2 mouse : TEXCOORD2;
             };
 
             StructuredBuffer<float2> Positions;
             StructuredBuffer<float> IsHighlighted;
+            
+            float2 _Mouse;
 
             vOut vert (vIn v, uint instanceID : SV_InstanceID)
             {
@@ -54,6 +57,7 @@ Shader "Unlit/GraphShaders/NodeShader"
                 o.vertex = mul(UNITY_MATRIX_VP, float4(v.vertex.xy + Positions[instanceID], 0., 1.));
                 o.uv = v.uv;
                 o.highlighted = IsHighlighted[instanceID];
+                o.mouse = (float2(_Mouse.x, -_Mouse.y) - o.vertex) * 10.;
 
                 return o;
             }
@@ -65,16 +69,13 @@ Shader "Unlit/GraphShaders/NodeShader"
             float4 _NodeColor;
             float4 _HighlightColor;
 
-            float2 _Mouse;
-
-            const float e = 2.71828;
-
             float warpFactor(float2 pnt, float2 towards)
             {
-                return pow(pow(e, (-pow(length(pnt - towards),2.))), 2.) * .2;
+                // return 0.;
+                return pow(exp(-pow(length(pnt - towards),2.)), 2.) * .2;
             }
 
-            float warpPoint(float2 pnt, float2 towards)
+            float2 warpPoint(float2 pnt, float2 towards)
             {
                 return pnt + (pnt - towards) * warpFactor(pnt, towards);
             }
@@ -96,10 +97,10 @@ Shader "Unlit/GraphShaders/NodeShader"
 
                 //Highlight
                 float o = atan2(i.uv.y, i.uv.x);
-                isHighlight = step(abs(r - _HighlightRadius+sin(o)*.05) - _HighlightThickness*.5, 0.) * i.highlighted;
+                isHighlight = step(abs(r - _HighlightRadius+sin(o*10. + _Time.y)*.05) - _HighlightThickness*.5, 0.) * i.highlighted;
 
                 //Node 
-                float d = length(warpPoint(i.uv, _Mouse)) - (_Radius * (1. + warpFactor(i.uv, _Mouse)));
+                float d = length(warpPoint(i.uv, i.mouse)) - (_Radius * (1. + warpFactor(i.uv, i.mouse)));
                 float4 col = step(d, 0.) * _NodeColor;
 
                 //Composite
