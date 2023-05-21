@@ -36,8 +36,8 @@ Shader "Unlit/GraphShaders/EdgeShader"
             {
                 float4 vertex : SV_POSITION;
                 float4 color : TEXCOORD0;
-                float2 uv : TEXCOORD0;
-                float isHighlighted : TEXCOORD1;
+                float2 uv : TEXCOORD1;
+                float isHighlighted : TEXCOORD2;
             };
 
             vOut vert (vIn v, uint instanceID : SV_InstanceID)
@@ -55,7 +55,7 @@ Shader "Unlit/GraphShaders/EdgeShader"
             fixed4 frag(vOut i, uint instanceID : SV_InstanceID) : SV_Target
             {
                 //Highlight
-                float2 p = uv; //make sure -1 to 1
+                float2 p = i.uv; //make sure -1 to 1
                 p.y = abs(p.y);
                 float highlight = step(_HighlightAmount, p.y) * i.isHighlighted;
 

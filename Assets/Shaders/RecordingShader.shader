@@ -38,7 +38,7 @@ Shader "Unlit/RecordingShader"
 
             float2 _PrickDim; //dimensions - is there a better name for this
 
-            v2f vert (vOut v)
+            vOut vert (vIn v)
             {
                 vOut o;
 
@@ -48,7 +48,7 @@ Shader "Unlit/RecordingShader"
                 return o;
             }
 
-            fixed4 frag(v2f i) : SV_Target
+            fixed4 frag(vOut i) : SV_Target
             {
                 //p = uv (-1, 1) get the abs of p x and y then do that half triangle thing and do the sdf of it isUnderTri && isOverY=0
                 //then union it with all the other stuff the big line and modulate the p.x for the pricks
@@ -58,7 +58,7 @@ Shader "Unlit/RecordingShader"
                 float2 ri = float2(1., 0.);
                 float2 up = float2(0., 1.);
 
-                float2 p = uv;
+                float2 p = i.uv;
                 p = float2(dot(p, ri), dot(p, up));
                 
                 //Tri
