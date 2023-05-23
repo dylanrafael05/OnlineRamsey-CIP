@@ -3,42 +3,45 @@ using Ramsey.Graph;
 using System.Linq;
 using Unity.Mathematics;
 
-public class NodeEditingMode : IUserMode
+namespace Ramsey.UI
 {
-    private Node cnode;
-    private float2 nodeOffset;
-
-    public void Init(BoardManager board)
+    public class NodeEditingMode : IUserMode
     {
-        cnode = null;
-        nodeOffset = float2.zero;
-    }
+        private Node cnode;
+        private float2 nodeOffset;
 
-    public void Update(InputData input, BoardManager board)
-    {
-        if(input.alt && input.lmbp)
-        {
-            board.CreateNode(input.mouse);
-        }
-
-        if(input.shift && input.lmbp)
-        {
-            cnode = input.collidingNodes.FirstOrDefault();
-
-            if(cnode != null) nodeOffset = cnode.Position - input.mouse;
-        }
-
-        if(input.lmbu)
+        public void Init(BoardManager board)
         {
             cnode = null;
+            nodeOffset = float2.zero;
         }
 
-        if(cnode != null)
+        public void Update(InputData input, BoardManager board)
         {
-            board.MoveNode(cnode, input.mouse + nodeOffset);
-        }
-    }
+            if (input.alt && input.lmbp)
+            {
+                board.CreateNode(input.mouse);
+            }
 
-    public void End(BoardManager board)
-    {}
+            if (input.shift && input.lmbp)
+            {
+                cnode = input.collidingNodes.FirstOrDefault();
+
+                if (cnode != null) nodeOffset = cnode.Position - input.mouse;
+            }
+
+            if (input.lmbu)
+            {
+                cnode = null;
+            }
+
+            if (cnode != null)
+            {
+                board.MoveNode(cnode, input.mouse + nodeOffset);
+            }
+        }
+
+        public void End(BoardManager board)
+        { }
+    }
 }

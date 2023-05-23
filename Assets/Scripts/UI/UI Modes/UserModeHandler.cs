@@ -3,41 +3,44 @@ using System.Collections.Generic;
 using Ramsey.Utilities;
 using System.Linq;
 
-public static class UserModeHandler
+namespace Ramsey.UI
 {
-    public static void Create(BoardManager board)
+    public static class UserModeHandler
     {
-        UserModeHandler.board = board;
-        UserModeHandler.currentModes = new();
+        public static void Create(BoardManager board)
+        {
+            UserModeHandler.board = board;
+            currentModes = new();
+        }
+
+        static BoardManager board;
+        static List<IUserMode> currentModes;
+        static List<bool> activationStatuses;
+
+        public static void Update(InputData input)
+            => currentModes.ForEachIndex((m, i) => { if (activationStatuses[i]) m.Update(input, board); });
+
+        public static void AddMode(IUserMode mode)
+        {
+            currentModes.Add(mode);
+            mode.Init(board);
+        }
+
+        public static void DelMode(IUserMode mode)
+        {
+            currentModes.Remove(mode);
+            mode.End(board);
+        }
+
+        public static void SetStatus(IUserMode mode, bool status)
+            => activationStatuses[currentModes.FindIndex(m => m == mode)] = status;
+
     }
 
-    static BoardManager board;
-    static List<IUserMode> currentModes;
-    static List<bool> activationStatuses;
-
-    public static void Update(InputData input)
-        => currentModes.ForEachIndex((m, i) => { if (activationStatuses[i]) m.Update(input, board); });
-
-    public static void AddMode(IUserMode mode)
+    public interface IUserMode
     {
-        currentModes.Add(mode);
-        mode.Init(board);
+        void Init(BoardManager board);
+        void Update(InputData input, BoardManager board);
+        void End(BoardManager board);
     }
-
-    public static void DelMode(IUserMode mode)
-    {
-        currentModes.Remove(mode);
-        mode.End(board);
-    }
-
-    public static void SetStatus(IUserMode mode, bool status)
-        => activationStatuses[currentModes.FindIndex(m => m == mode)] = status;
-
-}
-
-public interface IUserMode
-{
-    void Init(BoardManager board);
-    void Update(InputData input, BoardManager board);
-    void End(BoardManager board);
 }

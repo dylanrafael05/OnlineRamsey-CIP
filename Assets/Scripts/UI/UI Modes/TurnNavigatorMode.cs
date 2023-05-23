@@ -2,22 +2,25 @@
 using Ramsey.Utilities;
 using Ramsey.Gameplayer;
 
-public class TurnNavigatorMode : IUserMode
+namespace Ramsey.UI
 {
-    NodeEditingMode nodeEditingMode;
-
-    public TurnNavigatorMode(NodeEditingMode nodeEditingMode)
-        => this.nodeEditingMode = nodeEditingMode;
-
-    public void Init(BoardManager board) { }
-    public void Update(InputData input, BoardManager board)
+    public class TurnNavigatorMode : IUserMode
     {
-        int d = -1 * input.lkd.ToInt() + 1 * input.rkd.ToInt();
-        board.OffsetTurn(d);
+        NodeEditingMode nodeEditingMode;
 
-        IMove.Enable = board.IsCurrentTurn;
-        UserModeHandler.SetStatus(nodeEditingMode, board.IsCurrentTurn);
+        public TurnNavigatorMode(NodeEditingMode nodeEditingMode)
+            => this.nodeEditingMode = nodeEditingMode;
+
+        public void Init(BoardManager board) { }
+        public void Update(InputData input, BoardManager board)
+        {
+            int d = -1 * input.lkd.ToInt() + 1 * input.rkd.ToInt();
+            board.OffsetTurn(d);
+
+            IMove.Enable = board.IsCurrentTurn;
+            UserModeHandler.SetStatus(nodeEditingMode, board.IsCurrentTurn);
+        }
+        public void End(BoardManager board) { }
+
     }
-    public void End(BoardManager board) { }
-
 }

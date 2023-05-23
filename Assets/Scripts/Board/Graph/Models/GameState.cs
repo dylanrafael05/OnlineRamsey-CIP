@@ -10,8 +10,10 @@ namespace Ramsey.Graph
         internal GameState() { }
 
         public IReadOnlyGraph Graph { get; internal set; }
-        public Path MaxLengthPath { get; internal set; }
 
-        public GameState Clone() => throw new System.Exception("unimplemented");
+        public Path[] MaxPaths { get; internal set; }
+
+        public Edge EdgeStart(int i) => throw new System.NotImplementedException();
+        public Edge EdgeEnd(int i) => throw new System.NotImplementedException();
     }
 }
