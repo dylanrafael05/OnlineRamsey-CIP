@@ -61,11 +61,6 @@ Shader "Unlit/GraphShaders/RecordingShader"
 
             fixed4 frag(vOut i) : SV_Target
             {
-                //p = uv (-1, 1) get the abs of p x and y then do that half triangle thing and do the sdf of it isUnderTri && isOverY=0
-                //then union it with all the other stuff the big line and modulate the p.x for the pricks
-                //purely sdf given by a quad, can also give a special prick ID and when modulating, use our normal techniques to change that special prick
-                //make it larger or change its color idk whatever
-
                 float2 ri = float2(1., 0.);
                 float2 up = float2(0., 1.);
 
@@ -84,8 +79,10 @@ Shader "Unlit/GraphShaders/RecordingShader"
                 //Pricks
                 float2 pp = p;
                 pp.x = pp.x / _PrickZoneX; float isPrick = step(abs(pp.x), 1.);
-                pp.x = mod(pp.x + 1., 2. / (_PrickAmount)) - 1. / (_PrickAmount); float id = ((p.x / _PrickZoneX) - pp.x) * _PrickAmount; //do later
+                pp.x = fmod(pp.x + 1., 2. / (_PrickAmount)) - 1. / (_PrickAmount); 
+                float id = _PrickAmount * .5f * (p.x - fmod(p.x + 1., 2. / _PrickAmount)); float isSelected = step(abs(id - _PrickSelectID), 0.);
                 pp.y = abs(pp.y);
+                _PrickDim *= (1.+isSelected*.1);
                 isPrick *= step(pp.x, _PrickDim.x * .5) * step(pp.y, _PrickDim.y * .5);
                 
                 //Composite

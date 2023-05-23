@@ -1,4 +1,6 @@
+using System.Runtime.InteropServices.WindowsRuntime;
 using Unity.Mathematics;
+using UnityEngine.Profiling;
 
 namespace Ramsey.Drawing
 {
@@ -7,8 +9,10 @@ namespace Ramsey.Drawing
 
         //
         readonly Drawer drawer;
+        readonly DrawingData data;
 
-        internal DrawingActionInterface(Drawer drawer) => this.drawer = drawer;
+        internal DrawingActionInterface(Drawer drawer, DrawingData data)
+        { this.drawer = drawer; this.data = data; }
 
         //
         public void Draw()

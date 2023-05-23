@@ -36,7 +36,10 @@ public class Test : MonoBehaviour
                 nodeColor = Color.white,
                 nodeRadius = 0.3f,
                 highlightRadius = 0.5f,
-                highlightColor = Color.green
+                highlightColor = Color.green,
+
+                recorderColor = Color.white,
+                RecorderTransform = Matrix4x4.TRS(new(0f, 2f, 0f), Quaternion.identity, new(2f, 1f, 1f))
             }
         });
 
@@ -45,7 +48,11 @@ public class Test : MonoBehaviour
         UserModeHandler.Create(board);
         InputManager.Create(board);
 
-        UserModeHandler.AddMode(new NodeEditingMode());
+        var nodeEditingMode = new NodeEditingMode();
+        var turnNavigatorMode = new TurnNavigatorMode(nodeEditingMode);
+
+        UserModeHandler.AddMode(nodeEditingMode);
+        UserModeHandler.AddMode(turnNavigatorMode);
 
         // const int NodeCount = 100;
 

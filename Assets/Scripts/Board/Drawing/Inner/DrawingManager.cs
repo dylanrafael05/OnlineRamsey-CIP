@@ -5,8 +5,8 @@ namespace Ramsey.Drawing
     public class DrawingManager
     {
 
-        public DrawingActionInterface ReadingInterface { get; private set; }
-        public DrawingWritingInterface WritingInterface { get; private set; }
+        public DrawingActionInterface ActionInterface { get; private set; }
+        public DrawingIOInterface IOInterface { get; private set; }
 
         DrawingData data;
         Drawer drawer;
@@ -17,8 +17,8 @@ namespace Ramsey.Drawing
             data = new();
             drawer = new(data, preferences, camera);
 
-            ReadingInterface = new(drawer);
-            WritingInterface = new(data, preferences, drawer);
+            ActionInterface = new(drawer, data);
+            IOInterface = new(data, preferences, drawer);
 
         }
 

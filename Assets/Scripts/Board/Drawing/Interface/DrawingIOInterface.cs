@@ -7,14 +7,14 @@ using System.Data.SqlTypes;
 
 namespace Ramsey.Drawing
 {
-    public class DrawingWritingInterface
+    public class DrawingIOInterface
     {
 
-        DrawingData data;
-        DrawingPreferences preferences;
-        Drawer drawer;
+        readonly DrawingData data;
+        readonly DrawingPreferences preferences;
+        readonly Drawer drawer;
 
-        internal DrawingWritingInterface(DrawingData data, DrawingPreferences preferences, Drawer drawer)
+        internal DrawingIOInterface(DrawingData data, DrawingPreferences preferences, Drawer drawer)
         {
             this.data = data;
             this.preferences = preferences;
@@ -29,7 +29,7 @@ namespace Ramsey.Drawing
             data.EdgeColors.Add(preferences.TypeToColor(e.Type));
 
             drawer.UpdateEdgeBuffer();
-            drawer.UpdateArgsBuffers();
+            drawer.UpdateArgsBuffer();
         }
         public void AddNode(Node n)
         {
@@ -39,7 +39,7 @@ namespace Ramsey.Drawing
             data.NodeHighlights.Add(0);
 
             drawer.UpdateNodeBuffer();
-            drawer.UpdateArgsBuffers();
+            drawer.UpdateArgsBuffer();
         }
 
         public void UpdateNodePosition(Node n)
@@ -95,14 +95,29 @@ namespace Ramsey.Drawing
 
         public void SetMousePosition(float2 position)
         {
-            drawer.MouseRaw = position;
+            drawer.Mouse = position;
+        }
+
+        public void LoadDrawState(DrawState drawState)
+            => drawer.UpdateAll(drawState.Data);
+
+        public void UpdateRecorder(int prickAmount, int selectedID)
+        {
+            DrawingPreferences.RecorderMaterial.SetFloat("_PrickAmount", (float)prickAmount);
+            DrawingPreferences.RecorderMaterial.SetFloat("_PrickSelectID", (float)selectedID);
         }
 
         public void Clear()
         {
-            data.NodePositions.Clear();
             data.EdgeTransforms.Clear();
             data.EdgeColors.Clear();
+            data.EdgeHighlights.Clear();
+
+            data.NodePositions.Clear();
+            data.NodeHighlights.Clear();
         }
+
+        public DrawState CreateDrawState()
+            => data.CreateState();
     }
 }
