@@ -34,7 +34,7 @@ namespace Ramsey.Graph
             gameState = new()
             {
                 Graph = graph,
-                MaxLengthPath = pathFinder.MaxLengthPath
+                MaxPaths = pathFinder.MaxPathsByType
             };
         }
 
@@ -64,7 +64,7 @@ namespace Ramsey.Graph
             graph.PaintEdge(e, type);
             await pathFinder.HandlePaintedEdge(e);
             
-            gameState.MaxLengthPath = pathFinder.MaxLengthPath;
+            gameState.MaxPaths = pathFinder.MaxPathsByType;
         }
 
         public void MoveNode(Node n, float2 position)

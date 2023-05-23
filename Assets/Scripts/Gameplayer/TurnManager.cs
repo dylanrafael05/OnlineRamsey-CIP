@@ -51,7 +51,7 @@ namespace Ramsey.UI
                     awaitingTask = null;
                     isAwaitingTask = false;
 
-                    Debug.Log("Longest path = " + (board.GameState.MaxLengthPath?.ToString() ?? "none"));
+                    Debug.Log("Longest path = " + (board.GameState.MaxPaths?.ToString() ?? "none"));
                     Debug.Log("Paths found = " + board.Paths.Count());
                     
                     // Debug.Log("All paths \n" + string.Join("\n", board.Paths.Select(t => t.ToString())));

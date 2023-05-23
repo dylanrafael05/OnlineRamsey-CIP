@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Unity.Mathematics;
+using System;
 
 namespace Ramsey.Graph
 {
@@ -24,6 +25,12 @@ namespace Ramsey.Graph
         public bool IsConnectedTo(Node node) 
         {
             return edgesByOpposingID.ContainsKey(node);
+        }
+
+        public Edge EdgeConnectedTo(Node node) 
+        {
+            if(!IsConnectedTo(node)) return null;
+            return edgesByOpposingID[node];
         }
 
         internal void RegisterToEdge(Edge edge)

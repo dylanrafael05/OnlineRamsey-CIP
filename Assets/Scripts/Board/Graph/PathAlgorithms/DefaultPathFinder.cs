@@ -2,27 +2,27 @@ using Ramsey.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace Ramsey.Graph
 {
-    public class EveryPossibilityMergeLastPathFinder : IIncrementalPathFinder
+    public class DefaultPathFinder : IIncrementalPathFinder
     {
         public IEnumerable<IPath> AllPaths => NodesByTerminatingPaths.Values.Merge();
-
-        private List<IPath> newPaths = new();
+        private readonly List<IPath> maxLengthPathByType;
 
         internal Dictionary<Node, List<IPath>> NodesByTerminatingPaths { get; private set; }
-        public IPath MaxLengthPath { get; private set; }
+        public IReadOnlyList<IPath> MaxPathsByType => maxLengthPathByType;
 
-        public EveryPossibilityMergeLastPathFinder()
+        public DefaultPathFinder()
         {
             NodesByTerminatingPaths = new();
         }
-        internal EveryPossibilityMergeLastPathFinder(Dictionary<Node, List<IPath>> nodesByTerminatingPaths, IPath maxLengthPath)
+        internal DefaultPathFinder(Dictionary<Node, List<IPath>> nodesByTerminatingPaths, List<IPath> maxLengthPath)
         {
             NodesByTerminatingPaths = nodesByTerminatingPaths;
-            MaxLengthPath = maxLengthPath;
+            maxLengthPathByType = maxLengthPath;
         }
 
         public void HandleNodeAddition(Node node)
@@ -41,38 +41,25 @@ namespace Ramsey.Graph
             NodesByTerminatingPaths[edge.Start].Clear();
             NodesByTerminatingPaths[edge.End].Clear();
 
-            var count = byStart.Length + byEnd.Length;
-
-            newPaths.Clear(); // TODO: refine approximation
-
-            foreach(var path in byStart)
-                ExpandPath(newPaths, path);
-            foreach(var path in byEnd)
-                ExpandPath(newPaths, path);
-
-            foreach(var path in newPaths)
-            {
-                NodesByTerminatingPaths[path.End].Add(path);
-
-                if (MaxLengthPath == null || path.Length > MaxLengthPath.Length)
-                {
-                    MaxLengthPath = path;
-                }
-            }
+            foreach (var path in byStart)
+                ExpandPath(path);
+            foreach (var path in byEnd)
+                ExpandPath(path);
 
             return Task.CompletedTask;
         }
 
         internal void Clear()
         {
-            MaxLengthPath = null;
+            maxLengthPathByType.Clear();
             NodesByTerminatingPaths.Clear();
         }
 
-        private void ExpandPath(IList<IPath> newPaths, IPath path)
+        private void ExpandPath(IPath path)
         {
-            var startCount = newPaths.Count;
+            var any = false;
 
+            // Iterate over all expansions
             foreach (var edge in path.End.Edges)
             {
                 if (edge.Type != path.Type)
@@ -87,12 +74,26 @@ namespace Ramsey.Graph
                     continue;
                 }
 
-                ExpandPath(newPaths, path.Append(opposingNode));
+                any = true;
+                ExpandPath(path.Append(opposingNode));
             }
 
-            if (newPaths.Count == startCount)
+            // Add this to the max path if necessary
+            if (!any)
             {
-                newPaths.Add(path);
+                NodesByTerminatingPaths[path.End].Add(path);
+
+                // Expand size if needed
+                while(path.Type > maxLengthPathByType.Count)
+                {
+                    maxLengthPathByType.Add(null);
+                }
+
+                // Store if this is the maximum path length found
+                if (MaxPathsByType[path.Type] == null || path.Length > MaxPathsByType[path.Type].Length)
+                {
+                    maxLengthPathByType[path.Type] = path;
+                }
             }
         }
     }

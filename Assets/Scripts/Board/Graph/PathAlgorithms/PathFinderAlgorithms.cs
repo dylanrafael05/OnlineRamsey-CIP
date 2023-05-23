@@ -60,8 +60,7 @@ namespace Ramsey.Graph
 
                     await Task.WhenAll
                     ( 
-                        Perform<DefaultPathFinder>(),
-                        Perform<EveryPossibilityMergeLastPathFinder>()
+                        Perform<DefaultPathFinder>()
                     );
                 }
             });

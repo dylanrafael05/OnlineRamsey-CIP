@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Ramsey.Utilities;
@@ -55,7 +56,17 @@ namespace Ramsey.Graph
         }
 
         public IEnumerable<Edge> Edges
-            => throw new System.Exception("not implemented mabe do the node calcs or simply have edges entered inside the path but prolly not since memory allocation");
+        {
+            get 
+            {
+                var last = nodes.First();
+                foreach(var next in nodes.Skip(1)) 
+                {
+                    yield return last.EdgeConnectedTo(next) 
+                        ?? throw new InvalidOperationException("Edges must connect the nodes in a path.");
+                }
+            }
+        }
 
         public override string ToString()
             => $"{{Length = {Length}, Type = {Type}, Nodes = [{string.Join(", ", Nodes.Select(n => n.ID))}]}}";
