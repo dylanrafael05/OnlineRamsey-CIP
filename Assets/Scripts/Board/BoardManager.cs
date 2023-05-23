@@ -6,25 +6,26 @@ using Unity.Mathematics;
 using System;
 using Ramsey.Drawing;
 using Ramsey.Utilities;
+using System.Threading.Tasks;
 
 namespace Ramsey.Board
 {
-    public class BoardManager : IGraph
+    public class BoardManager
     {
         private DrawingManager renderManager;
         private GraphManager graphManager;
 
         public DrawingActionInterface RenderAPI => renderManager.ReadingInterface;
 
-        public IReadOnlyGraph Graph => graphManager;
+        public IReadOnlyGraph Graph => graphManager.Graph;
         public GameState GameState => graphManager.State;
         public GameState GameStateClone => graphManager.State.Clone();
 
         public BoardPreferences Preferences { get; private set; }
 
-        public IReadOnlyList<Node> Nodes => graphManager.Nodes;
-        public IReadOnlyList<Edge> Edges => graphManager.Edges;
-        public IEnumerable<Path> Paths => graphManager.Paths;
+        public IEnumerable<Node> Nodes => graphManager.Nodes;
+        public IEnumerable<Edge> Edges => graphManager.Edges;
+        public IEnumerable<IPath> Paths => graphManager.Paths;
 
         private BoardManager(Camera camera, BoardPreferences prefs, GraphManager graphManager)
         {
@@ -34,8 +35,14 @@ namespace Ramsey.Board
             Preferences = prefs;
         }
 
-        public BoardManager(Camera camera, BoardPreferences prefs) : this(camera, prefs, new())
+        public BoardManager(Camera camera, BoardPreferences prefs, IIncrementalPathFinder pathFinder) : this(camera, prefs, new GraphManager(pathFinder))
         { }
+
+        public static BoardManager UsingAlgorithm<TAlgo>(Camera camera, BoardPreferences prefs)
+            where TAlgo : IIncrementalPathFinder, new()
+        {
+            return new BoardManager(camera, prefs, GraphManager.UsingAlgorithm<TAlgo>());
+        }
 
         public Node CreateNode(float2 position = default)
         {
@@ -45,9 +52,9 @@ namespace Ramsey.Board
 
             return n;
         }
-        public Edge CreateEdge(Node start, Node end, int type)
+        public Edge CreateEdge(Node start, Node end)
         {
-            var e = graphManager.CreateEdge(start, end, type);
+            var e = graphManager.CreateEdge(start, end);
             renderManager.WritingInterface.AddEdge(e);
 
             return e;
@@ -58,9 +65,9 @@ namespace Ramsey.Board
             graphManager.MoveNode(node, position);
             renderManager.WritingInterface.UpdateNodePosition(node);
         }
-        public void PaintEdge(Edge edge, int type)
+        public async Task PaintEdge(Edge edge, int type)
         {
-            graphManager.PaintEdge(edge, type);
+            await graphManager.PaintEdge(edge, type);
             renderManager.WritingInterface.UpdateEdgeType(edge);
         }
 

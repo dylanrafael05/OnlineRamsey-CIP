@@ -16,30 +16,30 @@ namespace Ramsey.Graph
             return GraphSerializationAlgorithms.DeserializeGraph(ser);
         }
 
-        public static string SavePathFinderToString(IncrementalPathFinder pathFinder)
-        {
-            return JsonConvert.SerializeObject(GraphSerializationAlgorithms.Serialize(pathFinder));
-        }
-        public static IncrementalPathFinder LoadGraphFinderFromString(string json, Graph associatedGraph)
-        {
-            var ser = JsonConvert.DeserializeObject<SerializedPathFinder>(json);
+        // public static string SavePathFinderToString(IncrementalPathFinder pathFinder)
+        // {
+        //     return JsonConvert.SerializeObject(GraphSerializationAlgorithms.Serialize(pathFinder));
+        // }
+        // public static IncrementalPathFinder LoadGraphFinderFromString(string json, Graph associatedGraph)
+        // {
+        //     var ser = JsonConvert.DeserializeObject<SerializedPathFinder>(json);
 
-            return GraphSerializationAlgorithms.DeserializePathFinder(ser, associatedGraph);
-        }
+        //     return GraphSerializationAlgorithms.DeserializePathFinder(ser, associatedGraph);
+        // }
 
-        public static string SaveManagerToString(GraphManager manager)
-        {
-            return JsonConvert.SerializeObject(GraphSerializationAlgorithms.Serialize(manager));
-        }
+        // public static string SaveManagerToString(GraphManager manager)
+        // {
+        //     return JsonConvert.SerializeObject(GraphSerializationAlgorithms.Serialize(manager));
+        // }
 
-        public static GraphManager LoadManagerFromString(string json)
-        {
-            var ser = JsonConvert.DeserializeObject<SerializedGraphManager>(json);
+        // public static GraphManager LoadManagerFromString(string json)
+        // {
+        //     var ser = JsonConvert.DeserializeObject<SerializedGraphManager>(json);
 
-            var graph = GraphSerializationAlgorithms.DeserializeGraph(ser.Graph);
-            var ipf = GraphSerializationAlgorithms.DeserializePathFinder(ser.PathFinder, graph);
+        //     var graph = GraphSerializationAlgorithms.DeserializeGraph(ser.Graph);
+        //     var ipf = GraphSerializationAlgorithms.DeserializePathFinder(ser.PathFinder, graph);
 
-            return new GraphManager(graph, ipf);
-        }
+        //     return new GraphManager(graph, ipf);
+        // }
     }
 }

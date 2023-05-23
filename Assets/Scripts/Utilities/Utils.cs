@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Unity.Mathematics;
 using static Unity.Mathematics.math;
 using UnityEngine;
+using System.Collections.Concurrent;
 
 namespace Ramsey.Utilities
 {
@@ -15,6 +16,32 @@ namespace Ramsey.Utilities
         {
             foreach (T elem in self)
                 action(elem);
+        }
+        public static async void ForeachAsync<T>(this IEnumerable<T> self, Func<T, Task> action)
+        {
+            foreach (T elem in self)
+                await action(elem);
+        }
+        
+        public static Task ForeachParallel<T>(this IEnumerable<T> self, Func<T, Task> action, int parallelCount = 20) 
+        {
+            async Task DoPartition(IEnumerator<T> partition)
+            {
+                using(partition)
+                {
+                    while(partition.MoveNext())
+                    {
+                        await action(partition.Current);
+                    }
+                }
+            }
+
+            return Task.WhenAll(
+                Partitioner.Create(self)
+                    .GetPartitions(parallelCount)
+                    .AsParallel()
+                    .Select(DoPartition)
+            );
         }
 
         public static async Task WaitUntil(Func<bool> func, int milliDelay = 10)
@@ -48,6 +75,22 @@ namespace Ramsey.Utilities
         {
             return self.Enumerate().ToDictionary(k => k.item, k => k.index);
         }
+
+        public static BitSet ToBitSet(this IEnumerable<bool> self) 
+        {
+            var bs = new BitSet(self.Count());
+            var i = 0;
+
+            foreach(var item in self)
+            {
+                if(item) bs.Set(i);
+                i++;
+            }
+
+            return bs;
+        }
+        public static BitSet ToBitSet<T>(this IEnumerable<T> self, Func<T, bool> pred) 
+            => self.Select(pred).ToBitSet();
     }
 
     public static class MathUtils

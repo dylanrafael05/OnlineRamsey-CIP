@@ -24,7 +24,7 @@ namespace Ramsey.Gameplayer
             if (n1 is null || n2 is null || !board.IsValidEdge(n1, n2))
                 return false;
 
-            board.CreateEdge(n1, n2, -1);
+            board.CreateEdge(n1, n2);
             return true;
         }
 

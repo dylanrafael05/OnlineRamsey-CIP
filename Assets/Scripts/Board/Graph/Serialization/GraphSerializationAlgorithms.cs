@@ -30,7 +30,7 @@ namespace Ramsey.Graph
                 Edges = graph.Edges.Select(Serialize).ToArray()
             };  
         }
-        public static SerializedPath Serialize(Path path, int id)
+        public static SerializedPath Serialize(IPath path, int id)
         {
             return new()
             {
@@ -40,39 +40,39 @@ namespace Ramsey.Graph
                 ID    = id
             };
         }
-        public static SerializedPathFinder Serialize(IncrementalPathFinder finder) 
-        {
-            var ids = finder.AllPaths.AssignUniqueIDs();
+        // public static SerializedPathFinder Serialize(IncrementalPathFinder finder) 
+        // {
+        //     var ids = finder.AllPaths.AssignUniqueIDs();
 
-            return new()
-            {
-                Paths = finder.AllPaths.Select(path => Serialize(path, ids[path])).ToArray(),
+        //     return new()
+        //     {
+        //         Paths = finder.AllPaths.Select(path => Serialize(path, ids[path])).ToArray(),
 
-                NodesByTerminatingPaths = finder.NodesByTerminatingPaths
-                    .Select(k => new SerializedPathFinderEntry {
-                        Node = k.Key.ID, 
-                        TerminatingPaths = k.Value.Select(p => ids[p]).ToArray()
-                    }).ToArray(),
+        //         NodesByTerminatingPaths = finder.NodesByTerminatingPaths
+        //             .Select(k => new SerializedPathFinderEntry {
+        //                 Node = k.Key.ID, 
+        //                 TerminatingPaths = k.Value.Select(p => ids[p]).ToArray()
+        //             }).ToArray(),
                 
-                MaxLengthPath = ids[finder.MaxLengthPath]
-            };
-        }
-        public static SerializedGraphManager Serialize(GraphManager manager)
-        {
-            return new() 
-            {
-                Graph = Serialize(manager.graph),
-                PathFinder = Serialize(manager.pathFinder)
-            };
-        }
+        //         MaxLengthPath = ids[finder.MaxLengthPath]
+        //     };
+        // }
+        // public static SerializedGraphManager Serialize(GraphManager manager)
+        // {
+        //     return new() 
+        //     {
+        //         Graph = Serialize(manager.graph),
+        //         PathFinder = Serialize(manager.pathFinder)
+        //     };
+        // }
 
-        public static Path DeserializePath(SerializedPath path, Graph associatedGraph)
-        {
-            var nodes = path.Nodes.Select(i => associatedGraph.Nodes[i]).ToHashSet();
-            var end = associatedGraph.Nodes[path.End];
+        // public static IPath DeserializePath(SerializedPath path, Graph associatedGraph)
+        // {
+        //     var nodes = path.Nodes.Select(i => associatedGraph.Nodes[i]).ToHashSet();
+        //     var end = associatedGraph.Nodes[path.End];
 
-            return new Path(nodes, end, path.Type);
-        }
+        //     return new IPath(nodes, end, path.Type);
+        // }
         public static Graph DeserializeGraph(SerializedGraph ser)
         {
             var graph = new Graph();
@@ -84,26 +84,26 @@ namespace Ramsey.Graph
 
             foreach(var edge in ser.Edges)
             {
-                graph.CreateEdge(graph.Nodes[edge.Start], graph.Nodes[edge.End], edge.Type);
+                graph.CreateEdge(graph.NodeFromID(edge.Start), graph.NodeFromID(edge.End), edge.Type);
             }
 
             return graph;
         }
-        public static IncrementalPathFinder DeserializePathFinder(SerializedPathFinder ser, Graph associatedGraph)
-        {
-            var paths = new List<Path>();
-            foreach(var path in ser.Paths)
-            {
-                paths.Add(DeserializePath(path, associatedGraph));
-            }
+        // public static IncrementalPathFinder DeserializePathFinder(SerializedPathFinder ser, Graph associatedGraph)
+        // {
+        //     var paths = new List<IPath>();
+        //     foreach(var path in ser.Paths)
+        //     {
+        //         paths.Add(DeserializePath(path, associatedGraph));
+        //     }
 
-            var nbtp = ser.NodesByTerminatingPaths.ToDictionary(
-                k => associatedGraph.Nodes[k.Node], 
-                k => k.TerminatingPaths.Select(i => paths[i]).ToList()
-            );
-            var max = paths[ser.MaxLengthPath];
+        //     var nbtp = ser.NodesByTerminatingPaths.ToDictionary(
+        //         k => associatedGraph.Nodes[k.Node], 
+        //         k => k.TerminatingPaths.Select(i => paths[i]).ToList()
+        //     );
+        //     var max = paths[ser.MaxLengthPath];
             
-            return new IncrementalPathFinder(nbtp, max);
-        }
+        //     return new IncrementalPathFinder(nbtp, max);
+        // }
     }
 }

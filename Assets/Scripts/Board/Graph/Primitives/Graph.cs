@@ -10,8 +10,21 @@ namespace Ramsey.Graph
         private readonly List<Node> nodes = new();
         private readonly List<Edge> edges = new();
 
-        public IReadOnlyList<Node> Nodes => nodes;
-        public IReadOnlyList<Edge> Edges => edges;
+        public IEnumerable<Node> Nodes => nodes;
+        public IEnumerable<Edge> Edges => edges;
+
+        public Node NodeFromID(int id) 
+        {
+            Assert.IsTrue(nodes.Count > id, $"Cannot get a node of id {id} from this graph, it does not yet exist!");
+
+            return nodes[id];
+        }
+        public Edge EdgeFromID(int id) 
+        {
+            Assert.IsTrue(edges.Count > id, $"Cannot get an edge of id {id} from this graph, it does not yet exist!");
+
+            return edges[id];
+        }
 
         public bool IsValidEdge(Node start, Node end) 
         {
@@ -21,7 +34,7 @@ namespace Ramsey.Graph
             return true;
         }
 
-        public Edge CreateEdge(Node start, Node end, int type = -1)
+        public Edge CreateEdge(Node start, Node end, int type = Edge.NullType)
         {
             var edge = new Edge(start, end, type, edges.Count);
             edges.Add(edge);

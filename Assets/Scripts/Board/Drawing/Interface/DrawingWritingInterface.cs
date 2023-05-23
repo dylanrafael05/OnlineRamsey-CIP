@@ -85,7 +85,7 @@ namespace Ramsey.Drawing
             drawer.UpdateEdgeBuffer();
         }
 
-        public void SetHighlightedPath(Path path) //will unhighlight everything not inside this path
+        public void SetHighlightedPath(IPath path) //will unhighlight everything not inside this path
         {
             data.EdgeHighlights.ForEach(f => f = 0f); //this might be dumb for 2 reasons feel free to fix or maybe add something to utils
             path.Edges.Foreach(e => data.EdgeHighlights[e.ID] = 1.0f);

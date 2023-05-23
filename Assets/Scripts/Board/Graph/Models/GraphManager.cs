@@ -8,20 +8,25 @@ using Unity.Mathematics;
 namespace Ramsey.Graph
 {
     
-    public class GraphManager : IGraph
+    public class GraphManager
     {
         public IReadOnlyGraph Graph => graph;
         public GameState State => gameState;
 
-        public IReadOnlyList<Node> Nodes => graph.Nodes;
-        public IReadOnlyList<Edge> Edges => graph.Edges;
-        public IEnumerable<Path> Paths => pathFinder.AllPaths;
+        public IEnumerable<Node> Nodes => graph.Nodes;
+        public IEnumerable<Edge> Edges => graph.Edges;
+        public IEnumerable<IPath> Paths => pathFinder.AllPaths;
+
+        public Node NodeFromID(int id) 
+            => graph.NodeFromID(id);
+        public Edge EdgeFromID(int id) 
+            => graph.EdgeFromID(id);
 
         internal readonly Graph graph;
-        internal readonly IncrementalPathFinder pathFinder;
+        internal readonly IIncrementalPathFinder pathFinder;
         private readonly GameState gameState;
 
-        internal GraphManager(Graph graph, IncrementalPathFinder pathFinder)
+        internal GraphManager(Graph graph, IIncrementalPathFinder pathFinder)
         {
             this.graph = graph;
             this.pathFinder = pathFinder;
@@ -33,8 +38,11 @@ namespace Ramsey.Graph
             };
         }
 
-        public GraphManager() : this(new(), new())
+        public GraphManager(IIncrementalPathFinder pathFinder) : this(new(), pathFinder)
         {}
+
+        public static GraphManager UsingAlgorithm<TAlgo>() where TAlgo: IIncrementalPathFinder, new()
+            => new(new TAlgo());
 
         public Node CreateNode(float2 position = default)
         {
@@ -44,23 +52,17 @@ namespace Ramsey.Graph
             return n;
         }
 
-        public Edge CreateEdge(Node start, Node end, int type = Edge.NullType)
+        public Edge CreateEdge(Node start, Node end)
         {
-            var e = graph.CreateEdge(start, end, type);
-
-            if(e.Type != Edge.NullType)
-            {
-                pathFinder.HandlePaintedEdge(e);
-                gameState.MaxLengthPath = pathFinder.MaxLengthPath;
-            }
+            var e = graph.CreateEdge(start, end);
 
             return e;
         }
 
-        public void PaintEdge(Edge e, int type)
+        public async Task PaintEdge(Edge e, int type)
         {
             graph.PaintEdge(e, type);
-            pathFinder.HandlePaintedEdge(e);
+            await pathFinder.HandlePaintedEdge(e);
             
             gameState.MaxLengthPath = pathFinder.MaxLengthPath;
         }

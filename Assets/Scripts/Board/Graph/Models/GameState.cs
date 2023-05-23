@@ -10,7 +10,7 @@ namespace Ramsey.Graph
         internal GameState() { }
 
         public IReadOnlyGraph Graph { get; internal set; }
-        public Path MaxLengthPath { get; internal set; }
+        public IPath MaxLengthPath { get; internal set; }
 
         public GameState Clone() => throw new System.Exception("unimplemented");
     }
