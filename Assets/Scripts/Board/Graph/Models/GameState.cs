@@ -13,6 +13,8 @@ namespace Ramsey.Graph
         public IReadOnlyGraph Graph { get; internal set; }
         public IReadOnlyList<IPath> MaxPaths { get; internal set; }
 
+        public Edge LastUnpaintedEdge { get; internal set; }
+
         public Edge EdgeStart(int i) => MaxPaths[i].Edges.First();
         public Edge EdgeEnd(int i)   => MaxPaths[i].Edges.Last();
     }

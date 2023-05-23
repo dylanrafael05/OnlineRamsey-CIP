@@ -12,6 +12,7 @@ namespace Ramsey.Graph
     {
         public IReadOnlyGraph Graph => graph;
         public GameState State => gameState;
+        //TODO: move this to `BoardManager`
 
         public IEnumerable<Node> Nodes => graph.Nodes;
         public IEnumerable<Edge> Edges => graph.Edges;
@@ -55,12 +56,18 @@ namespace Ramsey.Graph
         public Edge CreateEdge(Node start, Node end)
         {
             var e = graph.CreateEdge(start, end);
+            State.LastUnpaintedEdge = e;
 
             return e;
         }
 
         public async Task PaintEdge(Edge e, int type)
         {
+            if(State.LastUnpaintedEdge == e)
+            {
+                State.LastUnpaintedEdge = null;
+            }
+            
             graph.PaintEdge(e, type);
             await pathFinder.HandlePaintedEdge(e);
             
