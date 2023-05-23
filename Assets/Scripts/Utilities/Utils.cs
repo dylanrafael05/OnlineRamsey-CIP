@@ -5,11 +5,32 @@ using System.Threading.Tasks;
 using Unity.Mathematics;
 using static Unity.Mathematics.math;
 using UnityEngine;
+using System.Runtime.InteropServices;
 
 namespace Ramsey.Utilities
 {
     public static class Utils
     {
+
+        public static void ForEachIndex<T>(this IEnumerable<T> e, Action<T, int> action)
+        {
+            int i = 0;
+            foreach(T elem in e)
+            {
+                action(elem, i);
+                i++;
+            }    
+        }
+
+        public static int ToInt(this bool b)
+            => b ? 1 : 0;
+
+        public static List<T> Copy<T>(this List<T> list) where T : struct
+        {
+            List<T> rList = new();
+            list.ForEach(e => rList.Add(e));
+            return rList;
+        }
 
         public static void Foreach<T>(this IEnumerable<T> self, Action<T> action)
         {

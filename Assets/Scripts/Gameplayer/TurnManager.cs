@@ -22,8 +22,6 @@ namespace Ramsey.UI
 
         private Task<IMove> awaitingTask;
 
-        private List<GameState> gameStates; //for recording
-
         public TurnManager(BoardManager board, Builder builder, Painter painter)
         {
             this.board = board;
@@ -33,7 +31,7 @@ namespace Ramsey.UI
 
             isBuilderTurn = true;
 
-            gameStates = new() { board.GameState };
+            board.SaveCurrentTurn();
         }
 
         public void Update() 
@@ -47,7 +45,7 @@ namespace Ramsey.UI
                     if(move.MakeMove(board))
                     {
                         isBuilderTurn = !isBuilderTurn;
-                        gameStates.Add(board.GameStateClone);
+                        board.SaveCurrentTurn();
                     }
                     
                     awaitingTask = null;

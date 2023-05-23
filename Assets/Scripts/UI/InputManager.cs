@@ -72,6 +72,8 @@ public class InputData
 
     public bool alt; public bool shift;
 
+    public bool lkd; public bool rkd; //[Left, Right] Key Down
+
     public ISet<Node> collidingNodes;
     public ISet<Edge> collidingEdges;
 }

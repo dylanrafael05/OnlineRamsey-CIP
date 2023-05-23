@@ -5,6 +5,7 @@ namespace Ramsey.Gameplayer
 {
     public interface IMove
     {
+        static bool Enable = true;
         bool MakeMove(BoardManager board);
     }
 
@@ -21,7 +22,7 @@ namespace Ramsey.Gameplayer
 
         public bool MakeMove(BoardManager board)
         {
-            if (n1 is null || n2 is null || !board.IsValidEdge(n1, n2))
+            if (!IMove.Enable || n1 is null || n2 is null || !board.IsValidEdge(n1, n2))
                 return false;
 
             board.CreateEdge(n1, n2, -1);
@@ -43,7 +44,7 @@ namespace Ramsey.Gameplayer
 
         public bool MakeMove(BoardManager board)
         {
-            if (edge.Type != Edge.NullType)
+            if (!IMove.Enable || edge.Type != Edge.NullType)
                 return false;
 
             board.PaintEdge(edge, type);

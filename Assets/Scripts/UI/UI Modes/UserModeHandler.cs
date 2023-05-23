@@ -1,7 +1,9 @@
 ﻿using Ramsey.Board;
 using System.Collections.Generic;
+using Ramsey.Utilities;
+using System.Linq;
 
-public class UserModeHandler
+public static class UserModeHandler
 {
     public static void Create(BoardManager board)
     {
@@ -11,9 +13,10 @@ public class UserModeHandler
 
     static BoardManager board;
     static List<IUserMode> currentModes;
+    static List<bool> activationStatuses;
 
     public static void Update(InputData input)
-        => currentModes.ForEach(m => m.Update(input, board));
+        => currentModes.ForEachIndex((m, i) => { if (activationStatuses[i]) m.Update(input, board); });
 
     public static void AddMode(IUserMode mode)
     {
@@ -26,6 +29,9 @@ public class UserModeHandler
         currentModes.Remove(mode);
         mode.End(board);
     }
+
+    public static void SetStatus(IUserMode mode, bool status)
+        => activationStatuses[currentModes.FindIndex(m => m == mode)] = status;
 
 }
 

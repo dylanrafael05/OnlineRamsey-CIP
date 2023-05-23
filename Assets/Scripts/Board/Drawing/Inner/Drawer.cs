@@ -16,6 +16,7 @@ namespace Ramsey.Drawing
 
         //
         DrawingData storage;
+        DrawingPreferences preferences;
 
         //
         const int MAXMESHCOUNT = 4096;
@@ -46,6 +47,7 @@ namespace Ramsey.Drawing
 
             //
             this.storage = storage;
+            this.preferences = preferences;
 
             //
             argsArrayEdge = new uint[5]
@@ -80,13 +82,16 @@ namespace Ramsey.Drawing
             DrawingPreferences.NodeMaterial.SetBuffer(Shader.PropertyToID("IsHighlighted"), nodeHighlightBuffer);
 
             //
-            UpdateArgsBuffers();
+            UpdateArgsBuffer();
             UpdateEdgeBuffer();
             UpdateNodeBuffer();
 
         }
 
-        public void UpdateArgsBuffers()
+        public void UpdateAll(DrawingData storage)
+        { UpdateArgsBuffer(storage); UpdateEdgeBuffer(storage); UpdateNodeBuffer(storage); }
+
+        public void UpdateArgsBuffer(DrawingData storage)
         {
 
             //
@@ -97,16 +102,22 @@ namespace Ramsey.Drawing
             argsBufferNode.SetData(argsArrayNode);
 
         }
-        public void UpdateEdgeBuffer() { edgeTransformBuffer.SetData(storage.EdgeTransforms); edgeTypeBuffer.SetData(storage.EdgeColors); edgeHighlightBuffer.SetData(storage.EdgeHighlights); } //last 1 mabe should be separate?
-        public void UpdateNodeBuffer() { nodePositionBuffer.SetData(storage.NodePositions); nodeHighlightBuffer.SetData(storage.NodeHighlights); }
+        public void UpdateEdgeBuffer(DrawingData storage) { edgeTransformBuffer.SetData(storage.EdgeTransforms); edgeTypeBuffer.SetData(storage.EdgeColors); edgeHighlightBuffer.SetData(storage.EdgeHighlights); } //last 1 mabe should be separate?
+        public void UpdateNodeBuffer(DrawingData storage) { nodePositionBuffer.SetData(storage.NodePositions); nodeHighlightBuffer.SetData(storage.NodeHighlights); }
 
-        public float2 MouseRaw { get; set; }
+        public void UpdateArgsBuffer() => UpdateArgsBuffer(storage);
+        public void UpdateEdgeBuffer() => UpdateEdgeBuffer(storage);
+        public void UpdateNodeBuffer() => UpdateNodeBuffer(storage);
+        
+
+        public float2 Mouse { get; set; }
 
         public void Draw()
         {
-            DrawingPreferences.NodeMaterial.SetVector(Shader.PropertyToID("_Mouse"), MouseRaw.xyzw());
+            DrawingPreferences.NodeMaterial.SetVector(Shader.PropertyToID("_Mouse"), Mouse.xyzw());
             Graphics.DrawMeshInstancedIndirect(DrawingData.QuadMesh, 0, DrawingPreferences.EdgeMaterial, DrawingData.Bounds, argsBufferEdge, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
             Graphics.DrawMeshInstancedIndirect(DrawingData.QuadMesh, 0, DrawingPreferences.NodeMaterial, DrawingData.Bounds, argsBufferNode, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
+            Graphics.DrawMesh(DrawingData.QuadMesh, preferences.RecorderTransform, DrawingPreferences.RecorderMaterial, LayerMask.NameToLayer("Default"), camera);
         }
 
         public void Cleanup()
