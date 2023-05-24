@@ -13,6 +13,12 @@ namespace Ramsey.Utilities
     public static class Utils
     {
 
+        public static void Fill<T>(this IList<T> E, T e)
+        {
+            for (int i = 0; i < E.Count; i++)
+                E[i] = e;
+        }
+
         public static void ForEachIndex<T>(this IEnumerable<T> e, Action<T, int> action)
         {
             int i = 0;

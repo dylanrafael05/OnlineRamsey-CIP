@@ -39,17 +39,18 @@ public class Test : MonoBehaviour
                 highlightColor = Color.green,
 
                 recorderColor = Color.white,
-                RecorderTransform = Matrix4x4.TRS(new(0f, 2f, 0f), Quaternion.identity, new(2f, 1f, 1f))
+                RecorderTransform = Matrix4x4.TRS(new(0f, 4.5f, 0.5f), Quaternion.identity, new(2f, 1f, 1f))
             }
         });
 
-        turns = new TurnManager(board, new UserBuilder(), new UserPainter());
+        var ub = new UserBuilder(); var up = new UserPainter();
+        turns = new TurnManager(board, ub, up);
 
         UserModeHandler.Create(board);
         InputManager.Create(board);
 
         var nodeEditingMode = new NodeEditingMode();
-        var turnNavigatorMode = new TurnNavigatorMode(nodeEditingMode);
+        var turnNavigatorMode = new TurnNavigatorMode(new IUserMode[] { nodeEditingMode, ub, up });
 
         UserModeHandler.AddMode(nodeEditingMode);
         UserModeHandler.AddMode(turnNavigatorMode);

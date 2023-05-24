@@ -91,6 +91,9 @@ namespace Ramsey.Drawing
         public void UpdateAll(DrawingData storage)
         { UpdateArgsBuffer(storage); UpdateEdgeBuffer(storage); UpdateNodeBuffer(storage); }
 
+        public void UpdateAll()
+            => UpdateAll(storage);
+
         public void UpdateArgsBuffer(DrawingData storage)
         {
 
@@ -117,7 +120,7 @@ namespace Ramsey.Drawing
             DrawingPreferences.NodeMaterial.SetVector(Shader.PropertyToID("_Mouse"), Mouse.xyzw());
             Graphics.DrawMeshInstancedIndirect(DrawingData.QuadMesh, 0, DrawingPreferences.EdgeMaterial, DrawingData.Bounds, argsBufferEdge, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
             Graphics.DrawMeshInstancedIndirect(DrawingData.QuadMesh, 0, DrawingPreferences.NodeMaterial, DrawingData.Bounds, argsBufferNode, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
-            Graphics.DrawMesh(DrawingData.QuadMesh, preferences.RecorderTransform, DrawingPreferences.RecorderMaterial, LayerMask.NameToLayer("Default"), camera);
+            Graphics.DrawMesh(DrawingData.QuadMesh, preferences.RecorderTransform, DrawingPreferences.RecorderMaterial, LayerMask.NameToLayer("Board"), camera);
         }
 
         public void Cleanup()

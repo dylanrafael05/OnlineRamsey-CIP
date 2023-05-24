@@ -1,3 +1,4 @@
+using Codice.CM.Client.Differences;
 using Ramsey.Board;
 using Ramsey.Graph;
 using System.Threading.Tasks;
@@ -21,9 +22,12 @@ namespace Ramsey.Gameplayer
             this.n2 = n2;
         }
 
+        bool IsValid(BoardManager board)
+            => IMove.Enable && n1 is not null && n2 is not null && board.IsValidEdge(n1, n2);
+
         public bool MakeMove(BoardManager board)
         {
-            if (!IMove.Enable || n1 is null || n2 is null || !board.IsValidEdge(n1, n2))
+            if (!IsValid(board))
                 return false;
 
             board.CreateEdge(n1, n2);
@@ -43,9 +47,12 @@ namespace Ramsey.Gameplayer
             this.type = type;
         }
 
+        bool IsValid(BoardManager board)
+            => IMove.Enable && this.edge.Type == Edge.NullType;
+
         public bool MakeMove(BoardManager board)
         {
-            if (!IMove.Enable || this.edge.Type != Edge.NullType)
+            if (!IsValid(board))
                 return false;
 
             board.PaintEdge(edge, type);

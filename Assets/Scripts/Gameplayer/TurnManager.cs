@@ -35,8 +35,6 @@ namespace Ramsey.UI
             this.painter = painter;
 
             isBuilderTurn = true;
-
-            board.SaveCurrentTurn();
         }
 
         public void Update() 
@@ -47,17 +45,23 @@ namespace Ramsey.UI
                 {
                     if(awaitingMove.IsCompleted)
                     {
+                        
                         var move = awaitingMove.Result;
 
                         if(move.MakeMove(board))
                         {
                             isBuilderTurn = !isBuilderTurn;
+                            if (isBuilderTurn) board.SaveCurrentTurn();
                             //board.SaveCurrentTurn();
                         }
 
                         if(board.IsAwaitingPathTask)
                         {
                             awaiting = board.AwaitPathTask();
+                        }
+                        else
+                        {
+                            isAwaiting = false;
                         }
                         
                         awaitingMove = null;
