@@ -14,8 +14,8 @@ namespace Ramsey.UI
         }
 
         static BoardManager board;
-        static List<IUserMode> currentModes;
-        static List<bool> activationStatuses;
+        static List<IUserMode> currentModes = new();
+        static List<bool> activationStatuses = new();
 
         public static void Update(InputData input)
             => currentModes.ForEachIndex((m, i) => { if (activationStatuses[i]) m.Update(input, board); });
@@ -23,12 +23,17 @@ namespace Ramsey.UI
         public static void AddMode(IUserMode mode)
         {
             currentModes.Add(mode);
+            activationStatuses.Add(true);
+
             mode.Init(board);
         }
 
         public static void DelMode(IUserMode mode)
         {
-            currentModes.Remove(mode);
+            int i = currentModes.FindIndex(m => m == mode);
+            currentModes.RemoveAt(i);
+            activationStatuses.RemoveAt(i);
+
             mode.End(board);
         }
 

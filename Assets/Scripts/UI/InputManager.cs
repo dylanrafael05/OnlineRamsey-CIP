@@ -58,6 +58,9 @@ namespace Ramsey.UI
             data.alt = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
             data.shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
 
+            data.lkd = Input.GetKeyDown(KeyCode.LeftArrow);
+            data.rkd = Input.GetKeyDown(KeyCode.RightArrow);
+
             board.SetMousePosition(data.rawMouse);
 
             return data;

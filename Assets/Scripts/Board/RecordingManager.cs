@@ -13,16 +13,21 @@ namespace Ramsey.Board
 
         //
         List<BoardState> boardStates;
-        int selectedID;
+        int selectedID = -1;
         public bool IsCurrentTurn => selectedID == boardStates.Count - 1;
 
-        public void Add(BoardState state)
+        public RecordingManager()
+            => boardStates = new();
+
+        public void Add(BoardState state, bool present)
         {
             boardStates.Add(state);
+            selectedID++;
         }
+        public void Add(BoardState state) => Add(state, true);
         public void LoadTurn(int i, DrawingIOInterface drawingWritingInterface)
         {
-            Assert.IsTrue(0 <= i && i < boardStates.Count);
+            Assert.IsTrue(0 <= i && i < boardStates.Count); if (i == selectedID) return;
             selectedID = i;
 
             drawingWritingInterface.LoadDrawState(boardStates[i].DrawState);

@@ -1,5 +1,6 @@
 using Ramsey.Board;
 using Ramsey.Graph;
+using System.Threading.Tasks;
 
 namespace Ramsey.Gameplayer
 {
@@ -44,7 +45,7 @@ namespace Ramsey.Gameplayer
 
         public bool MakeMove(BoardManager board)
         {
-            if (!IMove.Enable || edge.Type != Edge.NullType)
+            if (!IMove.Enable || this.edge.Type != Edge.NullType)
                 return false;
 
             board.PaintEdge(edge, type);

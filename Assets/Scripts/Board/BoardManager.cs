@@ -69,10 +69,10 @@ namespace Ramsey.Board
             graphManager.MoveNode(node, position);
             renderManager.IOInterface.UpdateNodePosition(node);
         }
-        public async Task PaintEdge(Edge edge, int type)
+        public void PaintEdge(Edge edge, int type)
         {
+            graphManager.PaintEdge(edge, type);
             renderManager.IOInterface.UpdateEdgeType(edge);
-            await graphManager.PaintEdge(edge, type);
         }
 
         public void HighlightNode(Node n)
@@ -106,7 +106,7 @@ namespace Ramsey.Board
         }
 
         public void SaveCurrentTurn()
-        { recordingManager.Add(new BoardState(renderManager.IOInterface.CreateDrawState())); }
+            => recordingManager.Add(new BoardState(renderManager.IOInterface.CreateDrawState()));
 
         public void LoadTurn(int i)
             => recordingManager.LoadTurn(i, renderManager.IOInterface);

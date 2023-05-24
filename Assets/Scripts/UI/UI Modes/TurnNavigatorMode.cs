@@ -1,6 +1,7 @@
 ﻿using Ramsey.Board;
 using Ramsey.Utilities;
 using Ramsey.Gameplayer;
+using UnityEngine;
 
 namespace Ramsey.UI
 {
@@ -15,6 +16,7 @@ namespace Ramsey.UI
         public void Update(InputData input, BoardManager board)
         {
             int d = -1 * input.lkd.ToInt() + 1 * input.rkd.ToInt();
+            Debug.Log(input.lkd);
             board.OffsetTurn(d);
 
             IMove.Enable = board.IsCurrentTurn;

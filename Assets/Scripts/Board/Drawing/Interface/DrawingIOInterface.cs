@@ -81,7 +81,6 @@ namespace Ramsey.Drawing
         public void UpdateEdgeType(Edge e)
         {
             data.EdgeColors[e.ID] = preferences.TypeToColor(e.Type);
-            
             drawer.UpdateEdgeBuffer();
         }
 

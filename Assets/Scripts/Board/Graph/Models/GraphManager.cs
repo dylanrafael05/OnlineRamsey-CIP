@@ -24,6 +24,9 @@ namespace Ramsey.Graph
         public Edge EdgeFromID(int id) 
             => graph.EdgeFromID(id);
 
+        public Task CurrentPathTask { get => currentPathTask ?? Task.CompletedTask; }
+        Task currentPathTask = null;
+
         internal readonly Graph graph;
         internal readonly IIncrementalPathFinder pathFinder;
         private readonly GameState gameState;
@@ -62,7 +65,7 @@ namespace Ramsey.Graph
             return e;
         }
 
-        public async Task PaintEdge(Edge e, int type)
+        public void PaintEdge(Edge e, int type) //Will start background task
         {
             if(State.LastUnpaintedEdge == e)
             {
@@ -70,11 +73,13 @@ namespace Ramsey.Graph
             }
             
             graph.PaintEdge(e, type);
-            await pathFinder.HandlePaintedEdge(e);
 
-            Debug.Log("What the fuck");
-            
-            gameState.MaxPaths = pathFinder.MaxPathsByType;
+            currentPathTask = Task.Run(async () => 
+            {
+                await pathFinder.HandlePaintedEdge(e); 
+                currentPathTask = null; 
+                gameState.MaxPaths = pathFinder.MaxPathsByType; 
+            });
         }
 
         public void MoveNode(Node n, float2 position)
