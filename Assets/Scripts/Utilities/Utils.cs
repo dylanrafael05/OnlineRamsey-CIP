@@ -23,6 +23,29 @@ namespace Ramsey.Utilities
             }    
         }
 
+        public static Task UnityReport(this Task task) 
+        {
+            return task.ContinueWith(t => 
+            {
+                if(t.IsFaulted)
+                {
+                    Debug.LogException(t.Exception);
+                }
+            });
+        }
+        public static async Task<T> UnityReport<T>(this Task<T> task) 
+        {
+            try 
+            {
+                return await task;
+            }
+            catch(Exception e) 
+            {
+                Debug.LogException(e);
+                throw;
+            }
+        }
+
         public static int ToInt(this bool b)
             => b ? 1 : 0;
 

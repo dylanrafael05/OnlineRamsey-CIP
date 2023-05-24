@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Ramsey.Utilities;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -24,8 +25,14 @@ namespace Ramsey.Graph
         public Edge EdgeFromID(int id) 
             => graph.EdgeFromID(id);
 
-        public Task CurrentPathTask { get => currentPathTask ?? Task.CompletedTask; }
         Task currentPathTask = null;
+
+        public bool IsAwaitingPathTask => currentPathTask != null;
+        public async Task AwaitPathTask()
+        {
+            if(IsAwaitingPathTask)
+                await currentPathTask;
+        }
 
         internal readonly Graph graph;
         internal readonly IIncrementalPathFinder pathFinder;
@@ -76,7 +83,8 @@ namespace Ramsey.Graph
 
             currentPathTask = Task.Run(async () => 
             {
-                await pathFinder.HandlePaintedEdge(e); 
+                await pathFinder.HandlePaintedEdge(e).UnityReport(); 
+
                 currentPathTask = null; 
                 gameState.MaxPaths = pathFinder.MaxPathsByType; 
             });

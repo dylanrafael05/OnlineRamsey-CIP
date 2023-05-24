@@ -113,7 +113,7 @@ namespace Ramsey.Utilities
         /// </summary>
         public bool IsSet(int index) 
         {
-            if(index > Count) return false;
+            if(index >= Count) return false;
 
             HandleIndex(index, out var valueIndex, out var mask);
 
@@ -124,7 +124,7 @@ namespace Ramsey.Utilities
         /// </summary>
         public bool IsUnset(int index) 
         {
-            if(index > Count) return true;
+            if(index >= Count) return true;
 
             HandleIndexMutable(index, out var valueIndex, out var mask);
 

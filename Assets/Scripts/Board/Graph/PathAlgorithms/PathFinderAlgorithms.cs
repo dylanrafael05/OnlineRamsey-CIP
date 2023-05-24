@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Ramsey.Utilities;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ namespace Ramsey.Graph
 {
     internal static class PathFinderAlgorithms
     {
-        public const int NodeCount = 5;
+        public const int NodeCount = 10;
 
         internal static Task Time(Func<Task> task, string name)
         {
@@ -18,7 +19,7 @@ namespace Ramsey.Graph
                 var sw = new Stopwatch();
                 sw.Start();
 
-                await task().ConfigureAwait(false);
+                await task();
 
                 sw.Stop();
 
@@ -44,14 +45,12 @@ namespace Ramsey.Graph
                     );
                     
                     graph.PaintEdge(e, 0);
-                    await graph.CurrentPathTask.ConfigureAwait(false);
-
-                    UnityEngine.Debug.Log("looooop");
+                    await graph.AwaitPathTask();
                 }
             }
         }
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+        // [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
         internal static void Test() 
         {
             Task.Run(async () => 
@@ -62,8 +61,8 @@ namespace Ramsey.Graph
 
                     await Task.WhenAll
                     ( 
-                        Perform<DefaultPathFinder>(),
-                        Perform<RemoveDuplicatesPathFinder>()
+                        Perform<DefaultPathFinder>() //,
+                        // Perform<RemoveDuplicatesPathFinder>()
                     );
                 }
             });
