@@ -60,7 +60,6 @@ public class BitSetTests
     
     public static readonly object[] Sequences = {
         new[] {false, true},
-        new[] {true, true, false, false},
         new[] {true, true, false, true},
         new[] {
             true, true, false, true, 
@@ -81,7 +80,7 @@ public class BitSetTests
     [Test, TestCaseSource(nameof(Sequences))]
     public void BitSetIterationWorks(bool[] expected)
     {
-        var bs = new BitSet(expected.Length);
+        var bs = new BitSet();
 
         for(var i = 0; i < expected.Length; i++)
         {

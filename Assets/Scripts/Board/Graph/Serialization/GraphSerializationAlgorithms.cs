@@ -30,7 +30,7 @@ namespace Ramsey.Graph
                 Edges = graph.Edges.Select(Serialize).ToArray()
             };  
         }
-        public static SerializedPath Serialize(IPath path, int id)
+        public static SerializedPath Serialize(Path path, int id)
         {
             return new()
             {

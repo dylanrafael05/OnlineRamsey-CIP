@@ -16,7 +16,7 @@ namespace Ramsey.Graph
 
             var best = existing;
 
-            foreach(var edge in startpoint.Edges)
+            foreach(var edge in startpoint.ConnectedEdges)
             {   
                 if(edge.Type != type)
                     continue;

@@ -99,7 +99,7 @@ namespace Ramsey.Utilities
 
         public static BitSet ToBitSet(this IEnumerable<bool> self) 
         {
-            var bs = new BitSet(self.Count());
+            var bs = new BitSet();
             var i = 0;
 
             foreach(var item in self)

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace Ramsey.Graph
 {
@@ -16,7 +17,7 @@ namespace Ramsey.Graph
 
         public IEnumerable<Node> Nodes => graph.Nodes;
         public IEnumerable<Edge> Edges => graph.Edges;
-        public IEnumerable<IPath> Paths => pathFinder.AllPaths;
+        public IEnumerable<Path> Paths => pathFinder.AllPaths;
 
         public Node NodeFromID(int id) 
             => graph.NodeFromID(id);
@@ -70,6 +71,8 @@ namespace Ramsey.Graph
             
             graph.PaintEdge(e, type);
             await pathFinder.HandlePaintedEdge(e);
+
+            Debug.Log("What the fuck");
             
             gameState.MaxPaths = pathFinder.MaxPathsByType;
         }

@@ -16,7 +16,7 @@ namespace Ramsey.Graph
 
         private Dictionary<Node, Edge> edgesByOpposingID = new();
 
-        public IEnumerable<Edge> Edges => edgesByOpposingID.Values;
+        public IEnumerable<Edge> ConnectedEdges => edgesByOpposingID.Values;
         public IEnumerable<Node> Neighbors => edgesByOpposingID.Keys;
         
         public int ID { get; }

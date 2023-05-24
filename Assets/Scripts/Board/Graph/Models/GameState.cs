@@ -11,7 +11,7 @@ namespace Ramsey.Graph
         internal GameState() { }
 
         public IReadOnlyGraph Graph { get; internal set; }
-        public IReadOnlyList<IPath> MaxPaths { get; internal set; }
+        public IReadOnlyList<Path> MaxPaths { get; internal set; }
 
         public Edge LastUnpaintedEdge { get; internal set; }
 

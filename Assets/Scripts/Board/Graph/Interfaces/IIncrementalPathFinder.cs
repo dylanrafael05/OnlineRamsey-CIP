@@ -5,8 +5,8 @@ namespace Ramsey.Graph
 {
     public interface IIncrementalPathFinder
     {
-        IEnumerable<IPath> AllPaths { get; }
-        IReadOnlyList<IPath> MaxPathsByType { get; }
+        IEnumerable<Path> AllPaths { get; }
+        IReadOnlyList<Path> MaxPathsByType { get; }
 
         void HandleNodeAddition(Node node);
         Task HandlePaintedEdge(Edge edge);

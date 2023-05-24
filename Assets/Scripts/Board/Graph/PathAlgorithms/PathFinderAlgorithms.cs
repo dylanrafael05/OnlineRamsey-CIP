@@ -9,7 +9,7 @@ namespace Ramsey.Graph
 {
     internal static class PathFinderAlgorithms
     {
-        public const int NodeCount = 23;
+        public const int NodeCount = 5;
 
         internal static Task Time(Func<Task> task, string name)
         {
@@ -43,10 +43,10 @@ namespace Ramsey.Graph
                         graph.NodeFromID(j)
                     );
                     await graph.PaintEdge(e, 0).ConfigureAwait(false);
+                    UnityEngine.Debug.Log("looooop");
+                    
                 }
             }
-
-            // UnityEngine.Debug.Log(graph.State.MaxLengthPath);
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
@@ -60,7 +60,8 @@ namespace Ramsey.Graph
 
                     await Task.WhenAll
                     ( 
-                        Perform<DefaultPathFinder>()
+                        Perform<DefaultPathFinder>(),
+                        Perform<RemoveDuplicatesPathFinder>()
                     );
                 }
             });
