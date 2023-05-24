@@ -42,7 +42,8 @@ namespace Ramsey.Graph
                         graph.NodeFromID(i), 
                         graph.NodeFromID(j)
                     );
-                    await graph.PaintEdge(e, 0).ConfigureAwait(false);
+                    graph.PaintEdge(e, 0);
+                    await graph.CurrentPathTask.ConfigureAwait(false);
                 }
             }
 

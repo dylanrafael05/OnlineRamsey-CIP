@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Unity.Mathematics;
 using UnityEngine.Assertions;
+using UnityEngine;
 
 namespace Ramsey.Graph
 {
@@ -60,7 +61,6 @@ namespace Ramsey.Graph
         public void PaintEdge(Edge edge, int type)
         {
             Assert.AreEqual(edge.Type, -1, "Cannot change the color of a painted edge!");
-
             edge.Type = type;
         }
         
