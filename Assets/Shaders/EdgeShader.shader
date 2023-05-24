@@ -2,7 +2,7 @@ Shader "Unlit/GraphShaders/EdgeShader"
 {
     Properties
     {
-        [HideInInspector] _HighlightColor("Highlight Color", Color) = (0., 0., 0., 1.)
+        [HideInInspector] _HighlightColor("Highlight Color", Color) = (1., 1., 1., 1.)
         [HideInInspector] _HighlightAmount("Highlight Amount", Float) = 0.5
     }
     SubShader
