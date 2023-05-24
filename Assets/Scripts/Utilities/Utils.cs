@@ -141,6 +141,47 @@ namespace Ramsey.Utilities
         }
         public static BitSet ToBitSet<T>(this IEnumerable<T> self, Func<T, bool> pred) 
             => self.Select(pred).ToBitSet();
+
+        public static T MaxBy<T>(this IEnumerable<T> self, Func<T, float> value)
+        {
+            var v = default(T);
+            var f = float.NaN;
+
+            foreach(var n in self)
+            {
+                var fn = value(n);
+                if(float.IsNaN(f) || fn > f)
+                {
+                    v = n;
+                    f = fn;
+                }
+            }
+
+            if(float.IsNaN(f))
+                throw new InvalidOperationException("Cannot get a 'max by' on an empty collection");
+            
+            return v;
+        }
+        public static T MinBy<T>(this IEnumerable<T> self, Func<T, float> value)
+        {
+            var v = default(T);
+            var f = float.NaN;
+
+            foreach(var n in self)
+            {
+                var fn = value(n);
+                if(float.IsNaN(f) || fn < f)
+                {
+                    v = n;
+                    f = fn;
+                }
+            }
+
+            if(float.IsNaN(f))
+                throw new InvalidOperationException("Cannot get a 'max by' on an empty collection");
+            
+            return v;
+        }
     }
 
     public static class MathUtils

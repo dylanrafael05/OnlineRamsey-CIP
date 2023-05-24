@@ -87,7 +87,10 @@ namespace Ramsey.Drawing
         public void SetHighlightedPath(Path path)
         {
             data.EdgeHighlights.Fill(0f);
-            path.Edges.Foreach(e => data.EdgeHighlights[e.ID] = 1.0f);
+            foreach(var e in path.Edges)
+            {
+                data.EdgeHighlights[e.ID] = 1.0f;
+            }
 
             drawer.UpdateEdgeBuffer();
         }
