@@ -13,10 +13,9 @@ namespace Ramsey.Board
 {
     public class BoardManager
     {
-        private RecordingManager recordingManager;
-
-        private DrawingManager renderManager;
-        private GraphManager graphManager;
+        private readonly RecordingManager recordingManager;
+        private readonly DrawingManager renderManager;
+        private readonly GraphManager graphManager;
 
         public DrawingActionInterface RenderAPI => renderManager.ActionInterface;
 
@@ -40,6 +39,11 @@ namespace Ramsey.Board
             recordingManager = new();
 
             Preferences = prefs;
+
+            graphManager.OnFinishPathCalculation += delegate 
+            {
+                SetHighlightedPath(GameState.MaxPaths.MaxBy(p => p.Length));
+            };
         }
 
         public BoardManager(Camera camera, BoardPreferences prefs, IIncrementalPathFinder pathFinder) : this(camera, prefs, new GraphManager(pathFinder))
