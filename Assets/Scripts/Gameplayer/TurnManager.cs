@@ -50,6 +50,7 @@ namespace Ramsey.UI
 
                         if(move.MakeMove(board))
                         {
+                            isBuilderTurn = !isBuilderTurn;
                             if (isBuilderTurn) board.SaveCurrentTurn();
                             //board.SaveCurrentTurn();
                         }
