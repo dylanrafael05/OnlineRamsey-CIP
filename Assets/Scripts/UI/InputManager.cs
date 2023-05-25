@@ -26,7 +26,7 @@ namespace Ramsey.UI
             => (Vector2)CameraManager.BoardCamera.ScreenToWorldPoint(GetScreenMousePosition().rescale(CameraManager.ScreenSize, CameraManager.BoardSize));
 
         public static bool CollideNode(float2 mouse, Node node)
-            => length(mouse - node.Position) <= board.Preferences.drawingPreferences.nodeRadius;
+            => length(mouse - node.Position) <= board.Preferences.drawingPreferences.nodeRadius * 1.09f; //bandaid num cuz gloop shader
         public static bool CollideEdge(float2 mouse, Edge e)
         {
             float2 StartToEnd = e.End.Position - e.Start.Position; float2 lp = mouse - .5f * (e.Start.Position + e.End.Position); float2 dir = normalize(StartToEnd);

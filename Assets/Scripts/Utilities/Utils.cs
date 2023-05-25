@@ -13,6 +13,9 @@ namespace Ramsey.Utilities
     public static class Utils
     {
 
+        public static void Print<T>(this IEnumerable<T> E)
+        { foreach (T e in E) Debug.Log(e.ToString()); }
+
         public static void Fill<T>(this IList<T> E, T e)
         {
             for (int i = 0; i < E.Count; i++)

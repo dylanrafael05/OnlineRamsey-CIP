@@ -58,9 +58,8 @@ Shader "Unlit/GraphShaders/EdgeShader"
                 float2 p = i.uv; //make sure -1 to 1
                 p.y = abs(p.y);
                 float highlight = step(_HighlightAmount, p.y) * i.isHighlighted;
-                return float4(i.isHighlighted, i.isHighlighted, i.isHighlighted, 1.0);
 
-                return i.color + (_HighlightColor - i.color) * highlight; //did this not work last time? if this message is here i havent tested it
+                return i.color + (_HighlightColor - i.color) * highlight;
             }
             ENDCG
         }

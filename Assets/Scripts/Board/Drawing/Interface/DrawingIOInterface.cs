@@ -27,6 +27,7 @@ namespace Ramsey.Drawing
 
             data.EdgeTransforms.Add(DrawingTransformGenerator.GenerateEdgeTransform(e.Start, e.End, e.Type, preferences.edgeThickness));
             data.EdgeColors.Add(preferences.TypeToColor(e.Type));
+            data.EdgeHighlights.Add(0);
 
             drawer.UpdateEdgeBuffer();
             drawer.UpdateArgsBuffer();
@@ -108,7 +109,6 @@ namespace Ramsey.Drawing
 
         public void UpdateRecorder(int prickAmount, int selectedID)
         {
-            Debug.Log(prickAmount);
             DrawingPreferences.RecorderMaterial.SetFloat("_PrickAmount", (float)prickAmount);
             DrawingPreferences.RecorderMaterial.SetFloat("_PrickSelectID", (float)selectedID);
         }
