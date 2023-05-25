@@ -20,6 +20,8 @@ namespace Ramsey.Graph
         public IEnumerable<Edge> Edges => graph.Edges;
         public IEnumerable<Path> Paths => pathFinder.AllPaths;
 
+        public event Action OnFinishPathCalculation;
+
         public Node NodeFromID(int id) 
             => graph.NodeFromID(id);
         public Edge EdgeFromID(int id) 
@@ -87,6 +89,8 @@ namespace Ramsey.Graph
 
                 currentPathTask = null; 
                 gameState.MaxPaths = pathFinder.MaxPathsByType; 
+
+                OnFinishPathCalculation.Invoke();
             });
         }
 
