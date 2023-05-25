@@ -37,7 +37,7 @@ namespace Ramsey.UI
         private static readonly InputData data = new();
         public static InputData Update()
         {
-            data.rawMouse = GetScreenMousePosition().xy / CameraManager.ScreenSize * 2 - 1;//* new float2(CameraManager.ScreenSize.y/CameraManager.ScreenSize.x, 1f);
+            data.normalizedMouse = GetScreenMousePosition().xy / CameraManager.ScreenSize * 2 - 1;//* new float2(CameraManager.ScreenSize.y/CameraManager.ScreenSize.x, 1f);
             data.mouse = GetWorldMousePosition();
 
             data.lmb = Input.GetMouseButton(0);
@@ -61,7 +61,7 @@ namespace Ramsey.UI
             data.lkd = Input.GetKeyDown(KeyCode.LeftArrow);
             data.rkd = Input.GetKeyDown(KeyCode.RightArrow);
 
-            board.SetMousePosition(data.rawMouse);
+            board.SetMousePosition(data.normalizedMouse);
 
             return data;
         }
@@ -69,7 +69,7 @@ namespace Ramsey.UI
 
     public class InputData
     {
-        public float2 rawMouse; public float2 mouse;
+        public float2 normalizedMouse; public float2 mouse;
 
         public bool lmb; public bool rmb; public bool mmb;
         public bool lmbp; public bool rmbp; public bool mmbp;

@@ -19,6 +19,7 @@ namespace Ramsey.Board
         private GraphManager graphManager;
 
         public DrawingActionInterface RenderAPI => renderManager.ActionInterface;
+        internal DrawingIOInterface RenderIO => renderManager.IOInterface;
 
         public IReadOnlyGraph Graph => graphManager.Graph;
         public GameState GameState => graphManager.State;
@@ -34,7 +35,7 @@ namespace Ramsey.Board
         {
             this.graphManager = graphManager;
             renderManager = new(camera, prefs.drawingPreferences);
-            recordingManager = new();
+            recordingManager = new(this);
 
             Preferences = prefs;
         }
@@ -91,28 +92,25 @@ namespace Ramsey.Board
         }
 
         public void IterateThroughNodes(Action<Node> action)
-        {
-            Graph.Nodes.Foreach(action);
-        }
+            => Graph.Nodes.Foreach(action);
 
         public bool IsValidEdge(Node start, Node end)
-        {
-            return graphManager.IsValidEdge(start, end);
-        }
+            => graphManager.IsValidEdge(start, end);
 
         public void SetMousePosition(float2 position)
-        {
-            renderManager.IOInterface.SetMousePosition(position);
-        }
+            => renderManager.IOInterface.SetMousePosition(position);
+
+        public void SetHighlightedPath(Path path)
+            => renderManager.IOInterface.SetHighlightedPath(path);
 
         public void SaveCurrentTurn()
-            => recordingManager.Add(new BoardState(renderManager.IOInterface.CreateDrawState()));
+            => recordingManager.AddCurrentTurn(); 
 
         public void LoadTurn(int i)
-            => recordingManager.LoadTurn(i, renderManager.IOInterface);
+            => recordingManager.LoadTurn(i);
 
         public void OffsetTurn(int delta)
-            => recordingManager.OffsetTurn(delta, renderManager.IOInterface);
+            => recordingManager.OffsetTurn(delta);
 
         public bool IsCurrentTurn => recordingManager.IsCurrentTurn;
     }

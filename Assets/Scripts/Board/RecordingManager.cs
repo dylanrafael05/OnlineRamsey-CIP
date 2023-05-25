@@ -14,27 +14,41 @@ namespace Ramsey.Board
         //
         List<BoardState> boardStates;
         int selectedID = -1;
+        
+        BoardManager board;
+
+        public RecordingManager(BoardManager board)
+        {
+            this.board = board; 
+            boardStates = new();
+
+            AddCurrentTurn();
+        }
+
+        //
+        void UpdateRecorder() => board.RenderIO.UpdateRecorder(boardStates.Count, selectedID);
+
+        //
         public bool IsCurrentTurn => selectedID == boardStates.Count - 1;
 
-        public RecordingManager()
-            => boardStates = new();
-
-        public void Add(BoardState state, bool present)
+        public void AddCurrentTurn()
         {
-            boardStates.Add(state);
+            boardStates.Add((new BoardState(board.RenderIO.CreateDrawState())));
             selectedID++;
+            UpdateRecorder();
         }
-        public void Add(BoardState state) => Add(state, true);
-        public void LoadTurn(int i, DrawingIOInterface drawingWritingInterface)
+        public void LoadTurn(int i)
         {
-            Assert.IsTrue(0 <= i && i < boardStates.Count); if (i == selectedID) return;
+            if(!(0 <= i && i < boardStates.Count) || i == selectedID) return;
             selectedID = i;
 
-            drawingWritingInterface.LoadDrawState(boardStates[i].DrawState);
-            drawingWritingInterface.UpdateRecorder(boardStates.Count, selectedID);
+            if (selectedID != boardStates.Count - 1) board.RenderIO.LoadDrawState(boardStates[i].DrawState);
+            else board.RenderIO.LoadDrawState();
+            board.RenderIO.UpdateRecorder(boardStates.Count, selectedID);
         }
-        public void OffsetTurn(int d, DrawingIOInterface drawingWritingInterface) 
-            => LoadTurn(selectedID + d, drawingWritingInterface);
+
+        public void OffsetTurn(int d) 
+            => LoadTurn(selectedID + d);
 
     }
 

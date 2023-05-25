@@ -6,6 +6,14 @@ Shader "Unlit/GraphShaders/RecordingShader"
 
         _PrickAmount ("Prick Amount", Float) = 1.
         _PrickSelectID ("Prick Select ID", Float) = 0.
+
+        _TriX ("Tri X", Vector) = (0.5, 0.9, 0.0, 0.0)
+        _TriHeight ("Tri Height", Float) = 0.8
+
+        _BarThickness ("Bar Thickness", Float) = .2
+
+        _PrickDim ("Prick Dimensions", Vector) = (.11, 1.0, 0.0, 0.0)
+        _PrickZoneX ("Prick Zone X", Float) = .45
     }
     SubShader
     {
@@ -39,15 +47,17 @@ Shader "Unlit/GraphShaders/RecordingShader"
 
             //Everything is init space [-1, 1]
 
-            float2 _TriX = float2(.7, .9); //[Bottom X, Top X]
-            float _TriHeight = .8;
+            float2 _TriX;
+            float _TriHeight;
 
-            float _BarThickness = 1.; //[0, 2]
+            float _BarThickness; //[0, 2]
 
-            float2 _PrickDim = float2(.08, 1.8); //dimensions - is there a better name for this
-            float _PrickZoneX = .67;
+            float2 _PrickDim;
+            float _PrickZoneX;
             float _PrickAmount;
             float _PrickSelectID;
+
+            #define PI 3.1415926
 
             vOut vert (vIn v)
             {
@@ -61,16 +71,18 @@ Shader "Unlit/GraphShaders/RecordingShader"
 
             fixed4 frag(vOut i) : SV_Target
             {
-                float2 ri = float2(1., 0.);
-                float2 up = float2(0., 1.);
+                float o = sin(_Time.y*2.)*.07;
+                float2 ri = float2(cos(o), sin(o));
+                float2 up = float2(cos(o+PI*.5), sin(o+PI*.5));
 
-                float2 p = i.uv;
+                float2 p = i.uv*float2(2.0,1.0);
                 p = float2(dot(p, ri), dot(p, up));
+                p.x *= 0.5;
                 
                 //Tri
                 float2 tp = abs(p);
                 float m = (_TriX.y - _TriX.x) / _TriHeight;
-                float ch = _TriHeight - m * tp.y;
+                float ch = _TriX.y - m * tp.y;
                 float isTri = step(tp.x, ch) * step(_TriX.x, tp.x);
 
                 //Bar
@@ -80,13 +92,13 @@ Shader "Unlit/GraphShaders/RecordingShader"
                 float2 pp = p;
                 pp.x = pp.x / _PrickZoneX; float isPrick = step(abs(pp.x), 1.);
                 pp.x = fmod(pp.x + 1., 2. / (_PrickAmount)) - 1. / (_PrickAmount); 
-                float id = _PrickAmount * .5f * (p.x - fmod(p.x + 1., 2. / _PrickAmount)); float isSelected = step(abs(id - _PrickSelectID), 0.);
+                float id = _PrickAmount * .5f * (p.x/_PrickZoneX + 1. - fmod(p.x/_PrickZoneX + 1., 2. / _PrickAmount)); float isSelected = step(abs(id - _PrickSelectID), 0.0001);
                 pp.y = abs(pp.y);
-                _PrickDim *= (1.+isSelected*.1);
-                isPrick *= step(pp.x, _PrickDim.x * .5) * step(pp.y, _PrickDim.y * .5);
+                _PrickDim *= (1. + .2*float2(isSelected*1.5, isSelected));
+                isPrick *= step(abs(pp.x), _PrickDim.x * .5) * step(abs(pp.y), _PrickDim.y * .5);
                 
                 //Composite
-                float exist = 1. - (1. - isPrick) * (1. - isBar) * (1. - isTri);
+                float exist = 1. - (1.- isPrick) * (1. - isBar) * (1. - isTri);
 
                 return exist * _Color;
             }

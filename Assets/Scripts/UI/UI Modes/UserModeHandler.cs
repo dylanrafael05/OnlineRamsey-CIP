@@ -38,7 +38,7 @@ namespace Ramsey.UI
         }
 
         public static void SetStatus(IUserMode mode, bool status)
-            => activationStatuses[currentModes.FindIndex(m => m == mode)] = status;
+        { var i = currentModes.FindIndex(m => m == mode); if (i != -1) activationStatuses[i] = status; }
 
     }
 
