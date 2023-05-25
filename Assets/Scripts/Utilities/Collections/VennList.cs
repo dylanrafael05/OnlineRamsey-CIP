@@ -204,6 +204,29 @@ namespace Ramsey.Utilities
                 yield return n.Value;
             }
         }
+        private IEnumerable<T> EnumerateNodeReverse(Node n)
+        {
+            if(n.IsEmpty)
+            {
+                yield break;
+            }
+            else if(n is AfterNode)
+            {
+                yield return n.Value;
+                foreach(var next in EnumerateNodeReverse(n.Next))
+                {
+                    yield return next;
+                }
+            }
+            else 
+            {
+                foreach(var next in EnumerateNodeReverse(n.Next))
+                {
+                    yield return next;
+                }
+                yield return n.Value;
+            }
+        }
 
         /// <summary>
         /// Returns an enumerator which lists all values contained by this list
@@ -222,6 +245,13 @@ namespace Ramsey.Utilities
                 }
             }
         }
+
+        /// <summary>
+        /// Returns an enumerator which lists the values in this list in reverse
+        /// order without allocating any new memory.
+        /// </summary>
+        public IEnumerable<T> Reverse()
+            => EnumerateNodeReverse(node);
 
         public IEnumerator<T> GetEnumerator()
             => EnumerateNode(node).GetEnumerator();

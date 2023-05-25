@@ -1,4 +1,5 @@
 using Ramsey.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,42 +10,47 @@ namespace Ramsey.Graph
 {
     public class DefaultPathFinder : IIncrementalPathFinder
     {
-        public IEnumerable<IPath> AllPaths => NodesByTerminatingPaths.Values.Merge();
-        private readonly List<IPath> maxLengthPathByType;
+        public IEnumerable<Path> AllPaths => PathsByColorByEndpoint.Values.Merge().Merge();
+        private readonly List<Path> maxLengthPathByType;
 
-        internal Dictionary<Node, List<IPath>> NodesByTerminatingPaths { get; private set; }
-        public IReadOnlyList<IPath> MaxPathsByType => maxLengthPathByType;
+        internal Dictionary<Node, List<HashSet<Path>>> PathsByColorByEndpoint { get; private set; }
+        public IReadOnlyList<Path> MaxPathsByType => maxLengthPathByType;
 
         public DefaultPathFinder()
         {
-            NodesByTerminatingPaths = new();
+            PathsByColorByEndpoint = new();
+            maxLengthPathByType = new();
         }
-        internal DefaultPathFinder(Dictionary<Node, List<IPath>> nodesByTerminatingPaths, List<IPath> maxLengthPath)
+        internal DefaultPathFinder(Dictionary<Node, List<HashSet<Path>>> pathsByEndpoint, List<Path> maxLengthPath)
         {
-            NodesByTerminatingPaths = nodesByTerminatingPaths;
+            PathsByColorByEndpoint = pathsByEndpoint;
             maxLengthPathByType = maxLengthPath;
         }
 
         public void HandleNodeAddition(Node node)
         {
-            // TODO: figure out how to add for each color specifid by user settings!
-            NodesByTerminatingPaths.Add(node, new() { new Path(node, 0), new Path(node, 1) });
+            PathsByColorByEndpoint.Add(node, new() { new() { new Path(node, 0) }, new() { new Path(node, 1) }});
         }
 
         public Task HandlePaintedEdge(Edge edge)
         {
             Assert.AreNotEqual(edge.Type, Edge.NullType, "Cannot add a non-painted edge to an incremental path finder!");
 
-            var byStart = NodesByTerminatingPaths[edge.Start].ToArray();
-            var byEnd = NodesByTerminatingPaths[edge.End].ToArray();
+            var byStart = PathsByColorByEndpoint[edge.Start][edge.Type].ToArray();
+            var byEnd = PathsByColorByEndpoint[edge.End][edge.Type].ToArray();
 
-            NodesByTerminatingPaths[edge.Start].Clear();
-            NodesByTerminatingPaths[edge.End].Clear();
+            // Remove those which did not start here
+            PathsByColorByEndpoint[edge.Start][edge.Type].Clear();
+            PathsByColorByEndpoint[edge.End][edge.Type].Clear();
 
             foreach (var path in byStart)
-                ExpandPath(path);
+            {
+                TryExpandPath(path, true);
+            }
             foreach (var path in byEnd)
-                ExpandPath(path);
+            {
+                TryExpandPath(path, false);
+            }
 
             return Task.CompletedTask;
         }
@@ -52,39 +58,39 @@ namespace Ramsey.Graph
         internal void Clear()
         {
             maxLengthPathByType.Clear();
-            NodesByTerminatingPaths.Clear();
+            PathsByColorByEndpoint.Clear();
         }
 
-        private void ExpandPath(IPath path)
+        private void TryExpandPath(Path path, bool prepend)
         {
-            var any = false;
+            var expandFrom = prepend ? path.Start : path.End;
+            var anyExpansions = false;
 
             // Iterate over all expansions
-            foreach (var edge in path.End.Edges)
+            foreach (var edge in expandFrom.ConnectedEdgesOfType(path.Type))
             {
-                if (edge.Type != path.Type)
-                {
-                    continue;
-                }
-
-                var opposingNode = edge.NodeOpposite(path.End);
+                var opposingNode = edge.NodeOpposite(expandFrom);
 
                 if (path.Contains(opposingNode))
                 {
-                    continue;
+                    continue; 
                 }
 
-                any = true;
-                ExpandPath(path.Append(opposingNode));
+                anyExpansions = true;
+                TryExpandPath(
+                    prepend ? path.Prepend(opposingNode) : path.Append(opposingNode),
+                    prepend
+                );
             }
 
             // Add this to the max path if necessary
-            if (!any)
+            if (!anyExpansions)
             {
-                NodesByTerminatingPaths[path.End].Add(path);
+                PathsByColorByEndpoint[path.Start][path.Type].Add(path);
+                PathsByColorByEndpoint[path.End][path.Type].Add(path);
 
                 // Expand size if needed
-                while(path.Type > maxLengthPathByType.Count)
+                while(path.Type >= maxLengthPathByType.Count)
                 {
                     maxLengthPathByType.Add(null);
                 }

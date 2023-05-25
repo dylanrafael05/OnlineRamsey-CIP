@@ -44,14 +44,6 @@ namespace Ramsey.Utilities
         }
 
         /// <summary>
-        /// Create an all-'false' bitset with the given count.
-        /// </summary>
-        public BitSet(int count) : this()
-        {
-            EnsureCount(count);
-        }
-
-        /// <summary>
         /// Create a copy of the given bitset.
         /// </summary>
         public BitSet(BitSet other) 
@@ -65,13 +57,10 @@ namespace Ramsey.Utilities
             => new(this);
 
         private void HandleIndex(int index, out int valueIndex, out uint mask) 
-        {
+        {   
             // INVARIANTS //
             if(index < 0) throw new IndexOutOfRangeException();
-            
-            // ENSURE CAPACITY //
-            EnsureCount(index + 1);
-            
+
             // CALCULATIONS //
             valueIndex   = index / ElementSize;
             var subIndex = index % ElementSize;
@@ -79,12 +68,24 @@ namespace Ramsey.Utilities
             mask = 1u << subIndex;
         }
 
+        private void HandleIndexMutable(int index, out int valueIndex, out uint mask) 
+        {
+            // INVARIANTS //
+            if(index < 0) throw new IndexOutOfRangeException();
+            
+            // ENSURE CAPACITY //
+            EnsureCount(index + 1);
+            
+            // HANDLE INDEX //
+            HandleIndex(index, out valueIndex, out mask);
+        }
+
         /// <summary>
         /// Set the bit at the given index to 'true'
         /// </summary>
         public void Set(int index)
         {
-            HandleIndex(index, out var valueIndex, out var mask);
+            HandleIndexMutable(index, out var valueIndex, out var mask);
 
             values[valueIndex] |= mask;
         }
@@ -93,7 +94,7 @@ namespace Ramsey.Utilities
         /// </summary>
         public void Unset(int index)
         {
-            HandleIndex(index, out var valueIndex, out var mask);
+            HandleIndexMutable(index, out var valueIndex, out var mask);
 
             values[valueIndex] &= ~mask;
         }
@@ -102,7 +103,7 @@ namespace Ramsey.Utilities
         /// </summary>
         public void Flip(int index)
         {
-            HandleIndex(index, out var valueIndex, out var mask);
+            HandleIndexMutable(index, out var valueIndex, out var mask);
 
             values[valueIndex] ^= mask;
         }
@@ -112,6 +113,8 @@ namespace Ramsey.Utilities
         /// </summary>
         public bool IsSet(int index) 
         {
+            if(index >= Count) return false;
+
             HandleIndex(index, out var valueIndex, out var mask);
 
             return (values[valueIndex] & mask) != 0;
@@ -121,7 +124,9 @@ namespace Ramsey.Utilities
         /// </summary>
         public bool IsUnset(int index) 
         {
-            HandleIndex(index, out var valueIndex, out var mask);
+            if(index >= Count) return true;
+
+            HandleIndexMutable(index, out var valueIndex, out var mask);
 
             return (values[valueIndex] & mask) == 0;
         }
@@ -141,7 +146,7 @@ namespace Ramsey.Utilities
         /// Ensure that the set can store the given number
         /// of elements.
         /// </summary>
-        public void EnsureCount(int count)
+        private void EnsureCount(int count)
         {
             if(count > this.count) this.count = count;
 
@@ -154,6 +159,11 @@ namespace Ramsey.Utilities
             values = new uint[neededCount];
 
             oldValues.CopyTo(values, 0);
+        }
+
+        public bool SetEquals(BitSet other)
+        {
+            return count == other.count && values.SequenceEqual(other.values);
         }
 
         public IEnumerator<bool> GetEnumerator()
@@ -169,7 +179,7 @@ namespace Ramsey.Utilities
                 }
                 else 
                 {
-                    c = c >> 1;
+                    c >>= 1;
                 }
 
                 yield return (c & 1) == 1;

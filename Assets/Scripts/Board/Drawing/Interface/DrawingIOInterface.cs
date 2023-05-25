@@ -47,7 +47,7 @@ namespace Ramsey.Drawing
             Assert.IsTrue(data.NodePositions.Count > n.ID, "Nodes must be added to renderer upon creation!");
 
             data.NodePositions[n.ID] = n.Position;
-            foreach(var e in n.Edges)
+            foreach(var e in n.ConnectedEdges)
             {
                 UpdateEdgeTransform(e);
             }

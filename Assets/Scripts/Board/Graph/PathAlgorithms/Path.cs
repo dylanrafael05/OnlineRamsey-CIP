@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Ramsey.Utilities;
+using UnityEngine;
 
 namespace Ramsey.Graph
 {
-    public class Path : IPath
+    public class Path
     {
         internal Path(VennList<Node> nodes, BitSet nodeSet, int type)
         {
@@ -31,6 +32,7 @@ namespace Ramsey.Graph
         public IEnumerable<Node> Nodes => nodes;
         public int Length => nodes.Count - 1;
 
+        public Node Start => nodes.First();
         public Node End => nodes.Last();
 
         public bool Contains(Node node)
@@ -38,7 +40,7 @@ namespace Ramsey.Graph
             return nodeSet.IsSet(node.ID);
         }
 
-        public IPath Append(Node node)
+        public Path Append(Node node)
         {
             var newNodes = nodes.Append(node);
             var newSet = nodeSet.Clone();
@@ -46,7 +48,7 @@ namespace Ramsey.Graph
 
             return new Path(newNodes, newSet, Type);
         }
-        public IPath Prepend(Node node)
+        public Path Prepend(Node node)
         {
             var newNodes = nodes.Prepend(node);
             var newSet = nodeSet.Clone();
@@ -54,7 +56,36 @@ namespace Ramsey.Graph
 
             return new Path(newNodes, newSet, Type);
         }
+        
+        public bool IsEndpoint(Node node) 
+            => node == Start || node == End;
+        
+        public Path Expand(Node node, Node from) 
+        {
+            if(from == Start) return Prepend(node);
+            else if(from == End) return Append(node);
 
+            throw new InvalidOperationException("Cannot expand a path from a non-endpoint!");
+        }
+        public bool IsIdenticalTo(Path other) 
+        {
+            if(nodeSet.SetEquals(other.nodeSet))
+            {
+                if(Start == other.Start)
+                {
+                    return End == other.End 
+                        && nodes.SequenceEqual(other.nodes);
+                }
+                else if(Start == other.End)
+                {
+                    return End == other.Start 
+                        && nodes.SequenceEqual(other.nodes.Reverse());
+                }
+            }
+
+            return false;
+        }
+ 
         public IEnumerable<Edge> Edges
         {
             get 

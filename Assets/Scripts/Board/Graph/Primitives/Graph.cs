@@ -60,8 +60,11 @@ namespace Ramsey.Graph
         }
         public void PaintEdge(Edge edge, int type)
         {
-            Assert.AreEqual(edge.Type, -1, "Cannot change the color of a painted edge!");
+            Assert.AreEqual(edge.Type, Edge.NullType, "Cannot change the color of a painted edge!");
             edge.Type = type;
+
+            edge.Start.PaintEdge(edge);
+            edge.End.PaintEdge(edge);
         }
         
         public void Clear()

@@ -17,10 +17,15 @@ namespace Ramsey.UI
         private Builder builder;
         private Painter painter;
 
-        private bool isAwaitingTask;
+        private bool isAwaitingMove;
+        private bool isAwaiting;
         private bool isBuilderTurn;
 
-        private Task<IMove> awaitingTask;
+        private Task awaiting;
+        private Task<IMove> awaitingMove;
+
+        public bool IsAwaitingMove => isAwaitingMove;
+        public bool IsAwaitingBoard => isAwaiting && !isAwaitingMove;
 
         public TurnManager(BoardManager board, Builder builder, Painter painter)
         {
@@ -34,25 +39,42 @@ namespace Ramsey.UI
 
         public void Update() 
         {
-            if(isAwaitingTask)
+            if(isAwaiting)
             {
-                if(awaitingTask.IsCompleted)
+                if(isAwaitingMove)
                 {
-                    var move = awaitingTask.Result;
-
-                    if(move.MakeMove(board))
+                    if(awaitingMove.IsCompleted)
                     {
-                        isBuilderTurn = !isBuilderTurn;
-                        if(isBuilderTurn) board.SaveCurrentTurn();
-                    }
-                    
-                    awaitingTask = null;
-                    isAwaitingTask = false;
+                        
+                        var move = awaitingMove.Result;
 
-                    Debug.Log("Longest path = " + (board.GameState.MaxPaths?.ToString() ?? "none"));
-                    Debug.Log("Paths found = " + board.Paths.Count());
-                    
+                        if(move.MakeMove(board))
+                        {
+                            if (isBuilderTurn) board.SaveCurrentTurn();
+                            //board.SaveCurrentTurn();
+                        }
+
+                        if(board.IsAwaitingPathTask)
+                        {
+                            awaiting = board.AwaitPathTask();
+                        }
+                        else
+                        {
+                            isAwaiting = false;
+                        }
+                        
+                        awaitingMove = null;
+                        isAwaitingMove = false;
+                    }
+
+                    // Debug.Log("Longest path = " + (board.GameState.MaxPaths?.ToString() ?? "none"));
+                    // Debug.Log("Paths found = " + board.Paths.Count());
                     // Debug.Log("All paths \n" + string.Join("\n", board.Paths.Select(t => t.ToString())));
+                }
+                else if(awaiting.IsCompleted)
+                {
+                    isAwaiting = false;
+                    awaiting = null;
                 }
             }
             else 
@@ -60,15 +82,16 @@ namespace Ramsey.UI
                 if(isBuilderTurn)
                 {
                     Debug.Log("Getting builder move . . .");
-                    awaitingTask = (builder as IPlayer).GetMove(board.GameState);
+                    awaitingMove = (builder as IPlayer).GetMove(board.GameState);
                 }
                 else 
                 {
                     Debug.Log("Getting painter move . . .");
-                    awaitingTask = (painter as IPlayer).GetMove(board.GameState);
+                    awaitingMove = (painter as IPlayer).GetMove(board.GameState);
                 }
 
-                isAwaitingTask = true;
+                isAwaiting = true;
+                isAwaitingMove = true;
             }
         }
     }

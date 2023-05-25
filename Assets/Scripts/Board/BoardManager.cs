@@ -27,9 +27,12 @@ namespace Ramsey.Board
 
         public BoardPreferences Preferences { get; private set; }
 
+        public bool IsAwaitingPathTask => graphManager.IsAwaitingPathTask;
+        public Task AwaitPathTask() => graphManager.AwaitPathTask();
+
         public IEnumerable<Node> Nodes => graphManager.Nodes;
         public IEnumerable<Edge> Edges => graphManager.Edges;
-        public IEnumerable<IPath> Paths => graphManager.Paths;
+        public IEnumerable<Path> Paths => graphManager.Paths;
 
         private BoardManager(Camera camera, BoardPreferences prefs, GraphManager graphManager)
         {
