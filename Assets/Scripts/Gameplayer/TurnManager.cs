@@ -52,7 +52,6 @@ namespace Ramsey.UI
                         {
                             isBuilderTurn = !isBuilderTurn;
                             if (isBuilderTurn) board.SaveCurrentTurn();
-                            //board.SaveCurrentTurn();
                         }
 
                         if(board.IsAwaitingPathTask)
