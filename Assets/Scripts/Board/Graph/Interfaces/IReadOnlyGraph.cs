@@ -4,8 +4,8 @@ namespace Ramsey.Graph
 {
     public interface IReadOnlyGraph
     {
-        IEnumerable<Node> Nodes {get;}
-        IEnumerable<Edge> Edges {get;}
+        IReadOnlyList<Node> Nodes {get;}
+        IReadOnlyList<Edge> Edges {get;}
 
         bool IsValidEdge(Node start, Node end);
 

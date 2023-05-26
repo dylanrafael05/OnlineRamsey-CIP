@@ -11,8 +11,8 @@ namespace Ramsey.Graph
         private readonly List<Node> nodes = new();
         private readonly List<Edge> edges = new();
 
-        public IEnumerable<Node> Nodes => nodes;
-        public IEnumerable<Edge> Edges => edges;
+        public IReadOnlyList<Node> Nodes => nodes;
+        public IReadOnlyList<Edge> Edges => edges;
 
         public Node NodeFromID(int id) 
         {

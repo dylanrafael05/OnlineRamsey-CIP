@@ -1,4 +1,5 @@
 using Ramsey.Graph;
+using Ramsey.Board;
 using System.Threading.Tasks;
 
 namespace Ramsey.Gameplayer
@@ -13,7 +14,7 @@ namespace Ramsey.Gameplayer
             this.count++; 
 
             return Task.FromResult<PainterMove>(
-                new(gameState.LastUnpaintedEdge, count % 100) 
+                new(gameState.NewestEdge, count % 100) 
                 //TODO: store target path length in game state!
             );
         }

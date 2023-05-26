@@ -13,6 +13,9 @@ namespace Ramsey.Utilities
     public static class Utils
     {
 
+        public static int ToDecimal(this IEnumerable<int> num, int previousBase)
+            => num.Select((n, i) => n * (int) pow(previousBase, i)).Sum();
+
         public static void Print<T>(this IEnumerable<T> E)
         { foreach (T e in E) Debug.Log(e.ToString()); }
 
