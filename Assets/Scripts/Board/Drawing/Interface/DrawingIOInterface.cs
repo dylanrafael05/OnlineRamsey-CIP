@@ -85,12 +85,26 @@ namespace Ramsey.Drawing
             drawer.UpdateEdgeBuffer();
         }
 
+        public void SetLoading(bool isLoading)
+        {
+            data.IsLoading = isLoading;
+        }
+
         public void SetHighlightedPath(Path path)
         {
-            data.EdgeHighlights.Fill(0f);
-            foreach(var e in path.Edges)
+            // Debug.Log("highlighting . . .");
+            lock(data.EdgeHighlights)
             {
-                data.EdgeHighlights[e.ID] = 1.0f;
+                for(int i = 0; i < data.EdgeHighlights.Count; i++)
+                {
+                    data.EdgeHighlights[i] = 0.0f;
+                }
+
+                foreach(var e in path.Edges)
+                {
+                    Debug.Log(e);
+                    data.EdgeHighlights[e.ID] = 1.0f;
+                }
             }
 
             drawer.UpdateEdgeBuffer();

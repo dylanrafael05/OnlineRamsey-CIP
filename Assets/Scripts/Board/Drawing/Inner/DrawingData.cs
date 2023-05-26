@@ -50,6 +50,8 @@ namespace Ramsey.Drawing
 
         public List<float2> NodePositions { get; private set; }
         public List<float> NodeHighlights { get; private set; }
+        
+        public bool IsLoading { get; set; }
 
         public DrawState CreateState() => new(new (EdgeTransforms.Copy(), EdgeColors.Copy(), EdgeHighlights.Copy(), NodePositions.Copy(), NodeHighlights.Copy()));
 

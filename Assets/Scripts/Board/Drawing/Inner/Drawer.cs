@@ -29,13 +29,11 @@ namespace Ramsey.Drawing
         ComputeBuffer argsBufferNode;
 
         //
-        int edgeCount;
         ComputeBuffer edgeTransformBuffer;
         ComputeBuffer edgeTypeBuffer;
         ComputeBuffer edgeHighlightBuffer;
 
         //
-        int nodeCount;
         ComputeBuffer nodePositionBuffer;
         ComputeBuffer nodeHighlightBuffer;
 
@@ -105,7 +103,15 @@ namespace Ramsey.Drawing
             argsBufferNode.SetData(argsArrayNode);
 
         }
-        public void UpdateEdgeBuffer(DrawingData storage) { edgeTransformBuffer.SetData(storage.EdgeTransforms); edgeTypeBuffer.SetData(storage.EdgeColors); edgeHighlightBuffer.SetData(storage.EdgeHighlights); storage.EdgeHighlights.Print(); } //last 1 mabe should be separate?
+        public void UpdateEdgeBuffer(DrawingData storage) 
+        { 
+            lock(storage.EdgeHighlights)
+            {
+                edgeTransformBuffer.SetData(storage.EdgeTransforms); 
+                edgeTypeBuffer.SetData(storage.EdgeColors);
+                edgeHighlightBuffer.SetData(storage.EdgeHighlights);
+            }
+        }
         public void UpdateNodeBuffer(DrawingData storage) { nodePositionBuffer.SetData(storage.NodePositions); nodeHighlightBuffer.SetData(storage.NodeHighlights); }
 
         public void UpdateArgsBuffer() => UpdateArgsBuffer(storage);
@@ -117,10 +123,23 @@ namespace Ramsey.Drawing
 
         public void Draw()
         {
+            TextDrawer.Flush();
             DrawingPreferences.NodeMaterial.SetVector(Shader.PropertyToID("_Mouse"), Mouse.xyzw());
+
             Graphics.DrawMeshInstancedIndirect(DrawingData.QuadMesh, 0, DrawingPreferences.EdgeMaterial, DrawingData.Bounds, argsBufferEdge, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
             Graphics.DrawMeshInstancedIndirect(DrawingData.QuadMesh, 0, DrawingPreferences.NodeMaterial, DrawingData.Bounds, argsBufferNode, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
             Graphics.DrawMesh(DrawingData.QuadMesh, preferences.RecorderTransform, DrawingPreferences.RecorderMaterial, LayerMask.NameToLayer("Board"), camera); //Mabe make expand as we add more pricks and maybe shrinkX pricks when we add more interpolate to low const approach -> inf
+
+            if(storage.IsLoading)
+            {
+                Graphics.DrawMesh(DrawingData.QuadMesh, preferences.LoadingCircleTransform, DrawingPreferences.LoadingMaterial, LayerMask.NameToLayer("Board"), camera);
+            }
+
+            for(var i = 0; i < storage.NodePositions.Count; i++) 
+            {
+                TextDrawer.Draw(storage.NodePositions[i], $"{i}");
+                // TODO: this sucks
+            }
         }
 
         public void Cleanup()

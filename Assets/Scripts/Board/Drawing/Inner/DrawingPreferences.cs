@@ -14,6 +14,9 @@ namespace Ramsey.Drawing
 
         public float highlightThickness;
 
+        public float loadingCircleOuterRadius;
+        public float loadingCircleInnerRadius;
+
         public Color nodeColor;
         public Color highlightColor;
 
@@ -23,25 +26,30 @@ namespace Ramsey.Drawing
             => type == -1 ? nullColor : colors[type];
 
         public Matrix4x4 RecorderTransform;
+        public Matrix4x4 LoadingCircleTransform;
 
         public void UniformPreferences()
         {
-            NodeMaterial.SetFloat(Shader.PropertyToID("_Radius"), nodeRadius);
-            NodeMaterial.SetFloat(Shader.PropertyToID("_HighlightRadius"), highlightRadius);
+            NodeMaterial.SetFloat("_Radius", nodeRadius);
+            NodeMaterial.SetFloat("_HighlightRadius", highlightRadius);
 
-            NodeMaterial.SetFloat(Shader.PropertyToID("_HighlightThickness"), highlightThickness);
+            NodeMaterial.SetFloat("_HighlightThickness", highlightThickness);
 
-            NodeMaterial.SetColor(Shader.PropertyToID("_NodeColor"), nodeColor);
-            NodeMaterial.SetColor(Shader.PropertyToID("_HighlightColor"), highlightColor);
+            NodeMaterial.SetColor("_NodeColor", nodeColor);
+            NodeMaterial.SetColor("_HighlightColor", highlightColor);
 
-            EdgeMaterial.SetColor(Shader.PropertyToID("_HighlightColor"), nodeColor); //think setting it to be nodecolor would be cool
+            EdgeMaterial.SetColor("_HighlightColor", nodeColor); //think setting it to be nodecolor would be cool
 
-            RecorderMaterial.SetColor(Shader.PropertyToID("_Color"), recorderColor);
+            RecorderMaterial.SetColor("_Color", recorderColor);
+
+            LoadingMaterial.SetFloat("_InnerRadius", loadingCircleInnerRadius);
+            LoadingMaterial.SetFloat("_OuterRadius", loadingCircleOuterRadius);
         }
 
         public static readonly Material EdgeMaterial = new(Shader.Find("Unlit/GraphShaders/EdgeShader"));
         public static readonly Material NodeMaterial = new(Shader.Find("Unlit/GraphShaders/NodeShader"));
-        public static readonly Material RecorderMaterial = new(Shader.Find("Unlit/GraphShaders/RecordingShader"));
+        public static readonly Material RecorderMaterial = new(Shader.Find("Unlit/UIShaders/RecordingShader"));
+        public static readonly Material LoadingMaterial = new(Shader.Find("Unlit/UIShaders/LoadingCircle"));
 
     }
 }
