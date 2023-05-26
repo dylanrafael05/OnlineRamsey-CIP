@@ -1,4 +1,4 @@
-Shader "Unlit/GraphShaders/RecordingShader"
+Shader "Unlit/UIShaders/RecordingShader"
 {
     Properties
     {

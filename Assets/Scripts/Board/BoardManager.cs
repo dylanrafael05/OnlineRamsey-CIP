@@ -17,7 +17,7 @@ namespace Ramsey.Board
         private readonly DrawingManager renderManager;
         private readonly GraphManager graphManager;
 
-        public DrawingActionInterface RenderAPI => renderManager.ActionInterface;
+        internal DrawingActionInterface RenderAPI => renderManager.ActionInterface;
         internal DrawingIOInterface RenderIO => renderManager.IOInterface;
 
         public IReadOnlyGraph Graph => graphManager.Graph;
@@ -90,6 +90,21 @@ namespace Ramsey.Board
         public void UnhighlightNode(Node n)
         {
             renderManager.IOInterface.UnhighlightNode(n);
+        }
+
+        public void SetLoading(bool isLoading)
+        {
+            renderManager.IOInterface.SetLoading(isLoading);
+        }
+
+        public void Draw()
+        {
+            renderManager.IOInterface.SetLoading(graphManager.IsAwaitingPathTask);
+            renderManager.ActionInterface.Draw();
+        }
+        public void Cleanup()
+        {
+            renderManager.ActionInterface.Cleanup();
         }
 
         public void Clear()

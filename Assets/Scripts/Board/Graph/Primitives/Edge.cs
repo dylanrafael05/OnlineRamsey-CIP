@@ -32,5 +32,8 @@ namespace Ramsey.Graph
 
             throw new InvalidOperationException("Cannot find node opposite to a node not related to this edge.");
         }
+
+        public override string ToString()
+            => $"edge[{ID}] {Start.ID} -> {End.ID}";
     }
 }
