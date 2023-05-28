@@ -22,7 +22,7 @@ namespace Ramsey.Gameplayer
             movesLoop = new();
             this.loop = loop;
 
-            this.subStrategies = new Func<GameState, BuilderMove>[(int) Enumerable.Range(1, maxLoop).Select(math.ceilpow2).Sum()];
+            this.subStrategies = new Func<GameState, BuilderMove>[(int) Enumerable.Range(0, maxLoop).Select(math.ceilpow2).Sum()];
             subStrategies.CopyTo(this.subStrategies, 0);
         }
 
@@ -31,7 +31,7 @@ namespace Ramsey.Gameplayer
             if (movesLoop.Count == maxLoop) if (loop) movesLoop.Clear(); else return null;
             movesLoop.Add(gameState.NewestPaint);
 
-            int bfore = (int)Enumerable.Range(1, movesLoop.Count - 1).Select(math.ceilpow2).Sum();
+            int bfore = (int)Enumerable.Range(0, movesLoop.Count - 1).Select(math.ceilpow2).Sum();
             return (subStrategies[bfore + movesLoop.ToDecimal(2)] ?? subStrategies[bfore + movesLoop.Select(k => 1 - k).ToDecimal(2)]).Invoke(gameState);
         }
 

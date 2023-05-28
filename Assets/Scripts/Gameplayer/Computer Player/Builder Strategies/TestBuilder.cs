@@ -1,10 +1,11 @@
-using Ramsey.Graph;
+/*using Ramsey.Graph;
 using Ramsey.Board;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using System.Linq;
 
 namespace Ramsey.Gameplayer
 {
@@ -27,7 +28,7 @@ namespace Ramsey.Gameplayer
         Node[] pendants;
 
         //Loop
-        Node[] terminates;
+        Node[] terminates = new Node[2];
 
         public TestBuilder()
         {
@@ -49,10 +50,10 @@ namespace Ramsey.Gameplayer
                 return new(g.Board.Nodes[1], g.Board.Nodes[3]);
             };
 
-            initialTree = new(3, new Func<GameState, BuilderMove>[] { move1, move1, move2, move2, move2, move2, move3, move3, move3, move3, move3, move3, move3, move3 });
+            initialTree = new(3, new Func<GameState, BuilderMove>[] { move1, move2, move2, move3, move3, move3, move3});
             currentTree = initialTree;
 
-            //Func<GameState, BuilderMove> connect = g =>
+            Func<GameState, BuilderMove> connect = g =>
         }
 
         public override Task<BuilderMove> GetMove(GameState gameState)
@@ -64,13 +65,20 @@ namespace Ramsey.Gameplayer
             if (move is null)
             {
                 currentTree = loopTree;
-                //logic for setting up for the looptree and the terminating nodes and stuff
-                return Task.FromResult((BuilderMove) currentTree.Run(gameState));
-            }
-            else return Task.FromResult((BuilderMove) move);
 
-            throw new System.NotImplementedException();
+                Node p1 = pendants[0];
+                var t = p1.ConnectedEdges.First().Type;
+                Node p2; if (t != pendants[1].ConnectedEdges.First().Type) p2 = pendants[1];
+                else p2 = pendants[2]; //will need to have initial infinite       
+
+                terminates[0] = p1;
+                terminates[1] = p2;
+
+                move = currentTree.Run(gameState);
+            }
+            return Task.FromResult((BuilderMove) move);
 
         }
     }
 }
+*/

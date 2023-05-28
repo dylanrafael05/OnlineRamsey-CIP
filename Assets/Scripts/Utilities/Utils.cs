@@ -217,4 +217,28 @@ namespace Ramsey.Utilities
         public static float3 rescale(this float3 xy, float2 inSize, float2 outSize)
             => xy.div(float3(inSize, 1)).mul(float3(outSize, 1));
     }
+
+    public class SequenceNavigator<T>
+    {
+
+        //Will loop last sequence
+
+        int current = 0;
+        List<IEnumerator<T>> navigators;
+
+        public T Loop()
+        {
+            if (!navigators[current].MoveNext())
+            {
+                if (current != navigators.Count - 1) current++; else navigators[current].Reset();
+                navigators[current].MoveNext(); 
+            }
+
+            return navigators[current].Current;
+        }
+
+        public SequenceNavigator(IList<IEnumerable<T>> sequences)
+            => sequences.ForEachIndex((s, i) => navigators[i] = s.GetEnumerator());
+
+    }
 }

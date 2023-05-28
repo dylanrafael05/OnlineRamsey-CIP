@@ -22,6 +22,8 @@ namespace Ramsey.Gameplayer
             this.n2 = n2;
         }
 
+        public BuilderMove(Node n1, BoardManager board) : this(n1, board.CreateNode()) { } //Later make it create using the NodeSmoother which we'll make
+
         bool IsValid(BoardManager board)
             => IMove.Enable && n1 is not null && n2 is not null && board.IsValidEdge(n1, n2);
 
