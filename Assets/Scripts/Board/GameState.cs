@@ -14,8 +14,8 @@ namespace Ramsey.Board
 
         public BoardManager Board { get; internal set; }
         public int TargetPathLength { get; internal set; }
+        public int TurnCount { get; internal set; }
 
-        //public IReadOnlyGraph Graph { get; internal set; } maybe?
         public IReadOnlyList<Path> MaxPaths { get; internal set; }
 
         public Edge EdgeStart(int i) => MaxPaths[i].Edges.First();

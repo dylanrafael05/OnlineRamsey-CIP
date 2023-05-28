@@ -23,8 +23,8 @@ namespace Ramsey.Board
 
         public int TargetPathLength
         {
-            get => graphManager.TargetPathLength;
-            set => graphManager.TargetPathLength = value;
+            get => gameState.TargetPathLength;
+            set => gameState.TargetPathLength = value;
         }
 
         public IReadOnlyGraph Graph => graphManager.Graph;
@@ -51,7 +51,7 @@ namespace Ramsey.Board
 
             graphManager.OnFinishPathCalculation += delegate 
             {
-                SetHighlightedPath(GameState.MaxPaths.MaxBy(p => p.Length));
+                RenderIO.SetHighlightedPathAsync(GameState.MaxPaths.MaxBy(p => p.Length));
                 gameState.MaxPaths = graphManager.MaxPathsByType;
             };
 
@@ -84,6 +84,7 @@ namespace Ramsey.Board
         public Edge CreateEdge(Node start, Node end)
         {
             var e = graphManager.CreateEdge(start, end);
+
             GameState.NewestEdge = e;
             renderManager.IOInterface.AddEdge(e);
 
@@ -98,6 +99,8 @@ namespace Ramsey.Board
         public void PaintEdge(Edge edge, int type)
         {
             GameState.NewestEdge = null;
+            GameState.NewestPaint = type;
+
             graphManager.PaintEdge(edge, type);
             renderManager.IOInterface.UpdateEdgeType(edge);
         }
@@ -141,12 +144,6 @@ namespace Ramsey.Board
         public void SetMousePosition(float2 position)
             => renderManager.IOInterface.SetMousePosition(position);
 
-        public void SetHighlightedPath(Path path)
-            => renderManager.IOInterface.SetHighlightedPathAsync(path);
-
-        public void SaveCurrentTurn()
-            => recordingManager.AddCurrentTurn(); 
-
         public void LoadTurn(int i)
             => recordingManager.LoadTurn(i);
 
@@ -154,5 +151,17 @@ namespace Ramsey.Board
             => recordingManager.OffsetTurn(delta);
 
         public bool IsCurrentTurn => recordingManager.IsCurrentTurn;
+
+        public void MarkNewTurn()
+        {
+            recordingManager.AddCurrentTurn();
+            gameState.TurnCount++;
+        }
+
+        public void StartGame(int pathLength)
+        {
+            gameState.TargetPathLength = pathLength;
+            gameState.TurnCount = 0;
+        }
     }
 }

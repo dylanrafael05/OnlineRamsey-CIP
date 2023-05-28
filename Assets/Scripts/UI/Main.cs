@@ -60,6 +60,8 @@ public class Main : MonoBehaviour
 
         UserModeHandler.AddMode(nodeEditingMode);
         UserModeHandler.AddMode(turnNavigatorMode);
+
+        board.StartGame(10);
     }
 
     // Update is called once per frame
