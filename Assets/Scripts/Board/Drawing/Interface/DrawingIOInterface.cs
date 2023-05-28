@@ -90,24 +90,19 @@ namespace Ramsey.Drawing
             data.IsLoading = isLoading;
         }
 
-        public void SetHighlightedPath(Path path)
+        public void SetHighlightedPathAsync(Path path)
         {
-            // Debug.Log("highlighting . . .");
-            lock(data.EdgeHighlights)
+            for(int i = 0; i < data.EdgeHighlights.Count; i++)
             {
-                for(int i = 0; i < data.EdgeHighlights.Count; i++)
-                {
-                    data.EdgeHighlights[i] = 0.0f;
-                }
-
-                foreach(var e in path.Edges)
-                {
-                    Debug.Log(e);
-                    data.EdgeHighlights[e.ID] = 1.0f;
-                }
+                data.EdgeHighlights[i] = 0.0f;
             }
 
-            drawer.UpdateEdgeBuffer();
+            foreach(var e in path.Edges)
+            {
+                data.EdgeHighlights[e.ID] = 1.0f;
+            }
+
+            data.ShouldUpdateEdgeBuffer = true;
         }
 
         public void SetMousePosition(float2 position)

@@ -8,7 +8,7 @@ using Ramsey.Drawing;
 using Ramsey.Utilities;
 using System.Threading.Tasks;
 using UnityEngine.Profiling;
-using static Codice.CM.Common.Merge.MergePathResolver;
+using System.Linq;
 
 namespace Ramsey.Board
 {
@@ -20,6 +20,12 @@ namespace Ramsey.Board
 
         internal DrawingActionInterface RenderAPI => renderManager.ActionInterface;
         internal DrawingIOInterface RenderIO => renderManager.IOInterface;
+
+        public int TargetPathLength
+        {
+            get => gameState.TargetPathLength;
+            set => gameState.TargetPathLength = value;
+        }
 
         public IReadOnlyGraph Graph => graphManager.Graph;
         public GameState GameState => gameState;
@@ -45,13 +51,12 @@ namespace Ramsey.Board
 
             graphManager.OnFinishPathCalculation += delegate 
             {
-                SetHighlightedPath(GameState.MaxPaths.MaxBy(p => p.Length));
+                RenderIO.SetHighlightedPathAsync(GameState.MaxPaths.MaxBy(p => p.Length));
                 gameState.MaxPaths = graphManager.MaxPathsByType;
             };
 
             gameState = new()
             {
-                //Graph = graphManager.Graph,
                 Board = this,
                 MaxPaths = graphManager.MaxPathsByType
             };
@@ -59,6 +64,8 @@ namespace Ramsey.Board
 
         public BoardManager(Camera camera, BoardPreferences prefs, IIncrementalPathFinder pathFinder) : this(camera, prefs, new GraphManager(pathFinder))
         { }
+
+        public bool GameOver => GameState.MaxPaths.Any(a => a.Length >= TargetPathLength);
 
         public static BoardManager UsingAlgorithm<TAlgo>(Camera camera, BoardPreferences prefs)
             where TAlgo : IIncrementalPathFinder, new()
@@ -77,6 +84,7 @@ namespace Ramsey.Board
         public Edge CreateEdge(Node start, Node end)
         {
             var e = graphManager.CreateEdge(start, end);
+
             GameState.NewestEdge = e;
             renderManager.IOInterface.AddEdge(e);
 
@@ -91,6 +99,8 @@ namespace Ramsey.Board
         public void PaintEdge(Edge edge, int type)
         {
             GameState.NewestEdge = null;
+            GameState.NewestPaint = type;
+
             graphManager.PaintEdge(edge, type);
             renderManager.IOInterface.UpdateEdgeType(edge);
         }
@@ -134,12 +144,6 @@ namespace Ramsey.Board
         public void SetMousePosition(float2 position)
             => renderManager.IOInterface.SetMousePosition(position);
 
-        public void SetHighlightedPath(Path path)
-            => renderManager.IOInterface.SetHighlightedPath(path);
-
-        public void SaveCurrentTurn()
-            => recordingManager.AddCurrentTurn(); 
-
         public void LoadTurn(int i)
             => recordingManager.LoadTurn(i);
 
@@ -147,5 +151,17 @@ namespace Ramsey.Board
             => recordingManager.OffsetTurn(delta);
 
         public bool IsCurrentTurn => recordingManager.IsCurrentTurn;
+
+        public void MarkNewTurn()
+        {
+            recordingManager.AddCurrentTurn();
+            gameState.TurnCount++;
+        }
+
+        public void StartGame(int pathLength)
+        {
+            gameState.TargetPathLength = pathLength;
+            gameState.TurnCount = 0;
+        }
     }
 }

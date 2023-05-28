@@ -123,7 +123,14 @@ namespace Ramsey.Drawing
 
         public void Draw()
         {
-            TextDrawer.Flush();
+            TextRenderer.Flush();
+
+            if(storage.ShouldUpdateEdgeBuffer)
+            {
+                UpdateEdgeBuffer();
+                storage.ShouldUpdateEdgeBuffer = false;
+            }
+
             DrawingPreferences.NodeMaterial.SetVector(Shader.PropertyToID("_Mouse"), Mouse.xyzw());
 
             Graphics.DrawMeshInstancedIndirect(DrawingData.QuadMesh, 0, DrawingPreferences.EdgeMaterial, DrawingData.Bounds, argsBufferEdge, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
@@ -137,8 +144,7 @@ namespace Ramsey.Drawing
 
             for(var i = 0; i < storage.NodePositions.Count; i++) 
             {
-                TextDrawer.Draw(storage.NodePositions[i], $"{i}");
-                // TODO: this sucks
+                TextRenderer.Draw(storage.NodePositions[i], i.ToString());
             }
         }
 

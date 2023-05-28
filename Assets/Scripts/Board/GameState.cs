@@ -13,11 +13,10 @@ namespace Ramsey.Board
         internal GameState() { }
 
         public BoardManager Board { get; internal set; }
+        public int TargetPathLength { get; internal set; }
+        public int TurnCount { get; internal set; }
 
-        //public IReadOnlyGraph Graph { get; internal set; } maybe?
         public IReadOnlyList<Path> MaxPaths { get; internal set; }
-
-        //public Edge LastUnpaintedEdge { get; internal set; }
 
         public Edge EdgeStart(int i) => MaxPaths[i].Edges.First();
         public Edge EdgeEnd(int i)   => MaxPaths[i].Edges.Last();
@@ -27,7 +26,5 @@ namespace Ramsey.Board
 
         //Painter Commands
         public Path MaxPathConnectedToNull(int i) => throw new System.NotImplementedException(); //shouldnt be array dont think
-
-
     }
 }

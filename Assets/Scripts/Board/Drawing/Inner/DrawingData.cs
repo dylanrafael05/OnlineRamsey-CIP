@@ -50,6 +50,8 @@ namespace Ramsey.Drawing
 
         public List<float2> NodePositions { get; private set; }
         public List<float> NodeHighlights { get; private set; }
+
+        public bool ShouldUpdateEdgeBuffer { get; set; }
         
         public bool IsLoading { get; set; }
 

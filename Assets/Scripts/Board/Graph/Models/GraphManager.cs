@@ -13,7 +13,6 @@ namespace Ramsey.Graph
     public class GraphManager
     {
         public IReadOnlyGraph Graph => graph;
-        //TODO: move this to `BoardManager`
 
         public IReadOnlyList<Node> Nodes => graph.Nodes;
         public IReadOnlyList<Edge> Edges => graph.Edges;
@@ -68,18 +67,16 @@ namespace Ramsey.Graph
         }
 
         public void PaintEdge(Edge e, int type) //Will start background task
-        {
-            
+        {   
             graph.PaintEdge(e, type);
 
             currentPathTask = Task.Run(async () => 
             {
                 await pathFinder.HandlePaintedEdge(e).UnityReport(); 
-
                 currentPathTask = null; 
 
                 OnFinishPathCalculation.Invoke();
-            });
+            }).UnityReport();
         }
 
         public void MoveNode(Node n, float2 position)

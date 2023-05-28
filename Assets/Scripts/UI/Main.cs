@@ -11,7 +11,7 @@ using Ramsey.UI;
 using Ramsey.Gameplayer;
 using Ramsey.Screen;
 
-public class Test : MonoBehaviour
+public class Main : MonoBehaviour
 {
     BoardManager board;
     TurnManager turns;
@@ -43,12 +43,14 @@ public class Test : MonoBehaviour
 
                 loadingCircleOuterRadius = 1.0f,
                 loadingCircleInnerRadius = 0.7f,
-                LoadingCircleTransform = Matrix4x4.TRS(new(6f, -3f, 0.5f), Quaternion.identity, new(0.5f, 0.5f, 1))
+                LoadingCircleTransform = Matrix4x4.TRS(new(8f, -3f, 0.5f), Quaternion.identity, new(0.5f, 0.5f, 1))
             }
         });
 
         var ub = new UserBuilder(); var up = new UserPainter();
         turns = new TurnManager(board, ub, up);
+
+        TextRenderer.Create();
 
         UserModeHandler.Create(board);
         InputManager.Create(board);
@@ -58,6 +60,8 @@ public class Test : MonoBehaviour
 
         UserModeHandler.AddMode(nodeEditingMode);
         UserModeHandler.AddMode(turnNavigatorMode);
+
+        board.StartGame(10);
     }
 
     // Update is called once per frame

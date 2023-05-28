@@ -27,6 +27,8 @@ namespace Ramsey.UI
         public bool IsAwaitingMove => isAwaitingMove;
         public bool IsAwaitingBoard => isAwaiting && !isAwaitingMove;
 
+        public int TurnNumber { get; private set; }
+
         public TurnManager(BoardManager board, Builder builder, Painter painter)
         {
             this.board = board;
@@ -51,7 +53,10 @@ namespace Ramsey.UI
                         if(move.MakeMove(board))
                         {
                             isBuilderTurn = !isBuilderTurn;
-                            if (isBuilderTurn) board.SaveCurrentTurn();
+                            if (isBuilderTurn) 
+                            {
+                                board.MarkNewTurn();
+                            }
                         }
 
                         if(board.IsAwaitingPathTask)

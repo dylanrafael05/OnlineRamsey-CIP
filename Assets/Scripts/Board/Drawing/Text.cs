@@ -1,43 +1,43 @@
 using System.Collections.Generic;
 using Ramsey.Utilities;
+using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
 
+using Text = TMPro.TMP_Text;
+
 namespace Ramsey.Drawing
 {
-    public static class TextDrawer
+    public static class TextRenderer
     {
         private static int lastUsedIndex;
         private static Canvas canvas;
+        private static GameObject textPrefab;
         private static List<Text> texts = new();
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
-        private static void Initialize()
+        public static void Create()
         {
-            var go = new GameObject("_textCanvas", typeof(Canvas));
-            GameObject.DontDestroyOnLoad(go);
-            go.layer = LayerMask.NameToLayer("Board");
+            canvas = GameObject.Find("Board Canvas").GetComponent<Canvas>();
+            textPrefab = Resources.Load<GameObject>("Prefabs/TextPrefab");
+        }
 
-            canvas = go.GetComponent<Canvas>();
+        private static Text CreateText()
+        {
+            var newgo = GameObject.Instantiate(textPrefab, Vector3.zero, Quaternion.identity);
+            newgo.transform.SetParent(canvas.transform);
 
-            canvas.renderMode = RenderMode.WorldSpace;
+            return newgo.GetComponent<Text>();
         }
 
         public static void Draw(float2 position, string content) 
         {
             if(lastUsedIndex >= texts.Count)
             {
-                var go = new GameObject("_text"+lastUsedIndex, typeof(Text));
-                GameObject.DontDestroyOnLoad(go);
-                go.layer = LayerMask.NameToLayer("Board");
-
-                go.transform.SetParent(canvas.transform, true);
-
-                texts.Add(go.GetComponent<Text>());
+                texts.Add(CreateText());
             }
 
-            texts[lastUsedIndex].transform.position = new float3(position, 0.2f);
+            texts[lastUsedIndex].transform.position = new float3(position, -3f);
             texts[lastUsedIndex].transform.localScale = new(1, 1, 1);
             texts[lastUsedIndex].color = Color.black;
             texts[lastUsedIndex].text = content;
