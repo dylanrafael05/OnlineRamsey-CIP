@@ -14,8 +14,8 @@ namespace Ramsey.Graph
     {
         public IReadOnlyGraph Graph => graph;
 
-        public IEnumerable<Node> Nodes => graph.Nodes;
-        public IEnumerable<Edge> Edges => graph.Edges;
+        public IReadOnlyList<Node> Nodes => graph.Nodes;
+        public IReadOnlyList<Edge> Edges => graph.Edges;
         public IEnumerable<Path> Paths => pathFinder.AllPaths;
 
         public event Action OnFinishPathCalculation;
@@ -34,20 +34,15 @@ namespace Ramsey.Graph
                 await currentPathTask;
         }
 
+        public IReadOnlyList<Path> MaxPathsByType => pathFinder.MaxPathsByType;
+
         internal readonly Graph graph;
         internal readonly IIncrementalPathFinder pathFinder;
-        private readonly GameState gameState;
 
         internal GraphManager(Graph graph, IIncrementalPathFinder pathFinder)
         {
             this.graph = graph;
             this.pathFinder = pathFinder;
-
-            gameState = new()
-            {
-                Graph = graph,
-                MaxPaths = pathFinder.MaxPathsByType
-            };
         }
 
         public GraphManager(IIncrementalPathFinder pathFinder) : this(new(), pathFinder)
@@ -67,28 +62,18 @@ namespace Ramsey.Graph
         public Edge CreateEdge(Node start, Node end)
         {
             var e = graph.CreateEdge(start, end);
-            State.LastUnpaintedEdge = e;
 
             return e;
         }
 
         public void PaintEdge(Edge e, int type) //Will start background task
-        {
-            if(State.LastUnpaintedEdge == e)
-            {
-                State.LastUnpaintedEdge = null;
-            }
-            
+        {   
             graph.PaintEdge(e, type);
 
             currentPathTask = Task.Run(async () => 
             {
                 await pathFinder.HandlePaintedEdge(e).UnityReport(); 
-
                 currentPathTask = null; 
-                gameState.MaxPaths = pathFinder.MaxPathsByType; 
-
-                Debug.Log(string.Join("\n" , gameState.MaxPaths));
 
                 OnFinishPathCalculation.Invoke();
             }).UnityReport();

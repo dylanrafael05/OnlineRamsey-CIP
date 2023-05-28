@@ -1,4 +1,4 @@
-using Ramsey.Graph;
+using Ramsey.Board;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -11,7 +11,7 @@ namespace Ramsey.Gameplayer
         public override Task<PainterMove> GetMove(GameState gameState)
         {
             return Task.FromResult<PainterMove>(
-                new(gameState.LastUnpaintedEdge, Random.Range(0, 2))
+                new(gameState.NewestEdge, Random.Range(0, 2))
             );
         }
     }

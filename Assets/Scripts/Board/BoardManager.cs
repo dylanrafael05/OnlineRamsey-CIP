@@ -17,7 +17,6 @@ namespace Ramsey.Board
         private readonly RecordingManager recordingManager;
         private readonly DrawingManager renderManager;
         private readonly GraphManager graphManager;
-        private readonly GameState gameState;
 
         internal DrawingActionInterface RenderAPI => renderManager.ActionInterface;
         internal DrawingIOInterface RenderIO => renderManager.IOInterface;
@@ -29,17 +28,18 @@ namespace Ramsey.Board
         }
 
         public IReadOnlyGraph Graph => graphManager.Graph;
-        public GameState GameState => graphManager.State;
-        // public GameState GameStateClone => graphManager.State.Clone();
+        public GameState GameState => gameState;
 
         public BoardPreferences Preferences { get; private set; }
 
         public bool IsAwaitingPathTask => graphManager.IsAwaitingPathTask;
         public Task AwaitPathTask() => graphManager.AwaitPathTask();
 
-        public IEnumerable<Node> Nodes => graphManager.Nodes;
-        public IEnumerable<Edge> Edges => graphManager.Edges;
+        public IReadOnlyList<Node> Nodes => graphManager.Nodes;
+        public IReadOnlyList<Edge> Edges => graphManager.Edges;
         public IEnumerable<Path> Paths => graphManager.Paths;
+
+        private readonly GameState gameState;
 
         private BoardManager(Camera camera, BoardPreferences prefs, GraphManager graphManager)
         {
@@ -52,6 +52,13 @@ namespace Ramsey.Board
             graphManager.OnFinishPathCalculation += delegate 
             {
                 SetHighlightedPath(GameState.MaxPaths.MaxBy(p => p.Length));
+                gameState.MaxPaths = graphManager.MaxPathsByType;
+            };
+
+            gameState = new()
+            {
+                Board = this,
+                MaxPaths = graphManager.MaxPathsByType
             };
         }
 
@@ -77,6 +84,7 @@ namespace Ramsey.Board
         public Edge CreateEdge(Node start, Node end)
         {
             var e = graphManager.CreateEdge(start, end);
+            GameState.NewestEdge = e;
             renderManager.IOInterface.AddEdge(e);
 
             return e;
@@ -89,6 +97,7 @@ namespace Ramsey.Board
         }
         public void PaintEdge(Edge edge, int type)
         {
+            GameState.NewestEdge = null;
             graphManager.PaintEdge(edge, type);
             renderManager.IOInterface.UpdateEdgeType(edge);
         }
