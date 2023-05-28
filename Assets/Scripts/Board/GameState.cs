@@ -15,6 +15,9 @@ namespace Ramsey.Graph
 
         public Edge LastUnpaintedEdge { get; internal set; }
 
+        public int TargetPathLength { get; internal set; }
+        public int TurnNumber { get; internal set; }
+
         public Edge EdgeStart(int i) => MaxPaths[i].Edges.First();
         public Edge EdgeEnd(int i)   => MaxPaths[i].Edges.Last();
     }

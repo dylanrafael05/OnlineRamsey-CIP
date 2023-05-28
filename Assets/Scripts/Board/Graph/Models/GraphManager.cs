@@ -13,8 +13,6 @@ namespace Ramsey.Graph
     public class GraphManager
     {
         public IReadOnlyGraph Graph => graph;
-        public GameState State => gameState;
-        //TODO: move this to `BoardManager`
 
         public IEnumerable<Node> Nodes => graph.Nodes;
         public IEnumerable<Edge> Edges => graph.Edges;
@@ -90,8 +88,10 @@ namespace Ramsey.Graph
                 currentPathTask = null; 
                 gameState.MaxPaths = pathFinder.MaxPathsByType; 
 
+                Debug.Log(string.Join("\n" , gameState.MaxPaths));
+
                 OnFinishPathCalculation.Invoke();
-            });
+            }).UnityReport();
         }
 
         public void MoveNode(Node n, float2 position)

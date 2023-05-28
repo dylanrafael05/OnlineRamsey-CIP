@@ -8,6 +8,7 @@ using Ramsey.Drawing;
 using Ramsey.Utilities;
 using System.Threading.Tasks;
 using UnityEngine.Profiling;
+using System.Linq;
 
 namespace Ramsey.Board
 {
@@ -16,9 +17,16 @@ namespace Ramsey.Board
         private readonly RecordingManager recordingManager;
         private readonly DrawingManager renderManager;
         private readonly GraphManager graphManager;
+        private readonly GameState gameState;
 
         internal DrawingActionInterface RenderAPI => renderManager.ActionInterface;
         internal DrawingIOInterface RenderIO => renderManager.IOInterface;
+
+        public int TargetPathLength
+        {
+            get => graphManager.TargetPathLength;
+            set => graphManager.TargetPathLength = value;
+        }
 
         public IReadOnlyGraph Graph => graphManager.Graph;
         public GameState GameState => graphManager.State;
@@ -49,6 +57,8 @@ namespace Ramsey.Board
 
         public BoardManager(Camera camera, BoardPreferences prefs, IIncrementalPathFinder pathFinder) : this(camera, prefs, new GraphManager(pathFinder))
         { }
+
+        public bool GameOver => GameState.MaxPaths.Any(a => a.Length >= TargetPathLength);
 
         public static BoardManager UsingAlgorithm<TAlgo>(Camera camera, BoardPreferences prefs)
             where TAlgo : IIncrementalPathFinder, new()
@@ -123,7 +133,7 @@ namespace Ramsey.Board
             => renderManager.IOInterface.SetMousePosition(position);
 
         public void SetHighlightedPath(Path path)
-            => renderManager.IOInterface.SetHighlightedPath(path);
+            => renderManager.IOInterface.SetHighlightedPathAsync(path);
 
         public void SaveCurrentTurn()
             => recordingManager.AddCurrentTurn(); 

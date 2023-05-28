@@ -85,19 +85,24 @@ namespace Ramsey.Graph
 
             return false;
         }
- 
-        public IEnumerable<Edge> Edges
+
+        private IEnumerable<Edge> GetEdges()
         {
-            get 
+            Node last = null;
+            foreach(var node in nodes.ToList()) 
             {
-                var last = nodes.First();
-                foreach(var next in nodes.Skip(1)) 
+                if (last != null) 
                 {
-                    yield return last.EdgeConnectedTo(next) 
+                    yield return node.EdgeConnectedTo(last) 
                         ?? throw new InvalidOperationException("Edges must connect the nodes in a path.");
                 }
+
+                last = node;
             }
         }
+ 
+        public IEnumerable<Edge> Edges
+            => GetEdges();
 
         public override string ToString()
             => $"{{Length = {Length}, Type = {Type}, Nodes = [{string.Join(", ", Nodes.Select(n => n.ID))}]}}";
