@@ -9,13 +9,13 @@ namespace Ramsey.Drawing
 
         //
         readonly Drawer drawer;
-        readonly DrawingData data;
+        readonly DrawingStorage data;
 
-        internal DrawingActionInterface(Drawer drawer, DrawingData data)
+        internal DrawingActionInterface(Drawer drawer, DrawingStorage data)
         { this.drawer = drawer; this.data = data; }
 
         //
-        public void Draw()
+        public void Update()
         {
             drawer.Draw();
         }

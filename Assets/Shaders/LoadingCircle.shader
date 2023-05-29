@@ -5,8 +5,8 @@ Shader "Unlit/UIShaders/LoadingCircle"
     Properties
     {
 
-        [HideInInspector] _OuterRadius ("Outer Radius", Float) = 1 //[0, 1] to avoid cutting
-        [HideInInspector] _InnerRadius ("Inner Radius", Float) = 0.9 //[0, 1] to avoid cutting
+        _OuterRadius ("Outer Radius", Float) = 1 //[0, 1] to avoid cutting
+        _InnerRadius ("Inner Radius", Float) = 0.9 //[0, 1] to avoid cutting
 
     }
     SubShader

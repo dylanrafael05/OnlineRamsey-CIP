@@ -12,9 +12,10 @@ namespace Ramsey.Board
 
         internal GameState() { }
 
-        public BoardManager Board { get; internal set; }
+        internal BoardManager Board { get; set; }
+
         public int TargetPathLength { get; internal set; }
-        public int TurnCount { get; internal set; }
+        public int TurnNo { get; internal set; }
 
         public IReadOnlyList<Path> MaxPaths { get; internal set; }
 
@@ -26,5 +27,10 @@ namespace Ramsey.Board
 
         //Painter Commands
         public Path MaxPathConnectedToNull(int i) => throw new System.NotImplementedException(); //shouldnt be array dont think
+
+        public Node CreateNode()
+        {
+            return Board.CreateNode();
+        }
     }
 }

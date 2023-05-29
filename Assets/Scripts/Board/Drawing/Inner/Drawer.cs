@@ -15,7 +15,7 @@ namespace Ramsey.Drawing
         Camera camera;
 
         //
-        DrawingData storage;
+        DrawingStorage storage;
         DrawingPreferences preferences;
 
         //
@@ -37,8 +37,9 @@ namespace Ramsey.Drawing
         ComputeBuffer nodePositionBuffer;
         ComputeBuffer nodeHighlightBuffer;
 
-        public Drawer(DrawingData storage, DrawingPreferences preferences, Camera camera)
+        public Drawer(DrawingStorage storage, DrawingPreferences preferences, Camera camera)
         {
+            Values.Initialize();
 
             //
             this.camera = camera;
@@ -50,10 +51,10 @@ namespace Ramsey.Drawing
             //
             argsArrayEdge = new uint[5]
             {
-                DrawingData.QuadMesh.GetIndexCount(0),
+                Values.QuadMesh.GetIndexCount(0),
                 0,
-                DrawingData.QuadMesh.GetIndexStart(0),
-                DrawingData.QuadMesh.GetBaseVertex(0),
+                Values.QuadMesh.GetIndexStart(0),
+                Values.QuadMesh.GetBaseVertex(0),
                 0
             };
             argsArrayNode = new uint[5]; argsArrayEdge.CopyTo(argsArrayNode, 0);
@@ -72,12 +73,12 @@ namespace Ramsey.Drawing
             preferences.UniformPreferences();
 
             //Link To Shader
-            DrawingPreferences.EdgeMaterial.SetBuffer(Shader.PropertyToID("Transforms"), edgeTransformBuffer);
-            DrawingPreferences.EdgeMaterial.SetBuffer(Shader.PropertyToID("Colors"), edgeTypeBuffer);
-            DrawingPreferences.EdgeMaterial.SetBuffer(Shader.PropertyToID("IsHighlighted"), edgeHighlightBuffer);
+            Values.EdgeMaterial.SetBuffer(Shader.PropertyToID("Transforms"), edgeTransformBuffer);
+            Values.EdgeMaterial.SetBuffer(Shader.PropertyToID("Colors"), edgeTypeBuffer);
+            Values.EdgeMaterial.SetBuffer(Shader.PropertyToID("IsHighlighted"), edgeHighlightBuffer);
 
-            DrawingPreferences.NodeMaterial.SetBuffer(Shader.PropertyToID("Positions"), nodePositionBuffer);
-            DrawingPreferences.NodeMaterial.SetBuffer(Shader.PropertyToID("IsHighlighted"), nodeHighlightBuffer);
+            Values.NodeMaterial.SetBuffer(Shader.PropertyToID("Positions"), nodePositionBuffer);
+            Values.NodeMaterial.SetBuffer(Shader.PropertyToID("IsHighlighted"), nodeHighlightBuffer);
 
             //
             UpdateArgsBuffer();
@@ -86,13 +87,13 @@ namespace Ramsey.Drawing
 
         }
 
-        public void UpdateAll(DrawingData storage)
+        public void UpdateAll(DrawingStorage storage)
         { UpdateArgsBuffer(storage); UpdateEdgeBuffer(storage); UpdateNodeBuffer(storage); }
 
         public void UpdateAll()
             => UpdateAll(storage);
 
-        public void UpdateArgsBuffer(DrawingData storage)
+        public void UpdateArgsBuffer(DrawingStorage storage)
         {
 
             //
@@ -103,7 +104,7 @@ namespace Ramsey.Drawing
             argsBufferNode.SetData(argsArrayNode);
 
         }
-        public void UpdateEdgeBuffer(DrawingData storage) 
+        public void UpdateEdgeBuffer(DrawingStorage storage) 
         { 
             lock(storage.EdgeHighlights)
             {
@@ -112,13 +113,18 @@ namespace Ramsey.Drawing
                 edgeHighlightBuffer.SetData(storage.EdgeHighlights);
             }
         }
-        public void UpdateNodeBuffer(DrawingData storage) { nodePositionBuffer.SetData(storage.NodePositions); nodeHighlightBuffer.SetData(storage.NodeHighlights); }
+        public void UpdateNodeBuffer(DrawingStorage storage) { nodePositionBuffer.SetData(storage.NodePositions); nodeHighlightBuffer.SetData(storage.NodeHighlights); }
 
         public void UpdateArgsBuffer() => UpdateArgsBuffer(storage);
         public void UpdateEdgeBuffer() => UpdateEdgeBuffer(storage);
         public void UpdateNodeBuffer() => UpdateNodeBuffer(storage);
-        
 
+        public float RecordingScale 
+        {
+            get => Values.RecordingTransform.localScale.x;
+            set => Values.RecordingTransform.localScale = new float3(value, ((float3)Values.RecordingTransform.localScale).yz);
+        }
+        
         public float2 Mouse { get; set; }
 
         public void Draw()
@@ -131,15 +137,15 @@ namespace Ramsey.Drawing
                 storage.ShouldUpdateEdgeBuffer = false;
             }
 
-            DrawingPreferences.NodeMaterial.SetVector(Shader.PropertyToID("_Mouse"), Mouse.xyzw());
+            Values.NodeMaterial.SetVector("_Mouse", Mouse.xyzw());
 
-            Graphics.DrawMeshInstancedIndirect(DrawingData.QuadMesh, 0, DrawingPreferences.EdgeMaterial, DrawingData.Bounds, argsBufferEdge, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
-            Graphics.DrawMeshInstancedIndirect(DrawingData.QuadMesh, 0, DrawingPreferences.NodeMaterial, DrawingData.Bounds, argsBufferNode, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
-            Graphics.DrawMesh(DrawingData.QuadMesh, preferences.RecorderTransform, DrawingPreferences.RecorderMaterial, LayerMask.NameToLayer("Board"), camera); //Mabe make expand as we add more pricks and maybe shrinkX pricks when we add more interpolate to low const approach -> inf
+            Graphics.DrawMeshInstancedIndirect(Values.QuadMesh, 0, Values.EdgeMaterial, Values.Bounds, argsBufferEdge, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
+            Graphics.DrawMeshInstancedIndirect(Values.QuadMesh, 0, Values.NodeMaterial, Values.Bounds, argsBufferNode, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
+            Graphics.DrawMesh(Values.QuadMesh, Values.RecordingTransform.WorldMatrix(), Values.RecorderMaterial, LayerMask.NameToLayer("Board"), camera);
 
-            if(storage.IsLoading)
+            if (storage.IsLoading)
             {
-                Graphics.DrawMesh(DrawingData.QuadMesh, preferences.LoadingCircleTransform, DrawingPreferences.LoadingMaterial, LayerMask.NameToLayer("Board"), camera);
+                Graphics.DrawMesh(Values.QuadMesh, Values.LoadingTransform.WorldMatrix(), Values.LoadingMaterial, LayerMask.NameToLayer("Board"), camera);
             }
 
             for(var i = 0; i < storage.NodePositions.Count; i++) 

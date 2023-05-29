@@ -4,7 +4,6 @@ namespace Ramsey.Drawing
 {
     public struct DrawingPreferences
     {
-
         public Color nullColor;
         public Color[] colors;
 
@@ -30,26 +29,20 @@ namespace Ramsey.Drawing
 
         public void UniformPreferences()
         {
-            NodeMaterial.SetFloat("_Radius", nodeRadius);
-            NodeMaterial.SetFloat("_HighlightRadius", highlightRadius);
+            Values.NodeMaterial.SetFloat("_Radius", nodeRadius);
+            Values.NodeMaterial.SetFloat("_HighlightRadius", highlightRadius);
 
-            NodeMaterial.SetFloat("_HighlightThickness", highlightThickness);
+            Values.NodeMaterial.SetFloat("_HighlightThickness", highlightThickness);
 
-            NodeMaterial.SetColor("_NodeColor", nodeColor);
-            NodeMaterial.SetColor("_HighlightColor", highlightColor);
+            Values.NodeMaterial.SetColor("_NodeColor", nodeColor);
+            Values.NodeMaterial.SetColor("_HighlightColor", highlightColor);
 
-            EdgeMaterial.SetColor("_HighlightColor", nodeColor); //think setting it to be nodecolor would be cool
+            Values.EdgeMaterial.SetColor("_HighlightColor", nodeColor); //think setting it to be nodecolor would be cool
 
-            RecorderMaterial.SetColor("_Color", recorderColor);
+            Values.RecorderMaterial.SetColor("_Color", recorderColor);
 
-            LoadingMaterial.SetFloat("_InnerRadius", loadingCircleInnerRadius);
-            LoadingMaterial.SetFloat("_OuterRadius", loadingCircleOuterRadius);
+            Values.LoadingMaterial.SetFloat("_InnerRadius", loadingCircleInnerRadius);
+            Values.LoadingMaterial.SetFloat("_OuterRadius", loadingCircleOuterRadius);
         }
-
-        public static readonly Material EdgeMaterial = new(Shader.Find("Unlit/GraphShaders/EdgeShader"));
-        public static readonly Material NodeMaterial = new(Shader.Find("Unlit/GraphShaders/NodeShader"));
-        public static readonly Material RecorderMaterial = new(Shader.Find("Unlit/UIShaders/RecordingShader"));
-        public static readonly Material LoadingMaterial = new(Shader.Find("Unlit/UIShaders/LoadingCircle"));
-
     }
 }

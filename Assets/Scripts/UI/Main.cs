@@ -39,11 +39,9 @@ public class Main : MonoBehaviour
                 highlightColor = Color.green,
 
                 recorderColor = Color.white,
-                RecorderTransform = Matrix4x4.TRS(new(0f, 4.5f, 0.5f), Quaternion.identity, new(2f, 1f, 1f)),
 
                 loadingCircleOuterRadius = 1.0f,
                 loadingCircleInnerRadius = 0.7f,
-                LoadingCircleTransform = Matrix4x4.TRS(new(8f, -3f, 0.5f), Quaternion.identity, new(0.5f, 0.5f, 1))
             }
         });
 
@@ -71,7 +69,7 @@ public class Main : MonoBehaviour
         UserModeHandler.Update(input);
 
         turns.Update();
-        board.Draw();
+        board.Update();
     }
 
     void OnDestroy() 

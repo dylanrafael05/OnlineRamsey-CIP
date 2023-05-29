@@ -12,6 +12,22 @@ namespace Ramsey.Utilities
 {
     public static class Utils
     {
+        public static Matrix4x4 WorldMatrix(this RectTransform transform) 
+        {
+            var corners = new Vector3[4];
+
+            transform.GetWorldCorners(corners);
+
+            return Matrix4x4.TRS(
+                corners.Aggregate((a, b) => a + b) / 4,
+                transform.rotation,
+                new(
+                    (corners.Select(c => c.x).Max() - corners.Select(c => c.x).Min()) / 2, 
+                    (corners.Select(c => c.y).Max() - corners.Select(c => c.y).Min()) / 2, 
+                    1
+                )
+            );
+        }
 
         public static int ToDecimal(this IEnumerable<int> num, int previousBase)
             => num.Select((n, i) => n * (int) pow(previousBase, i)).Sum();

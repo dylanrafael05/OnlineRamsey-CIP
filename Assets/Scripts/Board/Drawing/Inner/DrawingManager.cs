@@ -8,7 +8,7 @@ namespace Ramsey.Drawing
         public DrawingActionInterface ActionInterface { get; private set; }
         public DrawingIOInterface IOInterface { get; private set; }
 
-        DrawingData data;
+        DrawingStorage data;
         Drawer drawer;
 
         public DrawingManager(Camera camera, DrawingPreferences preferences)

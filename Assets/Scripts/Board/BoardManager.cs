@@ -114,15 +114,12 @@ namespace Ramsey.Board
             renderManager.IOInterface.UnhighlightNode(n);
         }
 
-        public void SetLoading(bool isLoading)
+        public void Update()
         {
-            renderManager.IOInterface.SetLoading(isLoading);
-        }
+            Values.GoalText.text = ""+gameState.TargetPathLength;
 
-        public void Draw()
-        {
-            renderManager.IOInterface.SetLoading(graphManager.IsAwaitingPathTask);
-            renderManager.ActionInterface.Draw();
+            RenderIO.SetLoading(graphManager.IsAwaitingPathTask);
+            renderManager.ActionInterface.Update();
         }
         public void Cleanup()
         {
@@ -155,13 +152,13 @@ namespace Ramsey.Board
         public void MarkNewTurn()
         {
             recordingManager.AddCurrentTurn();
-            gameState.TurnCount++;
+            gameState.TurnNo++;
         }
 
         public void StartGame(int pathLength)
         {
             gameState.TargetPathLength = pathLength;
-            gameState.TurnCount = 0;
+            gameState.TurnNo = 0;
         }
     }
 }

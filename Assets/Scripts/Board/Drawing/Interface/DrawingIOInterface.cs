@@ -10,11 +10,11 @@ namespace Ramsey.Drawing
     public class DrawingIOInterface
     {
 
-        readonly DrawingData data;
+        readonly DrawingStorage data;
         readonly DrawingPreferences preferences;
         readonly Drawer drawer;
 
-        internal DrawingIOInterface(DrawingData data, DrawingPreferences preferences, Drawer drawer)
+        internal DrawingIOInterface(DrawingStorage data, DrawingPreferences preferences, Drawer drawer)
         {
             this.data = data;
             this.preferences = preferences;
@@ -85,11 +85,6 @@ namespace Ramsey.Drawing
             drawer.UpdateEdgeBuffer();
         }
 
-        public void SetLoading(bool isLoading)
-        {
-            data.IsLoading = isLoading;
-        }
-
         public void SetHighlightedPathAsync(Path path)
         {
             for(int i = 0; i < data.EdgeHighlights.Count; i++)
@@ -118,8 +113,13 @@ namespace Ramsey.Drawing
 
         public void UpdateRecorder(int prickAmount, int selectedID)
         {
-            DrawingPreferences.RecorderMaterial.SetFloat("_PrickAmount", (float)prickAmount);
-            DrawingPreferences.RecorderMaterial.SetFloat("_PrickSelectID", (float)selectedID);
+            Values.RecorderMaterial.SetFloat("_PrickAmount", (float)prickAmount);
+            Values.RecorderMaterial.SetFloat("_PrickSelectID", (float)selectedID);
+        }
+
+        public void SetLoading(bool isLoading)
+        {
+            data.IsLoading = isLoading;
         }
 
         public void Clear()

@@ -21,7 +21,7 @@ public class TestOtherBuilder : Builder
 
     BuilderMove Extend(Node n1, GameState state)
     {
-        var n2 = state.Board.CreateNode();
+        var n2 = state.CreateNode();
         var move = new BuilderMove(n1, n2);
         n1 = n2;
         return move;
@@ -33,7 +33,7 @@ public class TestOtherBuilder : Builder
 
     IEnumerable<BuilderMove> InitialTree(GameState state)
     {
-        Node n = state.Board.CreateNode();
+        Node n = state.CreateNode();
         Node initial = n;
 
         yield return Extend(n, state);
