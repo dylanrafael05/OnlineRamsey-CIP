@@ -24,7 +24,7 @@ public class Main : MonoBehaviour
     {
         new CameraManager(screenCamera, boardCamera);
 
-        board = BoardManager.UsingAlgorithm<DefaultPathFinder>(CameraManager.BoardCamera, new BoardPreferences() 
+        board = BoardManager.UsingAlgorithm<DefaultPathFinder>(CameraManager.BoardCamera, new BoardPreferences()
         {
             drawingPreferences = new DrawingPreferences
             {

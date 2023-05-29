@@ -240,7 +240,7 @@ namespace Ramsey.Utilities
         //Will loop last sequence
 
         int current = 0;
-        List<IEnumerator<T>> navigators;
+        List<IEnumerator<T>> navigators = new();
 
         public T Loop()
         {
@@ -254,7 +254,7 @@ namespace Ramsey.Utilities
         }
 
         public SequenceNavigator(IList<IEnumerable<T>> sequences)
-            => sequences.ForEachIndex((s, i) => navigators[i] = s.GetEnumerator());
+            => sequences.Foreach(s => navigators.Add(s.GetEnumerator()));
 
     }
 }

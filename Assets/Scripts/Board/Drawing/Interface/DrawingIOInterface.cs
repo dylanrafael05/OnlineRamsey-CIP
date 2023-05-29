@@ -85,6 +85,9 @@ namespace Ramsey.Drawing
             drawer.UpdateEdgeBuffer();
         }
 
+        public void SetLoading(bool isLoading)
+            => data.IsLoading = isLoading;
+
         public void SetHighlightedPathAsync(Path path)
         {
             for(int i = 0; i < data.EdgeHighlights.Count; i++)
@@ -115,11 +118,12 @@ namespace Ramsey.Drawing
         {
             Values.RecorderMaterial.SetFloat("_PrickAmount", (float)prickAmount);
             Values.RecorderMaterial.SetFloat("_PrickSelectID", (float)selectedID);
-        }
 
-        public void SetLoading(bool isLoading)
-        {
-            data.IsLoading = isLoading;
+            float scale = 2.0f + 5.0f * math.max(0, 1-math.exp(-0.1f*(prickAmount - 6)));
+            drawer.RecordingScale = scale;
+
+            Values.RecorderMaterial.SetFloat("_xScale", scale);
+            
         }
 
         public void Clear()

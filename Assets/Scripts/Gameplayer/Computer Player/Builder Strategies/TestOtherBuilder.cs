@@ -19,7 +19,7 @@ public class TestOtherBuilder : Builder
     public override Task<BuilderMove> GetMove(GameState state)
        => Task.FromResult(sequenceNavigator.Loop());
 
-    BuilderMove Extend(Node n1, GameState state)
+    BuilderMove Extend(ref Node n1, GameState state)
     {
         var n2 = state.CreateNode();
         var move = new BuilderMove(n1, n2);
@@ -36,18 +36,17 @@ public class TestOtherBuilder : Builder
         Node n = state.CreateNode();
         Node initial = n;
 
-        yield return Extend(n, state);
+        yield return Extend(ref n, state);
 
         var b = state.NewestPaint;
 
-        while (state.NewestPaint == b) { n1 = n; yield return Extend(n, state); }
+        while (state.NewestPaint == b) { n1 = n; yield return Extend(ref n, state); }
 
-        yield return Extend(n1, state);
+        yield return Extend(ref n1, state);
         t1 = state.NewestPaint;
 
         if (state.NewestPaint == b) n2 = n;
         else n2 = initial;
-
     }
 
     IEnumerable<BuilderMove> LoopTree(GameState state) // 5/14 strategy needs an init to make a longer path
@@ -64,7 +63,7 @@ public class TestOtherBuilder : Builder
             n2 = n1t;
         }
 
-        yield return Extend(n2, state);
+        yield return Extend(ref n2, state);
         if(state.NewestPaint == t1)
         {
             n1 = n2;
