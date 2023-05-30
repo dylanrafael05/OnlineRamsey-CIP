@@ -50,19 +50,19 @@ namespace Ramsey.Graph
             }
         }
 
-        // [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         internal static void Test() 
         {
             Task.Run(async () => 
             {
-                for(var i = 0; i < 10; i++)
+                for(var i = 0; i < 1; i++)
                 {
                     UnityEngine.Debug.Log("Starting new round of tests!");
 
                     await Task.WhenAll
                     ( 
-                        Perform<DefaultPathFinder>() //,
-                        // Perform<RemoveDuplicatesPathFinder>()
+                        // Perform<DefaultPathFinder>(), //,
+                        Perform<Experimental.JobsPathFinder>()
                     );
                 }
             });

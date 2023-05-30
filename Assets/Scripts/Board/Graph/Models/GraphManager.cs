@@ -75,7 +75,7 @@ namespace Ramsey.Graph
                 await pathFinder.HandlePaintedEdge(e, graph).UnityReport(); 
                 currentPathTask = null; 
 
-                OnFinishPathCalculation.Invoke();
+                OnFinishPathCalculation?.Invoke();
             }).UnityReport();
         }
 
