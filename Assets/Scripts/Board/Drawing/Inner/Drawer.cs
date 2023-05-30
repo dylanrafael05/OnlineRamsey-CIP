@@ -15,7 +15,8 @@ namespace Ramsey.Drawing
         Camera camera;
 
         //
-        DrawingData storage;
+        DrawingData presentStorage;
+        DrawingData currentStorage;
         DrawingPreferences preferences;
 
         //
@@ -44,7 +45,8 @@ namespace Ramsey.Drawing
             this.camera = camera;
 
             //
-            this.storage = storage;
+            this.presentStorage = storage;
+            this.currentStorage = storage;
             this.preferences = preferences;
 
             //
@@ -87,10 +89,10 @@ namespace Ramsey.Drawing
         }
 
         public void UpdateAll(DrawingData storage)
-        { UpdateArgsBuffer(storage); UpdateEdgeBuffer(storage); UpdateNodeBuffer(storage); }
+        { UpdateArgsBuffer(storage); UpdateEdgeBuffer(storage); UpdateNodeBuffer(storage); this.currentStorage = storage; }
 
         public void UpdateAll()
-            => UpdateAll(storage);
+            => UpdateAll(presentStorage);
 
         public void UpdateArgsBuffer(DrawingData storage)
         {
@@ -114,9 +116,9 @@ namespace Ramsey.Drawing
         }
         public void UpdateNodeBuffer(DrawingData storage) { nodePositionBuffer.SetData(storage.NodePositions); nodeHighlightBuffer.SetData(storage.NodeHighlights); }
 
-        public void UpdateArgsBuffer() => UpdateArgsBuffer(storage);
-        public void UpdateEdgeBuffer() => UpdateEdgeBuffer(storage);
-        public void UpdateNodeBuffer() => UpdateNodeBuffer(storage);
+        public void UpdateArgsBuffer() => UpdateArgsBuffer(presentStorage);
+        public void UpdateEdgeBuffer() => UpdateEdgeBuffer(presentStorage);
+        public void UpdateNodeBuffer() => UpdateNodeBuffer(presentStorage);
         
 
         public float2 Mouse { get; set; }
@@ -125,27 +127,23 @@ namespace Ramsey.Drawing
         {
             TextRenderer.Flush();
 
-            if(storage.ShouldUpdateEdgeBuffer)
+            if(presentStorage.ShouldUpdateEdgeBuffer)
             {
                 UpdateEdgeBuffer();
-                storage.ShouldUpdateEdgeBuffer = false;
+                presentStorage.ShouldUpdateEdgeBuffer = false;
             }
 
             DrawingPreferences.NodeMaterial.SetVector(Shader.PropertyToID("_Mouse"), Mouse.xyzw());
 
             Graphics.DrawMeshInstancedIndirect(DrawingData.QuadMesh, 0, DrawingPreferences.EdgeMaterial, DrawingData.Bounds, argsBufferEdge, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
             Graphics.DrawMeshInstancedIndirect(DrawingData.QuadMesh, 0, DrawingPreferences.NodeMaterial, DrawingData.Bounds, argsBufferNode, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
-            Graphics.DrawMesh(DrawingData.QuadMesh, preferences.RecorderTransform, DrawingPreferences.RecorderMaterial, LayerMask.NameToLayer("Board"), camera); //Mabe make expand as we add more pricks and maybe shrinkX pricks when we add more interpolate to low const approach -> inf
+            Graphics.DrawMesh(DrawingData.QuadMesh, DrawingPreferences.RecorderTransform, DrawingPreferences.RecorderMaterial, LayerMask.NameToLayer("Board"), camera); //Mabe make expand as we add more pricks and maybe shrinkX pricks when we add more interpolate to low const approach -> inf
 
-            if(storage.IsLoading)
-            {
+            if(presentStorage.IsLoading)
                 Graphics.DrawMesh(DrawingData.QuadMesh, preferences.LoadingCircleTransform, DrawingPreferences.LoadingMaterial, LayerMask.NameToLayer("Board"), camera);
-            }
 
-            for(var i = 0; i < storage.NodePositions.Count; i++) 
-            {
-                TextRenderer.Draw(storage.NodePositions[i], i.ToString());
-            }
+            for(var i = 0; i < currentStorage.NodePositions.Count; i++) 
+                TextRenderer.Draw(currentStorage.NodePositions[i], i.ToString());
         }
 
         public void Cleanup()

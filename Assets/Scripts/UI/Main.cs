@@ -24,7 +24,7 @@ public class Main : MonoBehaviour
     {
         new CameraManager(screenCamera, boardCamera);
 
-        board = BoardManager.UsingAlgorithm<DefaultPathFinder>(CameraManager.BoardCamera, new BoardPreferences() 
+        board = BoardManager.UsingAlgorithm<DefaultPathFinder>(CameraManager.BoardCamera, new BoardPreferences()
         {
             drawingPreferences = new DrawingPreferences
             {
@@ -39,7 +39,6 @@ public class Main : MonoBehaviour
                 highlightColor = Color.green,
 
                 recorderColor = Color.white,
-                RecorderTransform = Matrix4x4.TRS(new(0f, 4.5f, 0.5f), Quaternion.identity, new(2f, 1f, 1f)),
 
                 loadingCircleOuterRadius = 1.0f,
                 loadingCircleInnerRadius = 0.7f,

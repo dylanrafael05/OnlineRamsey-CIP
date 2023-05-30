@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.Mathematics;
+using UnityEngine;
 
 namespace Ramsey.Drawing
 {
@@ -25,7 +26,7 @@ namespace Ramsey.Drawing
         public Color TypeToColor(int type)
             => type == -1 ? nullColor : colors[type];
 
-        public Matrix4x4 RecorderTransform;
+        public static Matrix4x4 RecorderTransform = Matrix4x4.TRS(new(0f, 4.5f, 0.5f), Quaternion.identity, new(2f, 1f, 1f));
         public Matrix4x4 LoadingCircleTransform;
 
         public void UniformPreferences()
@@ -39,8 +40,10 @@ namespace Ramsey.Drawing
             NodeMaterial.SetColor("_HighlightColor", highlightColor);
 
             EdgeMaterial.SetColor("_HighlightColor", nodeColor); //think setting it to be nodecolor would be cool
+            EdgeMaterial.SetFloat("_Thickness", edgeThickness);
 
             RecorderMaterial.SetColor("_Color", recorderColor);
+            RecorderMaterial.SetFloat("_xScale", 2.0f);
 
             LoadingMaterial.SetFloat("_InnerRadius", loadingCircleInnerRadius);
             LoadingMaterial.SetFloat("_OuterRadius", loadingCircleOuterRadius);

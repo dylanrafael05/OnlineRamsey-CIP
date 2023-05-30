@@ -11,7 +11,7 @@ namespace Ramsey.Drawing
     {
 
         readonly DrawingData data;
-        readonly DrawingPreferences preferences;
+        DrawingPreferences preferences;
         readonly Drawer drawer;
 
         internal DrawingIOInterface(DrawingData data, DrawingPreferences preferences, Drawer drawer)
@@ -86,9 +86,7 @@ namespace Ramsey.Drawing
         }
 
         public void SetLoading(bool isLoading)
-        {
-            data.IsLoading = isLoading;
-        }
+            => data.IsLoading = isLoading;
 
         public void SetHighlightedPathAsync(Path path)
         {
@@ -120,6 +118,12 @@ namespace Ramsey.Drawing
         {
             DrawingPreferences.RecorderMaterial.SetFloat("_PrickAmount", (float)prickAmount);
             DrawingPreferences.RecorderMaterial.SetFloat("_PrickSelectID", (float)selectedID);
+
+            float scale = 2.0f + 5.0f * math.max(0, 1-math.exp(-0.1f*(prickAmount - 6)));
+            DrawingPreferences.RecorderTransform = Matrix4x4.TRS(new(0f, 4.5f, 0.5f), Quaternion.identity, new(scale, 1f, 1f)); // drawer.RecordingScale = scale;
+
+            DrawingPreferences.RecorderMaterial.SetFloat("_xScale", scale);
+            
         }
 
         public void Clear()

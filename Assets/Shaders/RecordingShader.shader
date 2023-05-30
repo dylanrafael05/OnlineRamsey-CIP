@@ -4,6 +4,8 @@ Shader "Unlit/UIShaders/RecordingShader"
     {
         _Color ("Color", Color) = (1., 1., 1., 1.)
 
+        _xScale ("X Scale", Float) = 1.0
+
         _PrickAmount ("Prick Amount", Float) = 1.
         _PrickSelectID ("Prick Select ID", Float) = 0.
 
@@ -43,6 +45,8 @@ Shader "Unlit/UIShaders/RecordingShader"
                 float2 uv : TEXCOORD0;
             };
 
+            float _xScale;
+
             float4 _Color;
 
             //Everything is init space [-1, 1]
@@ -75,9 +79,14 @@ Shader "Unlit/UIShaders/RecordingShader"
                 float2 ri = float2(cos(o), sin(o));
                 float2 up = float2(cos(o+PI*.5), sin(o+PI*.5));
 
-                float2 p = i.uv*float2(2.0,1.0);
+                float2 p = i.uv*float2(_xScale,1.0);
                 p = float2(dot(p, ri), dot(p, up));
-                p.x *= 0.5;
+                p.x *= .5;
+
+                //Rescale
+                _PrickZoneX *= _xScale*.5;
+                _TriX = float2(_TriX.x*_xScale*.5, _TriX.x*_xScale*.5 + (_TriX.y - _TriX.x));
+                _PrickDim.x = _PrickDim.x*(.7+.3*exp(-.4*(_xScale-2.)))*2.0/_xScale;
                 
                 //Tri
                 float2 tp = abs(p);
