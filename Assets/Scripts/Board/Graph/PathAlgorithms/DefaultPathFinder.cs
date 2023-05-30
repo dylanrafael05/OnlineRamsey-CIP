@@ -32,7 +32,7 @@ namespace Ramsey.Graph
             PathsByColorByEndpoint.Add(node, new() { new() { new Path(node, 0) }, new() { new Path(node, 1) }});
         }
 
-        public Task HandlePaintedEdge(Edge edge)
+        public Task HandlePaintedEdge(Edge edge, Graph _)
         {
             Assert.AreNotEqual(edge.Type, Edge.NullType, "Cannot add a non-painted edge to an incremental path finder!");
 
