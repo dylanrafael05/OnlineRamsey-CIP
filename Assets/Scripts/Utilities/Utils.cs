@@ -232,6 +232,22 @@ namespace Ramsey.Utilities
             => xy.div(inSize).mul(outSize);
         public static float3 rescale(this float3 xy, float2 inSize, float2 outSize)
             => xy.div(float3(inSize, 1)).mul(float3(outSize, 1));
+
+        public static IReadOnlyList<int> BitPositions(ulong mask) 
+        {
+            var res = new List<int>();
+            var i = 0;
+
+            while(i < sizeof(ulong) * 8)
+            {
+                var b = mask & 1;
+                if(b == 1) res.Add(i);
+                mask >>= 1;
+                i++;
+            }
+
+            return res;
+        }
     }
 
     public class SequenceNavigator<T>

@@ -10,6 +10,7 @@ using Ramsey.Drawing;
 using Ramsey.UI;
 using Ramsey.Gameplayer;
 using Ramsey.Screen;
+using Ramsey.Graph.Experimental;
 
 public class Main : MonoBehaviour
 {
@@ -24,7 +25,7 @@ public class Main : MonoBehaviour
     {
         new CameraManager(screenCamera, boardCamera);
 
-        board = BoardManager.UsingAlgorithm<DefaultPathFinder>(CameraManager.BoardCamera, new BoardPreferences()
+        board = BoardManager.UsingAlgorithm<JobsPathFinder>(CameraManager.BoardCamera, new BoardPreferences()
         {
             drawingPreferences = new DrawingPreferences
             {
