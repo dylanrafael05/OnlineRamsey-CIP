@@ -6,7 +6,40 @@ using UnityEngine;
 
 namespace Ramsey.Graph
 {
-    public class Path
+    public interface IPath
+    {
+        int Type { get; }
+        IEnumerable<Node> Nodes { get; }
+
+        int Length { get; }
+        Node Start { get; }
+        Node End { get; }
+
+        IEnumerable<Edge> Edges { get; }
+
+        bool Contains(Node node);
+        bool IsEndpoint(Node node);
+    }
+
+    internal static class PathUtils
+    {
+        public static IEnumerable<Edge> GetEdgesConnecting(IEnumerable<Node> nodes) 
+        {
+            Node last = null;
+            foreach (var node in nodes.ToList())
+            {
+                if (last != null)
+                {
+                    yield return node.EdgeConnectedTo(last)
+                        ?? throw new InvalidOperationException("Edges must connect the nodes in a path.");
+                }
+
+                last = node;
+            }
+        }
+    }
+
+    public class Path : IPath
     {
         internal Path(VennList<Node> nodes, BitSet nodeSet, int type)
         {
@@ -56,29 +89,29 @@ namespace Ramsey.Graph
 
             return new Path(newNodes, newSet, Type);
         }
-        
-        public bool IsEndpoint(Node node) 
+
+        public bool IsEndpoint(Node node)
             => node == Start || node == End;
-        
-        public Path Expand(Node node, Node from) 
+
+        public Path Expand(Node node, Node from)
         {
-            if(from == Start) return Prepend(node);
-            else if(from == End) return Append(node);
+            if (from == Start) return Prepend(node);
+            else if (from == End) return Append(node);
 
             throw new InvalidOperationException("Cannot expand a path from a non-endpoint!");
         }
-        public bool IsIdenticalTo(Path other) 
+        public bool IsIdenticalTo(Path other)
         {
-            if(nodeSet.SetEquals(other.nodeSet))
+            if (nodeSet.SetEquals(other.nodeSet))
             {
-                if(Start == other.Start)
+                if (Start == other.Start)
                 {
-                    return End == other.End 
+                    return End == other.End
                         && nodes.SequenceEqual(other.nodes);
                 }
-                else if(Start == other.End)
+                else if (Start == other.End)
                 {
-                    return End == other.Start 
+                    return End == other.Start
                         && nodes.SequenceEqual(other.nodes.Reverse());
                 }
             }
@@ -87,20 +120,8 @@ namespace Ramsey.Graph
         }
 
         private IEnumerable<Edge> GetEdges()
-        {
-            Node last = null;
-            foreach(var node in nodes.ToList()) 
-            {
-                if (last != null) 
-                {
-                    yield return node.EdgeConnectedTo(last) 
-                        ?? throw new InvalidOperationException("Edges must connect the nodes in a path.");
-                }
+            => PathUtils.GetEdgesConnecting(Nodes);
 
-                last = node;
-            }
-        }
- 
         public IEnumerable<Edge> Edges
             => GetEdges();
 

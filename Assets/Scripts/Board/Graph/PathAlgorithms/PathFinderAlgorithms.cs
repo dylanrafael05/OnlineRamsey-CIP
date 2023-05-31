@@ -10,7 +10,7 @@ namespace Ramsey.Graph
 {
     internal static class PathFinderAlgorithms
     {
-        public const int NodeCount = 20;
+        public const int NodeCount = 14;
 
         internal static Task Time(Func<Task> task, string name)
         {

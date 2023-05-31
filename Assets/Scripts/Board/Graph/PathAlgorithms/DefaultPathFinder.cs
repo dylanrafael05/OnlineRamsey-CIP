@@ -10,11 +10,11 @@ namespace Ramsey.Graph
 {
     public class DefaultPathFinder : IIncrementalPathFinder
     {
-        public IEnumerable<Path> AllPaths => PathsByColorByEndpoint.Values.Merge().Merge();
+        public IEnumerable<IPath> AllPaths => PathsByColorByEndpoint.Values.Merge().Merge();
         private readonly List<Path> maxLengthPathByType;
 
         internal Dictionary<Node, List<HashSet<Path>>> PathsByColorByEndpoint { get; private set; }
-        public IReadOnlyList<Path> MaxPathsByType => maxLengthPathByType;
+        public IReadOnlyList<IPath> MaxPathsByType => maxLengthPathByType;
 
         public DefaultPathFinder()
         {

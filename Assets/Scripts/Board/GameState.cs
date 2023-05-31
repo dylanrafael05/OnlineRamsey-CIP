@@ -9,7 +9,6 @@ namespace Ramsey.Board
 {
     public class GameState 
     {
-
         internal GameState() { }
 
         internal BoardManager Board { get; set; }
@@ -19,7 +18,7 @@ namespace Ramsey.Board
         public int TargetPathLength { get; internal set; }
         public int TurnNum { get; internal set; }
 
-        public IReadOnlyList<Path> MaxPaths { get; internal set; }
+        public IReadOnlyList<IPath> MaxPaths { get; internal set; }
 
         public Edge EdgeStart(int i) => MaxPaths[i].Edges.First();
         public Edge EdgeEnd(int i)   => MaxPaths[i].Edges.Last();

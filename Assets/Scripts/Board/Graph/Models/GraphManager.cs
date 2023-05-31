@@ -16,7 +16,7 @@ namespace Ramsey.Graph
 
         public IReadOnlyList<Node> Nodes => graph.Nodes;
         public IReadOnlyList<Edge> Edges => graph.Edges;
-        public IEnumerable<Path> Paths => pathFinder.AllPaths;
+        public IEnumerable<IPath> Paths => pathFinder.AllPaths;
 
         public event Action OnFinishPathCalculation;
 
@@ -34,7 +34,7 @@ namespace Ramsey.Graph
                 await currentPathTask;
         }
 
-        public IReadOnlyList<Path> MaxPathsByType => pathFinder.MaxPathsByType;
+        public IReadOnlyList<IPath> MaxPathsByType => pathFinder.MaxPathsByType;
 
         internal readonly Graph graph;
         internal readonly IIncrementalPathFinder pathFinder;
