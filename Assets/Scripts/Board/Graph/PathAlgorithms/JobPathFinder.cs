@@ -25,10 +25,57 @@ namespace Ramsey.Graph.Experimental
         {
             var paths = await Task.Run(() => PathFinder.FindAll(graph));
 
+            var maxPath = paths[0];
+
             foreach(var p in paths) 
             {
-                Debug.Log($"{p.Start} -> {p.End} ; length {p.Length} [{Convert.ToString((long)p.Mask, 2).PadLeft(64, '-')}]");
+                if(p.Length > maxPath.Length)
+                {
+                    maxPath = p;
+                }
             }
+            
+            Debug.Log($"{maxPath.Start} -> {maxPath.End} ; length {maxPath.Length} [{Convert.ToString((long)maxPath.Mask, 2).PadLeft(64, '-')}]");
+        }
+    }
+
+    public readonly struct VirtualEdgeCreateAction 
+    {
+        public VirtualEdgeCreateAction(VirtualEdge edge, Biconnection conn) 
+        {
+            Edge = edge;
+            Connection = conn;
+        }
+
+        public VirtualEdge Edge { get; }
+        public Biconnection Connection { get; }
+    }
+
+    public readonly struct Biconnection : IEquatable<Biconnection>
+    {
+        public Biconnection(int a, int b) 
+        {
+            Min = math.min(a, b);
+            Max = math.max(a, b);
+        }
+
+        public Biconnection(Biconnection a, Biconnection b) 
+        {
+            Min = math.min(a.Min, b.Min);
+            Max = math.max(a.Max, b.Max);
+        }
+
+        public int Min { get; }
+        public int Max { get; }
+
+        public bool Equals(Biconnection other)
+        {
+            return Min == other.Min && Max == other.Max;
+        }
+
+        public override int GetHashCode()
+        {
+            return Min + short.MaxValue * Max;
         }
     }
 
@@ -36,17 +83,32 @@ namespace Ramsey.Graph.Experimental
     {
         public ulong Mask;
 
-        public int Count => X86.Popcnt.popcnt_u64(Mask);
+        public static bool operator ==(VirtualEdge a, VirtualEdge b) 
+            => a.Mask == b.Mask;
+        public static bool operator !=(VirtualEdge a, VirtualEdge b) 
+            => a.Mask != b.Mask;
+
+        public int Count => math.countbits(Mask);
         public bool IsValid => Mask != 0;
         public static bool CheckValidCombo(VirtualEdge a, VirtualEdge b) 
-            => X86.Popcnt.popcnt_u64(a.Mask & b.Mask) == 1L;
+            => math.countbits(a.Mask & b.Mask) == 1L;
 
         public static VirtualEdge operator |(VirtualEdge a, VirtualEdge b)
-            => new VirtualEdge() { Mask = a.Mask | b.Mask };
+            => new() { Mask = a.Mask | b.Mask };
 
         public override string ToString()
         {
             return Convert.ToString((long)Mask, 2).PadLeft(8, '-');
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is VirtualEdge v && this == v;
+        }
+
+        public override int GetHashCode()
+        {
+            return Mask.GetHashCode();
         }
     }
 
@@ -66,38 +128,54 @@ namespace Ramsey.Graph.Experimental
         public int End { get; }
     }
 
-    public struct NativeArray3D<T> where T : unmanaged
+    public struct NativeListMatrix<T> : IDisposable 
+        where T : unmanaged
     {
-        public NativeArray3D(int w, int h, int d, Allocator alloc)
+        public NativeListMatrix(int w, int h, int d, Allocator alloc)
         {
-            array = new NativeArray<T>(w * h * d, alloc);
-
             Width = w;
             Height = h;
-            Depth = d;
+            DepthCapacity = d;
+
+            array = new NativeArray<T>(w * h * d, alloc);
+            depths = new NativeArray<int>(w * h, alloc);
         }
 
-        public NativeArray3D(NativeArray3D<T> other) 
+        public NativeListMatrix(NativeListMatrix<T> other) 
         {
             array = other.array;
+            depths = other.depths;
 
             Width = other.Width;
             Height = other.Height;
-            Depth = other.Depth;
+            DepthCapacity = other.DepthCapacity;
         }
 
         [NativeDisableParallelForRestriction] private NativeArray<T> array;
+        [NativeDisableParallelForRestriction] private NativeArray<int> depths;
         public int Width { get; }
         public int Height { get; }
-        public int Depth { get; }
 
-        public NativeArray<T> Array => array;
+        public int DepthCapacity { get; }
 
         public int BuildIndex(int x, int y, int z)
         {
-            return y * Depth * Width 
-                 + x * Depth 
+            return y * DepthCapacity * Width 
+                 + x * DepthCapacity 
                  + z;
+        }
+
+        public int DepthAt(int x, int y)
+        {
+            return depths[x * Width + y];
+        }
+
+        public bool Add(int x, int y, T value)
+        {
+            var di = x * Width + y;
+
+            this[x, y, depths[di]] = value; 
+            return ++depths[di] < DepthCapacity;
         }
 
         public T this[int x, int y, int z]
@@ -106,6 +184,11 @@ namespace Ramsey.Graph.Experimental
             set => array[BuildIndex(x, y, z)] = value;
         }
 
+        public void Dispose()
+        {
+            array.Dispose();
+            depths.Dispose();
+        }
     }
 
     public static class PathFinder 
@@ -114,28 +197,29 @@ namespace Ramsey.Graph.Experimental
         {
             var nodeCount = graph.Nodes.Count;
 
-            NativeArray3D<VirtualEdge> bufferA = new(nodeCount, nodeCount, 64, Allocator.Persistent);
-            NativeArray3D<VirtualEdge> bufferB = new(nodeCount, nodeCount, 64, Allocator.Persistent);
+            NativeListMatrix<VirtualEdge> matrix = new(nodeCount, nodeCount, 80, Allocator.Persistent);
+            NativeQueue<VirtualEdgeCreateAction> actionQueue = new(Allocator.Persistent);
 
-            var job = new PathFinderJob
+            var core = new PathFinderCoreJob
             {
-                inputEdges = bufferA,
-                outputEdges = bufferB
+                input = matrix,
+                output = actionQueue.AsParallelWriter()
+            };
+            var merge = new PathFinderMergeJob
+            {
+                input = actionQueue,
+                output = matrix
             };
 
             var anyChanges = true;
-            NativeArray3D<VirtualEdge> currentOutput = bufferB;
 
             foreach(var edge in graph.Edges)
             {
-                bufferA[
-                    Mathf.Min(edge.Start.ID, edge.End.ID), 
-                    Mathf.Max(edge.Start.ID, edge.End.ID), 
-                    0
-                ] = new() { Mask = (1ul << edge.Start.ID) | (1ul << edge.End.ID) };
+                matrix.Add(
+                    math.min(edge.Start.ID, edge.End.ID), 
+                    math.max(edge.Start.ID, edge.End.ID), 
+                    new() { Mask = (1ul << edge.Start.ID) | (1ul << edge.End.ID) });
             }
-            
-            bufferB.Array.CopyFrom(bufferA.Array);
 
             // var s = "";
 
@@ -150,15 +234,18 @@ namespace Ramsey.Graph.Experimental
             
             // Debug.Log(s);
 
+            var count = 0;
+
             while(anyChanges)
             {
-                job.anyChanges = false;
-
-                var handle = job.Schedule(nodeCount * nodeCount, 16);
+                var handle = core.Schedule(nodeCount * nodeCount, 16);
                 handle.Complete();
 
-                anyChanges = job.anyChanges;
+                anyChanges = actionQueue.Count > 0;
 
+                handle = merge.Schedule();
+                handle.Complete();
+                
                 // Debug.Log("Did it once, hyay!");
 
                 // s = "";
@@ -173,28 +260,20 @@ namespace Ramsey.Graph.Experimental
                 // }
 
                 // Debug.Log(s);
+                count++;
 
-
-                if(anyChanges)
-                {
-                    job.inputEdges.Array.CopyFrom(job.outputEdges.Array);
-
-                    (job.inputEdges, job.outputEdges) = (job.outputEdges, job.inputEdges);
-                    currentOutput = job.outputEdges;
-                }
+                if(count > 100) break;
             }
 
             var pathlist = new List<Path>();
 
-            for(int i = 0; i < currentOutput.Width; i++)
+            for(int i = 0; i < matrix.Width; i++)
             {
-                for(int j = 0; j < currentOutput.Height; j++)
+                for(int j = 0; j < matrix.Height; j++)
                 {
-                    for(int k = 0; k < currentOutput.Depth; k++)
+                    for(int k = 0; k < matrix.DepthCapacity; k++)
                     {
-                        var ve = currentOutput[i, j, k];
-
-                        // Debug.Log($"Checking {i}, {j}, {k}");
+                        var ve = matrix[i, j, k];
 
                         if(ve.IsValid)
                         {
@@ -204,50 +283,77 @@ namespace Ramsey.Graph.Experimental
                 }
             }
 
-            bufferA.Array.Dispose();
-            bufferB.Array.Dispose();
+            matrix.Dispose();
+            actionQueue.Dispose();
 
             return pathlist.ToArray();
         }
     }
 
     [BurstCompile(CompileSynchronously = true)]
-    public struct PathFinderJob : IJobParallelFor
+    public struct PathFinderMergeJob : IJob 
     {
-        [ReadOnly, NativeDisableParallelForRestriction] public NativeArray3D<VirtualEdge> inputEdges;
+        public NativeQueue<VirtualEdgeCreateAction> input;
+        public NativeListMatrix<VirtualEdge> output;
 
-        [WriteOnly, NativeDisableParallelForRestriction] public NativeArray3D<VirtualEdge> outputEdges;
+        public void Execute()
+        {
+            while(input.TryDequeue(out var action))
+            {
+                var conn = action.Connection;
+                var edge = action.Edge;
+                
+                var shouldcontinue = false;
 
-        [WriteOnly] public bool anyChanges;
+                for(int i = 0; i < output.DepthAt(conn.Min, conn.Max); i++)
+                {
+                    var other = output[conn.Min, conn.Max, i];
+                    if(other == edge || other.Count > edge.Count) 
+                    {
+                        shouldcontinue = true;
+                        break;
+                    }
+                }
+
+                if(shouldcontinue) continue;
+                
+                output.Add(conn.Min, conn.Max, edge);
+
+                // Debug.Log($"{action.Connection.Min} -> {action.Connection.Max}, {action.Edge}");
+            }
+        }
+    }
+
+    [BurstCompile(CompileSynchronously = true)]
+    public struct PathFinderCoreJob : IJobParallelFor
+    {
+        [ReadOnly, NativeDisableParallelForRestriction] public NativeListMatrix<VirtualEdge> input;
+
+        [WriteOnly, NativeDisableParallelForRestriction] public NativeQueue<VirtualEdgeCreateAction>.ParallelWriter output;
 
         public void Execute(int i)
         {
-            int foundCount = 0;
+            int2 p = new(i % input.Width, i / input.Width);
+            if(p.x >= p.y) return;
 
-            int2 p = new(i % inputEdges.Width, i / inputEdges.Width);
-
-            // Debug.Log($"{p}");
-            // return;
-
-            if(p.x > p.y) return;
-
-            for(int y = 0; y<inputEdges.Height; y++)
+            Biconnection t = new(p.x, p.y);
+            
+            for(int z = 0; z < input.DepthAt(p.x, p.y); z++)
             {
-                for(int z = 0; z<inputEdges.Depth; z++)
-                {
-                    VirtualEdge a = inputEdges[p.x, p.y, z];
-                    if (!a.IsValid) break;
+                VirtualEdge a = input[p.x, p.y, z];
+                if (!a.IsValid) return;
 
-                    for (int zz = 0; zz < inputEdges.Depth; zz++)
+                for(int y = p.x + 1; y < input.Height; y++)
+                {
+                    Biconnection o = new(p.x, y);
+
+                    for (int zz = 0; zz < input.DepthAt(o.Min, o.Max); zz++)
                     {
-                        VirtualEdge b = inputEdges[p.y, y, zz];
+                        VirtualEdge b = input[o.Min, o.Max, zz];
                         if (!b.IsValid) break;
 
                         if(VirtualEdge.CheckValidCombo(a, b)) 
-                            outputEdges[p.x, y, foundCount] = a | b;
-                        
-                        foundCount++;
-                        anyChanges = true;
+                            output.Enqueue(new(a | b, new(t, o)));
                     }
                 }
             }

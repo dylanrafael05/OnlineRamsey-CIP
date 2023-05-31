@@ -10,7 +10,7 @@ namespace Ramsey.Graph
 {
     internal static class PathFinderAlgorithms
     {
-        public const int NodeCount = 10;
+        public const int NodeCount = 20;
 
         internal static Task Time(Func<Task> task, string name)
         {
@@ -30,24 +30,30 @@ namespace Ramsey.Graph
         internal static Task Perform<TAlgo>() where TAlgo : IIncrementalPathFinder, new()
             => Time(TestAlgo<TAlgo>, typeof(TAlgo).Name);
 
+
+        // TODO: this was fully mutilated in order to test the job path finder!
         internal static async Task TestAlgo<TAlgo>() where TAlgo : IIncrementalPathFinder, new()
         {
             var graph = GraphManager.UsingAlgorithm<TAlgo>();
+
+            Edge e = null;
             
             for(var i = 0; i < NodeCount; i++) graph.CreateNode();
             for(var i = 0; i < NodeCount; i++)
             {
                 for(var j = i + 1; j < NodeCount; j++)
                 {
-                    var e = graph.CreateEdge(
+                    if(e != null) graph.graph.PaintEdge(e, 0);
+
+                    e = graph.CreateEdge(
                         graph.NodeFromID(i), 
                         graph.NodeFromID(j)
                     );
-                    
-                    graph.PaintEdge(e, 0);
-                    await graph.AwaitPathTask();
                 }
             }
+
+            graph.PaintEdge(e, 0);
+            await graph.AwaitPathTask();
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
