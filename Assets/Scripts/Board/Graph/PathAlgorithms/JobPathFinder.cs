@@ -114,10 +114,10 @@ namespace Ramsey.Graph.Experimental
 
     public readonly struct Path 
     {
-        public Path(VirtualEdge edge, int start, int end) 
+        public Path(ulong mask, int count, int start, int end) 
         {
-            Mask = edge.Mask;
-            Length = edge.Count;
+            Mask = mask;
+            Length = count;
             Start = start;
             End = end;
         }
@@ -126,6 +126,39 @@ namespace Ramsey.Graph.Experimental
         public ulong Mask { get; }
         public int Start { get; }
         public int End { get; }
+
+        public override string ToString()
+        {
+            return $"{Start} -> {End} ; length {Length} [{Convert.ToString((long)Mask, 2).PadLeft(64, '-')}]";
+        }
+    }
+
+    public readonly struct NativeBitMatrix : IDisposable 
+    {
+        public NativeBitMatrix(int w, int h, Allocator alloc) 
+        {
+            Width = w;
+            Height = h;
+            Size = w * h;
+
+            innerArray = new(Size, alloc);
+        }
+
+        private readonly NativeBitArray innerArray;
+        public int Width { get; }
+        public int Height { get; }
+        public int Size { get; }
+
+        public bool this[int x, int y]
+        {
+            get => innerArray.IsSet(x * Height + y);
+            set => innerArray.Set(x * Height + y, value);
+        }
+
+        public void Dispose()
+        {
+            innerArray.Dispose();
+        }
     }
 
     public struct NativeListMatrix<T> : IDisposable 
@@ -197,29 +230,43 @@ namespace Ramsey.Graph.Experimental
         {
             var nodeCount = graph.Nodes.Count;
 
-            NativeListMatrix<VirtualEdge> matrix = new(nodeCount, nodeCount, 80, Allocator.Persistent);
-            NativeQueue<VirtualEdgeCreateAction> actionQueue = new(Allocator.Persistent);
+            NativeBitMatrix matrix = new(nodeCount, nodeCount, Allocator.Persistent);
+            NativeList<Path> paths = new(nodeCount * nodeCount, Allocator.Persistent);
+            NativeQueue<Path> actionQueue = new(Allocator.Persistent);
+            NativeArray<bool> anyChangesArr = new(1, Allocator.Persistent);
 
+            foreach(var edge in graph.Edges)
+            {
+                var min = math.min(edge.Start.ID, edge.End.ID);
+                var max = math.max(edge.Start.ID, edge.End.ID);
+
+                matrix[min, max] = true;
+
+                var p = new Path
+                (
+                    (1UL << min) | (1UL << max),
+                    1,
+                    min,
+                    max
+                );
+
+                paths.Add(p);
+            }
+            
             var core = new PathFinderCoreJob
             {
-                input = matrix,
-                output = actionQueue.AsParallelWriter()
+                matrix = matrix,
+                input = paths.AsParallelReader(),
+                output = actionQueue.AsParallelWriter(),
+                anyChanges = anyChangesArr
             };
             var merge = new PathFinderMergeJob
             {
                 input = actionQueue,
-                output = matrix
+                output = paths
             };
 
             var anyChanges = true;
-
-            foreach(var edge in graph.Edges)
-            {
-                matrix.Add(
-                    math.min(edge.Start.ID, edge.End.ID), 
-                    math.max(edge.Start.ID, edge.End.ID), 
-                    new() { Mask = (1ul << edge.Start.ID) | (1ul << edge.End.ID) });
-            }
 
             // var s = "";
 
@@ -238,77 +285,64 @@ namespace Ramsey.Graph.Experimental
 
             while(anyChanges)
             {
-                var handle = core.Schedule(nodeCount * nodeCount, 16);
+                anyChangesArr[0] = false;
+
+                var handle = core.Schedule(paths.Length, 16);
                 handle.Complete();
 
-                anyChanges = actionQueue.Count > 0;
+                anyChanges = anyChangesArr[0];
 
                 handle = merge.Schedule();
                 handle.Complete();
                 
                 // Debug.Log("Did it once, hyay!");
+                // Debug.Log(anyChanges);
 
-                // s = "";
+                // var s = "";
 
-                // for (int i = 0; i < job.outputEdges.Width; i++)
+                // for (int i = 0; i < paths.Length; i++)
                 // {
-                //     for (int j = 0; j < job.outputEdges.Height; j++)
-                //     {
-                //         s += job.outputEdges[i, j, 0] + ", ";
-                //     }
+                //     var p = paths[i];
+
+                //     s += $"{p}";
                 //     s += "\n";
                 // }
 
                 // Debug.Log(s);
+
                 count++;
 
                 if(count > 100) break;
             }
 
-            var pathlist = new List<Path>();
-
-            for(int i = 0; i < matrix.Width; i++)
-            {
-                for(int j = 0; j < matrix.Height; j++)
-                {
-                    for(int k = 0; k < matrix.DepthCapacity; k++)
-                    {
-                        var ve = matrix[i, j, k];
-
-                        if(ve.IsValid)
-                        {
-                            pathlist.Add(new Path(ve, i, j));
-                        }
-                    }
-                }
-            }
+            var pathlist = paths.ToArray();
 
             matrix.Dispose();
+            paths.Dispose();
             actionQueue.Dispose();
 
-            return pathlist.ToArray();
+            return pathlist;
         }
     }
 
     [BurstCompile(CompileSynchronously = true)]
     public struct PathFinderMergeJob : IJob 
     {
-        public NativeQueue<VirtualEdgeCreateAction> input;
-        public NativeListMatrix<VirtualEdge> output;
+        public NativeQueue<Path> input;
+        public NativeList<Path> output;
 
         public void Execute()
         {
-            while(input.TryDequeue(out var action))
+            output.Clear();
+
+            while(input.TryDequeue(out var path))
             {
-                var conn = action.Connection;
-                var edge = action.Edge;
-                
                 var shouldcontinue = false;
 
-                for(int i = 0; i < output.DepthAt(conn.Min, conn.Max); i++)
+                for(int i = 0; i < output.Length; i++)
                 {
-                    var other = output[conn.Min, conn.Max, i];
-                    if(other == edge || other.Count > edge.Count) 
+                    var other = output[i];
+                    if(other.Mask == path.Mask && (other.End == path.Start | other.End == path.End)) 
                     {
                         shouldcontinue = true;
                         break;
@@ -317,45 +351,61 @@ namespace Ramsey.Graph.Experimental
 
                 if(shouldcontinue) continue;
                 
-                output.Add(conn.Min, conn.Max, edge);
+                output.Add(path);
 
                 // Debug.Log($"{action.Connection.Min} -> {action.Connection.Max}, {action.Edge}");
             }
+
+            input.Clear();
         }
     }
 
     [BurstCompile(CompileSynchronously = true)]
     public struct PathFinderCoreJob : IJobParallelFor
     {
-        [ReadOnly, NativeDisableParallelForRestriction] public NativeListMatrix<VirtualEdge> input;
+        [ReadOnly] public NativeBitMatrix matrix;
 
-        [WriteOnly, NativeDisableParallelForRestriction] public NativeQueue<VirtualEdgeCreateAction>.ParallelWriter output;
+        [ReadOnly] public NativeArray<Path>.ReadOnly input;
+        [WriteOnly] public NativeQueue<Path>.ParallelWriter output;
+        [WriteOnly, NativeDisableParallelForRestriction] public NativeArray<bool> anyChanges;
 
         public void Execute(int i)
         {
-            int2 p = new(i % input.Width, i / input.Width);
-            if(p.x >= p.y) return;
+            Path p = input[i];
 
-            Biconnection t = new(p.x, p.y);
-            
-            for(int z = 0; z < input.DepthAt(p.x, p.y); z++)
+            var pcur = p.End;
+            var pother = p.Start;
+
+            var shouldAppendThis = true;
+    
+            for(int other = 0; other < matrix.Width; other++)
             {
-                VirtualEdge a = input[p.x, p.y, z];
-                if (!a.IsValid) return;
+                if(other == pcur | other == pother) continue;
 
-                for(int y = p.x + 1; y < input.Height; y++)
+                var min = math.min(pcur, other);
+                var max = math.max(pcur, other);
+
+                bool b = matrix[min, max];
+                if (!b) break;
+                
+                var othermask = 1UL << other;
+                var newmask = p.Mask | othermask;
+
+                if(newmask != p.Mask) 
                 {
-                    Biconnection o = new(p.x, y);
-
-                    for (int zz = 0; zz < input.DepthAt(o.Min, o.Max); zz++)
-                    {
-                        VirtualEdge b = input[o.Min, o.Max, zz];
-                        if (!b.IsValid) break;
-
-                        if(VirtualEdge.CheckValidCombo(a, b)) 
-                            output.Enqueue(new(a | b, new(t, o)));
-                    }
+                    shouldAppendThis = false;
+                    output.Enqueue(new(newmask, p.Length + 1, min, max));
                 }
+            }
+
+            if(shouldAppendThis)
+            {
+                output.Enqueue(p);
+            }
+            
+            if(!shouldAppendThis) 
+            {
+                anyChanges[0] = true;
             }
         }
     }
