@@ -4,7 +4,7 @@ using Text = TMPro.TMP_Text;
 
 namespace Ramsey.Drawing
 {
-    public static class Values
+    public static class UnityReferences
     {
         public static readonly Mesh QuadMesh = new()
         {

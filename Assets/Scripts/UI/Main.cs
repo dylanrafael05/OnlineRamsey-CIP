@@ -65,8 +65,7 @@ public class Main : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        var input = InputManager.Update();
-        UserModeHandler.Update(input);
+        UserModeHandler.Update(InputManager.Update());
 
         turns.Update();
         board.Update();

@@ -58,7 +58,7 @@ namespace Ramsey.UI
                             {
                                 board.MarkNewTurn();
                             }
-                            Debug.Log("Game End: " + (Math.Max(board.GameState.MaxPaths[0].Length, board.GameState.MaxPaths[1].Length) >= board.TargetPathLength));
+                            Debug.Log("Game End: " + board.GameState.IsGameDone);
                             Debug.Log("Current Turn: " + board.GameState.TurnNum);
                         }
 

@@ -40,7 +40,7 @@ namespace Ramsey.Drawing
 
         public Drawer(DrawingStorage storage, DrawingPreferences preferences, Camera camera)
         {
-            Values.Initialize();
+            UnityReferences.Initialize();
 
             //
             this.camera = camera;
@@ -53,10 +53,10 @@ namespace Ramsey.Drawing
             //
             argsArrayEdge = new uint[5]
             {
-                Values.QuadMesh.GetIndexCount(0),
+                UnityReferences.QuadMesh.GetIndexCount(0),
                 0,
-                Values.QuadMesh.GetIndexStart(0),
-                Values.QuadMesh.GetBaseVertex(0),
+                UnityReferences.QuadMesh.GetIndexStart(0),
+                UnityReferences.QuadMesh.GetBaseVertex(0),
                 0
             };
             argsArrayNode = new uint[5]; argsArrayEdge.CopyTo(argsArrayNode, 0);
@@ -75,12 +75,12 @@ namespace Ramsey.Drawing
             preferences.UniformPreferences();
 
             //Link To Shader
-            Values.EdgeMaterial.SetBuffer(Shader.PropertyToID("Transforms"), edgeTransformBuffer);
-            Values.EdgeMaterial.SetBuffer(Shader.PropertyToID("Colors"), edgeTypeBuffer);
-            Values.EdgeMaterial.SetBuffer(Shader.PropertyToID("IsHighlighted"), edgeHighlightBuffer);
+            UnityReferences.EdgeMaterial.SetBuffer(Shader.PropertyToID("Transforms"), edgeTransformBuffer);
+            UnityReferences.EdgeMaterial.SetBuffer(Shader.PropertyToID("Colors"), edgeTypeBuffer);
+            UnityReferences.EdgeMaterial.SetBuffer(Shader.PropertyToID("IsHighlighted"), edgeHighlightBuffer);
 
-            Values.NodeMaterial.SetBuffer(Shader.PropertyToID("Positions"), nodePositionBuffer);
-            Values.NodeMaterial.SetBuffer(Shader.PropertyToID("IsHighlighted"), nodeHighlightBuffer);
+            UnityReferences.NodeMaterial.SetBuffer(Shader.PropertyToID("Positions"), nodePositionBuffer);
+            UnityReferences.NodeMaterial.SetBuffer(Shader.PropertyToID("IsHighlighted"), nodeHighlightBuffer);
 
             //
             UpdateArgsBuffer();
@@ -124,8 +124,8 @@ namespace Ramsey.Drawing
 
         public float RecordingScale 
         {
-            get => Values.RecordingTransform.localScale.x;
-            set => Values.RecordingTransform.localScale = new float3(value, ((float3)Values.RecordingTransform.localScale).yz);
+            get => UnityReferences.RecordingTransform.localScale.x;
+            set => UnityReferences.RecordingTransform.localScale = new float3(value, ((float3)UnityReferences.RecordingTransform.localScale).yz);
         }
         
         public float2 Mouse { get; set; }
@@ -140,15 +140,15 @@ namespace Ramsey.Drawing
                 presentStorage.ShouldUpdateEdgeBuffer = false;
             }
 
-            Values.NodeMaterial.SetVector("_Mouse", Mouse.xyzw());
+            UnityReferences.NodeMaterial.SetVector("_Mouse", Mouse.xyzw());
 
-            Graphics.DrawMeshInstancedIndirect(Values.QuadMesh, 0, Values.EdgeMaterial, Values.Bounds, argsBufferEdge, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
-            Graphics.DrawMeshInstancedIndirect(Values.QuadMesh, 0, Values.NodeMaterial, Values.Bounds, argsBufferNode, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
-            Graphics.DrawMesh(Values.QuadMesh, Values.RecordingTransform.WorldMatrix(), Values.RecorderMaterial, LayerMask.NameToLayer("Board"), camera);
+            Graphics.DrawMeshInstancedIndirect(UnityReferences.QuadMesh, 0, UnityReferences.EdgeMaterial, UnityReferences.Bounds, argsBufferEdge, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
+            Graphics.DrawMeshInstancedIndirect(UnityReferences.QuadMesh, 0, UnityReferences.NodeMaterial, UnityReferences.Bounds, argsBufferNode, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
+            Graphics.DrawMesh(UnityReferences.QuadMesh, UnityReferences.RecordingTransform.WorldMatrix(), UnityReferences.RecorderMaterial, LayerMask.NameToLayer("Board"), camera);
 
             if (presentStorage.IsLoading)
             {
-                Graphics.DrawMesh(Values.QuadMesh, Values.LoadingTransform.WorldMatrix(), Values.LoadingMaterial, LayerMask.NameToLayer("Board"), camera);
+                Graphics.DrawMesh(UnityReferences.QuadMesh, UnityReferences.LoadingTransform.WorldMatrix(), UnityReferences.LoadingMaterial, LayerMask.NameToLayer("Board"), camera);
             }
 
             for(var i = 0; i < currentStorage.NodePositions.Count; i++) 

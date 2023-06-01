@@ -118,10 +118,12 @@ namespace Ramsey.Board
 
         public void Update()
         {
-            Values.GoalText.text = ""+gameState.TargetPathLength;
+            UnityReferences.GoalText.text = ""+gameState.TargetPathLength;
 
             RenderIO.SetLoading(graphManager.IsAwaitingPathTask);
             renderManager.ActionInterface.Update();
+
+            if (GameState.IsGameDone) UnityReferences.GoalText.text = "Game Over";
         }
         public void Cleanup()
         {

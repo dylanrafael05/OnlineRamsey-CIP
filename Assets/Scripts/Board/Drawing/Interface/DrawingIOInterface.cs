@@ -116,13 +116,13 @@ namespace Ramsey.Drawing
 
         public void UpdateRecorder(int prickAmount, int selectedID)
         {
-            Values.RecorderMaterial.SetFloat("_PrickAmount", (float)prickAmount);
-            Values.RecorderMaterial.SetFloat("_PrickSelectID", (float)selectedID);
+            UnityReferences.RecorderMaterial.SetFloat("_PrickAmount", (float)prickAmount);
+            UnityReferences.RecorderMaterial.SetFloat("_PrickSelectID", (float)selectedID);
 
             float scale = 2.0f + 5.0f * math.max(0, 1-math.exp(-0.1f*(prickAmount - 6)));
             drawer.RecordingScale = scale;
 
-            Values.RecorderMaterial.SetFloat("_xScale", scale);
+            UnityReferences.RecorderMaterial.SetFloat("_xScale", scale);
             
         }
 

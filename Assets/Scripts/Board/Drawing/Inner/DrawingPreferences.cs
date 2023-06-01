@@ -27,22 +27,22 @@ namespace Ramsey.Drawing
 
         public void UniformPreferences()
         {
-            Values.NodeMaterial.SetFloat("_Radius", nodeRadius);
-            Values.NodeMaterial.SetFloat("_HighlightRadius", highlightRadius);
+            UnityReferences.NodeMaterial.SetFloat("_Radius", nodeRadius);
+            UnityReferences.NodeMaterial.SetFloat("_HighlightRadius", highlightRadius);
 
-            Values.NodeMaterial.SetFloat("_HighlightThickness", highlightThickness);
+            UnityReferences.NodeMaterial.SetFloat("_HighlightThickness", highlightThickness);
 
-            Values.NodeMaterial.SetColor("_NodeColor", nodeColor);
-            Values.NodeMaterial.SetColor("_HighlightColor", highlightColor);
+            UnityReferences.NodeMaterial.SetColor("_NodeColor", nodeColor);
+            UnityReferences.NodeMaterial.SetColor("_HighlightColor", highlightColor);
 
-            Values.EdgeMaterial.SetColor("_HighlightColor", nodeColor); //think setting it to be nodecolor would be cool
-            Values.EdgeMaterial.SetFloat("_Thickness", edgeThickness);
+            UnityReferences.EdgeMaterial.SetColor("_HighlightColor", nodeColor); //think setting it to be nodecolor would be cool
+            UnityReferences.EdgeMaterial.SetFloat("_Thickness", edgeThickness);
 
-            Values.RecorderMaterial.SetColor("_Color", recorderColor);
-            Values.RecorderMaterial.SetFloat("_xScale", 2.0f);
+            UnityReferences.RecorderMaterial.SetColor("_Color", recorderColor);
+            UnityReferences.RecorderMaterial.SetFloat("_xScale", 2.0f);
 
-            Values.LoadingMaterial.SetFloat("_InnerRadius", loadingCircleInnerRadius);
-            Values.LoadingMaterial.SetFloat("_OuterRadius", loadingCircleOuterRadius);
+            UnityReferences.LoadingMaterial.SetFloat("_InnerRadius", loadingCircleInnerRadius);
+            UnityReferences.LoadingMaterial.SetFloat("_OuterRadius", loadingCircleOuterRadius);
         }
     }
 }
