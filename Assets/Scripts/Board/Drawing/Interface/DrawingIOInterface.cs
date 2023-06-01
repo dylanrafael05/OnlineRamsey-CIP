@@ -88,7 +88,7 @@ namespace Ramsey.Drawing
         public void SetLoading(bool isLoading)
             => data.IsLoading = isLoading;
 
-        public void SetHighlightedPathAsync(Path path)
+        public void SetHighlightedPathAsync(IPath path)
         {
             for(int i = 0; i < data.EdgeHighlights.Count; i++)
             {
