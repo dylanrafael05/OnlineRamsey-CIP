@@ -20,8 +20,8 @@ namespace Ramsey.Board
         public int TurnNum { get; internal set; }
 
         public IReadOnlyList<IPath> MaxPaths { get; internal set; }
-        public IPath MaxPath => MaxPaths?.MaxBy(p => p.Length);
-        public bool IsGameDone => MaxPath != null && MaxPath.Length >= TargetPathLength;
+        public IPath MaxPath { get; internal set; }
+        public bool IsGameDone => MaxPath is not null && MaxPath.Length >= TargetPathLength;
 
         public Edge EdgeStart(int i) => MaxPaths[i].Edges.First();
         public Edge EdgeEnd(int i)   => MaxPaths[i].Edges.Last();

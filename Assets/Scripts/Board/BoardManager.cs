@@ -55,6 +55,7 @@ namespace Ramsey.Board
             {
                 RenderIO.SetHighlightedPathAsync(GameState.MaxPaths.MaxBy(p => p.Length));
                 gameState.MaxPaths = graphManager.MaxPathsByType;
+                gameState.MaxPath = gameState.MaxPaths?.Where(p => p is not null).MaxBy(p => p.Length);
             };
 
             gameState = new()
@@ -77,7 +78,7 @@ namespace Ramsey.Board
 
         public Node CreateNode(float2? position = default)
         {
-            var n = graphManager.CreateNode(position ?? new float2(Rand.Range(-6, 6), Rand.Range(-3, 3)));
+            var n = graphManager.CreateNode(position ?? new float2(Rand.Range(-6f, 6f), Rand.Range(-3f, 3f)));
 
             renderManager.IOInterface.AddNode(n);
 
@@ -122,8 +123,6 @@ namespace Ramsey.Board
 
             RenderIO.SetLoading(graphManager.IsAwaitingPathTask);
             renderManager.ActionInterface.Update();
-
-            if (GameState.IsGameDone) UnityReferences.GoalText.text = "Game Over";
         }
         public void Cleanup()
         {

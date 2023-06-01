@@ -46,7 +46,7 @@ Shader "Unlit/Fullscreen/Vignette"
                 //return tex2D(_ScreenTexture, 1. - i.uv);
 
                 float2 uvc = i.uv * 2. - 1.;
-                uvc *= 16./9.;
+                uvc.x *= 16./9.;
                 
                 //params temp here
                 float repLen = 0.5;
@@ -55,14 +55,13 @@ Shader "Unlit/Fullscreen/Vignette"
 
                 float r = length(uvc);
                 
-                float d = 2.0*fmod(r+s*_Time.y, repLen)/repLen-1.;
+                float d = (fmod(-r+s*_Time.y+length(float2(16./9., 1.)), repLen)/repLen)*2.-1.;
                 r += a * d * pow(1.-abs(d), 2.0);
-                // uvc = uvc + float2(_SinTime.w / 10. + sin(r * 20.) / 40., _CosTime.w / 10. + sin(r * 20.) / 40.);
 
                 //if(fmod(-r + s*_Time.y+100., repLen) < .01) return float4(1.0, 1.0, 1.0, 1.0);
 
                 float o = atan2(uvc.y, uvc.x);
-                return tex2D(_ScreenTexture, 1. - (float2(r * cos(o), r * sin(o))*(9./16.)*.5+.5));
+                return tex2D(_ScreenTexture, 1. - (float2(r * cos(o), r * sin(o))*float2(9./16., 1.0)*.5+.5));
             }
             ENDCG
         }
