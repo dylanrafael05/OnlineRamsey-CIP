@@ -43,13 +43,14 @@ Shader "Unlit/Fullscreen/Vignette"
 
             fixed4 frag (vOut i) : SV_Target
             {
-                return tex2D(_ScreenTexture, 1. - i.uv);
+                //return tex2D(_ScreenTexture, 1. - i.uv);
 
                 float2 uvc = i.uv * 2. - 1.;
+                uvc *= 16./9.;
                 
                 //params temp here
                 float repLen = 0.5;
-                float a = 0.;//0.15;
+                float a = 0.15;
                 float s = 1.0;
 
                 float r = length(uvc);
@@ -61,7 +62,7 @@ Shader "Unlit/Fullscreen/Vignette"
                 //if(fmod(-r + s*_Time.y+100., repLen) < .01) return float4(1.0, 1.0, 1.0, 1.0);
 
                 float o = atan2(uvc.y, uvc.x);
-                return tex2D(_ScreenTexture, 1. - (float2(r * cos(o), r * sin(o))*.5+.5));
+                return tex2D(_ScreenTexture, 1. - (float2(r * cos(o), r * sin(o))*(9./16.)*.5+.5));
             }
             ENDCG
         }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using Ramsey.Graph;
+using Ramsey.Utilities;
 
 namespace Ramsey.Board
 {
@@ -19,8 +20,8 @@ namespace Ramsey.Board
         public int TurnNum { get; internal set; }
 
         public IReadOnlyList<IPath> MaxPaths { get; internal set; }
-        public IPath MaxPath => MaxPaths.Max();
-        public bool IsGameDone => MaxPath.Length >= TargetPathLength;
+        public IPath MaxPath => MaxPaths?.MaxBy(p => p.Length);
+        public bool IsGameDone => MaxPath != null && MaxPath.Length >= TargetPathLength;
 
         public Edge EdgeStart(int i) => MaxPaths[i].Edges.First();
         public Edge EdgeEnd(int i)   => MaxPaths[i].Edges.Last();
