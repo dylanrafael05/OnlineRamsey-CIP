@@ -14,8 +14,10 @@ namespace Ramsey.Board
 
         internal BoardManager Board { get; set; }
 
+        public IReadOnlyList<Node> Nodes => Board.Nodes;
+
         public int TargetPathLength { get; internal set; }
-        public int TurnNo { get; internal set; }
+        public int TurnNum { get; internal set; }
 
         public IReadOnlyList<Path> MaxPaths { get; internal set; }
 
@@ -32,5 +34,6 @@ namespace Ramsey.Board
         {
             return Board.CreateNode();
         }
+
     }
 }

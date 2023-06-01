@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Ramsey.Board;
 using Ramsey.Gameplayer;
 using Ramsey.Graph;
+using Ramsey.Utilities;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -57,6 +58,8 @@ namespace Ramsey.UI
                             {
                                 board.MarkNewTurn();
                             }
+                            Debug.Log("Game End: " + (Math.Max(board.GameState.MaxPaths[0].Length, board.GameState.MaxPaths[1].Length) >= board.TargetPathLength));
+                            Debug.Log("Current Turn: " + board.GameState.TurnNum);
                         }
 
                         if(board.IsAwaitingPathTask)
@@ -86,13 +89,17 @@ namespace Ramsey.UI
             {
                 if(isBuilderTurn)
                 {
-                    Debug.Log("Getting builder move . . .");
-                    awaitingMove = (builder as IPlayer).GetMove(board.GameState);
+                    //Debug.Log("Getting builder move . . .");
+                    awaitingMove = (builder as IPlayer).GetMove(board.GameState)
+                           .ContinueWith(async t => { await Task.Delay(200); return t.Result; })
+                           .Unwrap();
                 }
                 else 
                 {
-                    Debug.Log("Getting painter move . . .");
-                    awaitingMove = (painter as IPlayer).GetMove(board.GameState);
+                    //Debug.Log("Getting painter move . . .");
+                    awaitingMove = (painter as IPlayer).GetMove(board.GameState)
+                           .ContinueWith(async t => { await Task.Delay(200); return t.Result; })
+                           .Unwrap();
                 }
 
                 isAwaiting = true;

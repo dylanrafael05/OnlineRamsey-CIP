@@ -45,7 +45,7 @@ public class Main : MonoBehaviour
             }
         });
 
-        var ub = new UserBuilder(); var up = new UserPainter();
+        var ub = new RandomBuilder(.4f, .55f, .05f); var up = new RandomPainter();
         turns = new TurnManager(board, ub, up);
 
         TextRenderer.Create();
@@ -54,7 +54,7 @@ public class Main : MonoBehaviour
         InputManager.Create(board);
 
         var nodeEditingMode = new NodeEditingMode();
-        var turnNavigatorMode = new TurnNavigatorMode(new IUserMode[] { nodeEditingMode, ub, up });
+        var turnNavigatorMode = new TurnNavigatorMode(new IUserMode[] { nodeEditingMode }); //put locks in here
 
         UserModeHandler.AddMode(nodeEditingMode);
         UserModeHandler.AddMode(turnNavigatorMode);

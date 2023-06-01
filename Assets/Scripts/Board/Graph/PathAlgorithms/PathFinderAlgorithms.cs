@@ -50,7 +50,7 @@ namespace Ramsey.Graph
             }
         }
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        //[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         internal static void Test() 
         {
             Task.Run(async () => 

@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using UnityEngine.Profiling;
 using System.Linq;
 
+using Rand = UnityEngine.Random;
+
 namespace Ramsey.Board
 {
     public class BoardManager
@@ -73,9 +75,9 @@ namespace Ramsey.Board
             return new BoardManager(camera, prefs, GraphManager.UsingAlgorithm<TAlgo>());
         }
 
-        public Node CreateNode(float2 position = default)
+        public Node CreateNode(float2? position = default)
         {
-            var n = graphManager.CreateNode(position);
+            var n = graphManager.CreateNode(position ?? new float2(Rand.Range(-6, 6), Rand.Range(-3, 3)));
 
             renderManager.IOInterface.AddNode(n);
 
@@ -152,13 +154,13 @@ namespace Ramsey.Board
         public void MarkNewTurn()
         {
             recordingManager.AddCurrentTurn();
-            gameState.TurnNo++;
+            gameState.TurnNum++;
         }
 
         public void StartGame(int pathLength)
         {
             gameState.TargetPathLength = pathLength;
-            gameState.TurnNo = 0;
+            gameState.TurnNum = 0;
         }
     }
 }

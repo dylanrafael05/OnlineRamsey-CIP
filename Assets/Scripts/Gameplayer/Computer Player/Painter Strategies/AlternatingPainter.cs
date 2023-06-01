@@ -9,7 +9,7 @@ namespace Ramsey.Gameplayer
         public override Task<PainterMove> GetMove(GameState gameState)
         {
             return Task.FromResult<PainterMove>(
-                new(gameState.NewestEdge, gameState.TurnNo % gameState.TargetPathLength) 
+                new(gameState.NewestEdge, gameState.TurnNum % 2) 
             );
         }
     }
@@ -19,7 +19,7 @@ namespace Ramsey.Gameplayer
         public override Task<PainterMove> GetMove(GameState gameState)
         {
             return Task.FromResult<PainterMove>(
-                new(gameState.NewestEdge, gameState.TurnNo / (gameState.TargetPathLength - 1) % 2) 
+                new(gameState.NewestEdge, (gameState.TurnNum / (gameState.TargetPathLength - 1)) % 2) 
             );
         }
     }

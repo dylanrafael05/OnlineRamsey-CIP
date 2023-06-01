@@ -12,6 +12,13 @@ namespace Ramsey.Utilities
 {
     public static class Utils
     {
+        public static void Swap<T>(ref T a, ref T b)
+        {
+            T tempA = a;
+            a = b;
+            b = tempA;
+        }
+
         public static Matrix4x4 WorldMatrix(this RectTransform transform) 
         {
             var corners = new Vector3[4];
@@ -241,12 +248,13 @@ namespace Ramsey.Utilities
 
         int current = 0;
         List<IEnumerator<T>> navigators = new();
+        IEnumerable<T> lastEnumerable;
 
         public T Loop()
         {
             if (!navigators[current].MoveNext())
             {
-                if (current != navigators.Count - 1) current++; else navigators[current].Reset();
+                if (current != navigators.Count - 1) current++; else navigators[current] = lastEnumerable.GetEnumerator();
                 navigators[current].MoveNext(); 
             }
 
@@ -254,7 +262,7 @@ namespace Ramsey.Utilities
         }
 
         public SequenceNavigator(IList<IEnumerable<T>> sequences)
-            => sequences.Foreach(s => navigators.Add(s.GetEnumerator()));
+        { sequences.Foreach(s => navigators.Add(s.GetEnumerator())); lastEnumerable = sequences.Last(); }
 
     }
 }
