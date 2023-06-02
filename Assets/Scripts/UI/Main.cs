@@ -4,7 +4,6 @@ using Ramsey.Graph;
 using UnityEngine;
 using Unity.Mathematics;
 using System.Linq;
-using System.Diagnostics;
 using Ramsey.Board;
 using Ramsey.Drawing;
 using Ramsey.UI;
@@ -23,8 +22,7 @@ public class Main : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        new CameraManager(screenCamera, boardCamera);
-
+        
         board = BoardManager.UsingAlgorithm<JobsPathFinder>(CameraManager.BoardCamera, new BoardPreferences()
         {
             drawingPreferences = new DrawingPreferences
@@ -46,6 +44,8 @@ public class Main : MonoBehaviour
             }
         });
 
+        new CameraManager(screenCamera, boardCamera);
+
         var ub = new RandomBuilder(.4f, .55f, .05f); var up = new RandomPainter();
         turns = new TurnManager(board, ub, up);
 
@@ -63,7 +63,8 @@ public class Main : MonoBehaviour
         board.StartGame(10);
     }
 
-    // Update is called once per frame
+    bool effectPlayed;
+
     void Update()
     {
         UserModeHandler.Update(InputManager.Update());
@@ -73,7 +74,12 @@ public class Main : MonoBehaviour
 
         NodeSmoothing.Smooth(board);
 
-        if (board.GameState.IsGameDone) UnityReferences.GoalText.text = "Game Over";
+        if (board.GameState.IsGameDone && !effectPlayed)
+        {
+            UnityReferences.GoalText.text = "Game Over";
+            UnityReferences.ScreenMaterial.SetFloat("_TimeStart", Time.timeSinceLevelLoad);
+            effectPlayed = true;
+        }
     }
 
     void OnDestroy() 

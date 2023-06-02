@@ -1,8 +1,9 @@
-Shader "Unlit/Fullscreen/Vignette"
+Shader "Unlit/Fullscreen/Pulse"
 {
     Properties
     {
-        _ScreenTexture ("Texture", 2D) = "red" {}
+        [HideInInspector] _ScreenTexture ("Texture", 2D) = "red" {}
+        [HideInInspector] _TimeStart ("Time Start", Float) = -100.
     }
     SubShader
     {
@@ -41,6 +42,13 @@ Shader "Unlit/Fullscreen/Vignette"
                 return o;
             }
 
+            float _TimeStart;
+
+            float stepped(float val, float step)
+            {
+                return val - fmod(val, step);
+            }
+
             fixed4 frag (vOut i) : SV_Target
             {
                 //return tex2D(_ScreenTexture, 1. - i.uv);
@@ -51,11 +59,16 @@ Shader "Unlit/Fullscreen/Vignette"
                 //params temp here
                 float repLen = 0.5;
                 float a = 0.15;
-                float s = 1.0;
+                float s = 1.5;
+                float repeatAmount = 8.0;
 
                 float r = length(uvc);
                 
-                float d = (fmod(-r+s*_Time.y+length(float2(16./9., 1.)), repLen)/repLen)*2.-1.;
+                float rr = length(float2(16. / 9., 1.)) - r + s * (_Time.y - _TimeStart);
+                float d = fmod(rr, repLen);
+                float offset = length(float2(16. / 9., 1.));// stepped(length(float2(16. / 9., 1.)), repLen) + repLen;
+                d *= step(offset, rr) *step(rr, offset + repeatAmount * repLen);
+                d = d/repLen * 2. - 1.;
                 r += a * d * pow(1.-abs(d), 2.0);
 
                 //if(fmod(-r + s*_Time.y+100., repLen) < .01) return float4(1.0, 1.0, 1.0, 1.0);

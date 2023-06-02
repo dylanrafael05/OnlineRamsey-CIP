@@ -39,6 +39,7 @@ namespace Ramsey.Drawing
         public static Material NodeMaterial { get; private set; }
         public static Material RecorderMaterial { get; private set; }
         public static Material LoadingMaterial { get; private set; }
+        public static Material ScreenMaterial { get; private set; }
 
         public static void Initialize()
         {
@@ -54,6 +55,7 @@ namespace Ramsey.Drawing
             NodeMaterial = new(Shader.Find("Unlit/GraphShaders/NodeShader"));
             RecorderMaterial = new(Shader.Find("Unlit/UIShaders/RecordingShader"));
             LoadingMaterial = new(Shader.Find("Unlit/UIShaders/LoadingCircle"));
+            ScreenMaterial = new(Shader.Find("Unlit/Fullscreen/Pulse"));
         }
     }
 }
