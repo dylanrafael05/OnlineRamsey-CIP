@@ -34,6 +34,9 @@ namespace Ramsey.Board
         public void AddCurrentTurn()
         {
             boardStates.Add((new BoardState(board.RenderIO.CreateDrawState())));
+
+            if (selectedID != boardStates.Count-2) return;
+
             selectedID++;
             UpdateRecorder();
         }
