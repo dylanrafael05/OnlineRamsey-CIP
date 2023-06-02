@@ -9,8 +9,7 @@ using UnityEngine;
 
 namespace Ramsey.Graph
 {
-    
-    public class GraphManager
+    public class GraphManager : IGraphManager
     {
         public IReadOnlyGraph Graph => graph;
 
