@@ -91,14 +91,14 @@ namespace Ramsey.UI
                 {
                     //Debug.Log("Getting builder move . . .");
                     awaitingMove = (builder as IPlayer).GetMove(board.GameState)
-                           .ContinueWith(async t => { await Task.Delay(200); return t.Result; })
+                           .ContinueWith(async t => { await Task.Delay((int) builder.Delay * 1000); return t.Result; })
                            .Unwrap();
                 }
                 else 
                 {
                     //Debug.Log("Getting painter move . . .");
                     awaitingMove = (painter as IPlayer).GetMove(board.GameState)
-                           .ContinueWith(async t => { await Task.Delay(200); return t.Result; })
+                           .ContinueWith(async t => { await Task.Delay((int) painter.Delay * 1000); return t.Result; })
                            .Unwrap();
                 }
 

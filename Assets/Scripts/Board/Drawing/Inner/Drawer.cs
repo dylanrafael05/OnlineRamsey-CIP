@@ -3,7 +3,6 @@ using System.Runtime.InteropServices;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Diagnostics;
-using Ramsey.Screen;
 using Ramsey.Utilities;
 
 namespace Ramsey.Drawing

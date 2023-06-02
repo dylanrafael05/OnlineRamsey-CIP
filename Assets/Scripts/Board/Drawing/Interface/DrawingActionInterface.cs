@@ -16,9 +16,7 @@ namespace Ramsey.Drawing
 
         //
         public void Update()
-        {
-            drawer.Draw();
-        }
+            => drawer.Draw();
 
         public void Cleanup()
             => drawer.Cleanup();

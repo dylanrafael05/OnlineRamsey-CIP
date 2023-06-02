@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Mathematics;
+using Ramsey.Drawing;
 
 namespace Ramsey.Screen
 {
@@ -33,9 +34,8 @@ namespace Ramsey.Screen
             boardCamera.targetTexture = renderTexture;
 
             //
-            Material m = new Material(Shader.Find("Unlit/Fullscreen/Vignette"));
-            GameObject.Find("Board Plane").GetComponent<MeshRenderer>().material = m;
-            m.SetTexture(Shader.PropertyToID("_ScreenTexture"), renderTexture);
+            GameObject.Find("Board Plane").GetComponent<MeshRenderer>().material = UnityReferences.ScreenMaterial;
+            UnityReferences.ScreenMaterial.SetTexture(Shader.PropertyToID("_ScreenTexture"), renderTexture);
         }
 
     }

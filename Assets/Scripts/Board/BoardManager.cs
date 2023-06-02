@@ -119,8 +119,6 @@ namespace Ramsey.Board
 
         public void Update()
         {
-            UnityReferences.GoalText.text = ""+gameState.TargetPathLength;
-
             RenderIO.SetLoading(graphManager.IsAwaitingPathTask);
             renderManager.ActionInterface.Update();
         }
@@ -162,6 +160,7 @@ namespace Ramsey.Board
         {
             gameState.TargetPathLength = pathLength;
             gameState.TurnNum = 0;
+            UnityReferences.GoalText.text = "" + gameState.TargetPathLength;
         }
     }
 }
