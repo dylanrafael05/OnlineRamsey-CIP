@@ -37,9 +37,6 @@ namespace Ramsey.Graph
                 lendel *= 1f;
                 var scale = 0.5f * math.exp(-lendel*lendel);
 
-                Debug.Log($"{lendel} -> {scale}");
-                // var scale = (math.exp(-lendel) - .5f) / (lendel + 1) * 1f;
-
                 if(math.abs(scale) > 0.005f)
                 {
                     npos += delta / math.length(delta) * scale;
