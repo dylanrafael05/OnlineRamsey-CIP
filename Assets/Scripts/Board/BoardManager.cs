@@ -14,7 +14,7 @@ using Rand = UnityEngine.Random;
 
 namespace Ramsey.Board
 {
-    public class BoardManager
+    public class BoardManager : IGraphManager
     {
         private readonly RecordingManager recordingManager;
         private readonly DrawingManager renderManager;
