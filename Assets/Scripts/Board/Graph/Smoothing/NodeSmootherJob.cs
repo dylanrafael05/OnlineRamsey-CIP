@@ -4,18 +4,14 @@ using Unity.Jobs;
 
 using Random = Unity.Mathematics.Random;
 using System.Linq;
+using UnityEngine;
 
 namespace Ramsey.Graph
 {
     public struct NodeSmootherJob : IJobParallelFor
     {
-        [NativeMatchesParallelForLength]
-        public NativeArray<float2> positions;
-
-        public static float GetScaleFromRadiusSquared(float r2)
-        {
-            return (math.pow(math.E, -r2) - .5f) / (r2*r2*r2 + 1);
-        }
+        [NativeMatchesParallelForLength, ReadOnly] public NativeArray<float2> positions;
+        [NativeMatchesParallelForLength, WriteOnly] public NativeArray<float2> outPositions;
 
         public void Execute(int index)
         {
@@ -26,6 +22,7 @@ namespace Ramsey.Graph
 
             for(int i = 0; i < positions.Length; i++)
             {
+                if(i == index) continue;
                 var other = positions[i];
 
                 var delta = pos - other;
@@ -37,15 +34,19 @@ namespace Ramsey.Graph
                     delta = ran.NextFloat2Direction();
                 }
 
-                var scale = GetScaleFromRadiusSquared(lendel);
+                lendel *= 1f;
+                var scale = 0.5f * math.exp(-lendel*lendel);
 
-                if(math.abs(scale) > 0.01f)
+                Debug.Log($"{lendel} -> {scale}");
+                // var scale = (math.exp(-lendel) - .5f) / (lendel + 1) * 1f;
+
+                if(math.abs(scale) > 0.005f)
                 {
-                    npos += math.normalize(delta) * scale;
+                    npos += delta / math.length(delta) * scale;
                 }
             }
 
-            positions[index] = npos;
+            outPositions[index] = npos;
         }
     }
 }
