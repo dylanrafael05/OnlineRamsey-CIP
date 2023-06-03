@@ -13,10 +13,21 @@ namespace Ramsey.Graph
         [NativeMatchesParallelForLength, ReadOnly] public NativeArray<float2> positions;
         [NativeMatchesParallelForLength, WriteOnly] public NativeArray<float2> outPositions;
 
+        public float GetScaleFromRadiusSquared(float r2)
+        {
+            return math.exp(-r2);
+        }
+
+        public float2 ModifyVelocity(float2 vel) 
+        {
+            const float A = 0.1f / math.PI;
+            return math.atan(math.length(vel / A)) * A * math.normalizesafe(vel);
+        }
+
         public void Execute(int index)
         {
             var pos = positions[index];
-            var npos = pos;
+            var vel = new float2();
 
             var ran = Random.CreateFromIndex(math.asuint(index));
 
@@ -34,16 +45,15 @@ namespace Ramsey.Graph
                     delta = ran.NextFloat2Direction();
                 }
 
-                lendel *= 1f;
-                var scale = 0.5f * math.exp(-lendel*lendel);
+                var scale = 0.15f * GetScaleFromRadiusSquared(lendel * 0.6f);
 
                 if(math.abs(scale) > 0.005f)
                 {
-                    npos += delta / math.length(delta) * scale;
+                    vel += delta / math.length(delta) * scale;
                 }
             }
 
-            outPositions[index] = npos;
+            outPositions[index] = pos + ModifyVelocity(vel);
         }
     }
 }
