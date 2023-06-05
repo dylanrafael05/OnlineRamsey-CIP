@@ -4,28 +4,36 @@ using Unity.Jobs;
 
 using Random = Unity.Mathematics.Random;
 using System.Linq;
+using UnityEngine;
 
 namespace Ramsey.Graph
 {
     public struct NodeSmootherJob : IJobParallelFor
     {
-        [NativeMatchesParallelForLength]
-        public NativeArray<float2> positions;
+        [NativeMatchesParallelForLength, ReadOnly] public NativeArray<float2> positions;
+        [NativeMatchesParallelForLength, WriteOnly] public NativeArray<float2> outPositions;
 
-        public static float GetScaleFromRadiusSquared(float r2)
+        public float GetScaleFromRadiusSquared(float r2)
         {
-            return (math.pow(math.E, -r2) - .5f) / (r2*r2*r2 + 1);
+            return math.exp(-r2);
+        }
+
+        public float2 ModifyVelocity(float2 vel) 
+        {
+            const float A = 0.1f / math.PI;
+            return math.atan(math.length(vel / A)) * A * math.normalizesafe(vel);
         }
 
         public void Execute(int index)
         {
             var pos = positions[index];
-            var npos = pos;
+            var vel = new float2();
 
             var ran = Random.CreateFromIndex(math.asuint(index));
 
             for(int i = 0; i < positions.Length; i++)
             {
+                if(i == index) continue;
                 var other = positions[i];
 
                 var delta = pos - other;
@@ -37,15 +45,15 @@ namespace Ramsey.Graph
                     delta = ran.NextFloat2Direction();
                 }
 
-                var scale = GetScaleFromRadiusSquared(lendel);
+                var scale = 0.15f * GetScaleFromRadiusSquared(lendel * 0.6f);
 
-                if(math.abs(scale) > 0.01f)
+                if(math.abs(scale) > 0.005f)
                 {
-                    npos += math.normalize(delta) * scale;
+                    vel += delta / math.length(delta) * scale;
                 }
             }
 
-            positions[index] = npos;
+            outPositions[index] = pos + ModifyVelocity(vel);
         }
     }
 }

@@ -2,6 +2,7 @@ using Unity.Mathematics;
 using Unity.Collections;
 using Unity.Jobs;
 using System.Linq;
+using Ramsey.Utilities;
 
 namespace Ramsey.Graph
 {
@@ -12,23 +13,27 @@ namespace Ramsey.Graph
             var positions = new NativeArray<float2>(
                 gm.Graph.Nodes.Select(n => n.Position).ToArray(),
                 Allocator.TempJob);
+            var outPositions = new NativeArray<float2>(positions, Allocator.TempJob);
 
             var ns = new NodeSmootherJob
             {
                 positions = positions,
+                outPositions = outPositions,
             };
 
             for(int count = 0; count < iterationCount; count++)
             {
+                (ns.outPositions, ns.positions) = (ns.positions, ns.outPositions);
                 ns.Run(positions.Length);
             }
 
-            for(int i = 0; i < positions.Length; i++)
+            for (int i = 0; i < ns.outPositions.Length; i++)
             {
-                gm.MoveNode(gm.Graph.Nodes[i], positions[i]);
+                gm.MoveNode(gm.Graph.Nodes[i], ns.outPositions[i]);
             }
 
             positions.Dispose();
+            outPositions.Dispose();
         }
     }
 }

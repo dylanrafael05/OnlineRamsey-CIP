@@ -53,9 +53,10 @@ namespace Ramsey.Board
 
             graphManager.OnFinishPathCalculation += delegate 
             {
-                RenderIO.SetHighlightedPathAsync(GameState.MaxPaths.MaxBy(p => p.Length));
                 gameState.MaxPaths = graphManager.MaxPathsByType;
                 gameState.MaxPath = gameState.MaxPaths?.Where(p => p is not null).MaxBy(p => p.Length);
+                
+                RenderIO.SetHighlightedPathAsync(gameState.MaxPath);
             };
 
             gameState = new()
