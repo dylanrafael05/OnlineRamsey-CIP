@@ -16,6 +16,7 @@ namespace Ramsey.Graph
         public IReadOnlyList<Node> Nodes => graph.Nodes;
         public IReadOnlyList<Edge> Edges => graph.Edges;
         public IEnumerable<IPath> Paths => pathFinder.AllPaths;
+        public int? MaxNodeCount => pathFinder.MaxSupportedNodeCount;
 
         public event Action OnFinishPathCalculation;
 
@@ -52,6 +53,11 @@ namespace Ramsey.Graph
 
         public Node CreateNode(float2 position = default)
         {
+            if(pathFinder.MaxSupportedNodeCount is int max && Nodes.Count > max)
+            {
+                throw new GraphTooComplexException(max);
+            }
+
             var n = graph.CreateNode(position);
             pathFinder.HandleNodeAddition(n);
 

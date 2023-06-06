@@ -21,7 +21,11 @@ namespace Ramsey.UI
         {
             if (input.alt && input.lmbp)
             {
-                board.CreateNode(input.mouse);
+                try 
+                {
+                    board.CreateNode(input.mouse);
+                }
+                catch(GraphTooComplexException) {}
             }
 
             if (input.shift && input.lmbp)

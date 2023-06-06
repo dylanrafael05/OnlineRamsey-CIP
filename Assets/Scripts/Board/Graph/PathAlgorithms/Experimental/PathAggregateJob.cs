@@ -8,7 +8,7 @@ namespace Ramsey.Graph.Experimental
     internal struct PathAggregateJob : IJob 
     {
         public int step;
-        public NativeQueue<JobPathInternal> input;
+        public NativeQueue<JobPathGeneration> input;
         public NativeList<JobPathInternal> deadOutput;
         public NativeList<JobPathInternal> liveOutput;
 
@@ -16,11 +16,12 @@ namespace Ramsey.Graph.Experimental
         {
             liveOutput.Clear();
 
-            while(input.TryDequeue(out var path))
+            while(input.TryDequeue(out var gen))
             {
                 var shouldcontinue = false;
+                var path = gen.Path;
 
-                // Duplicates in all
+                // Duplicates in dead
                 for(int i = 0; i < deadOutput.Length; i++)
                 {
                     var other = deadOutput[i];
@@ -46,19 +47,16 @@ namespace Ramsey.Graph.Experimental
 
                 if(shouldcontinue) continue;
                 
-                if(path.Length <= step)
-                {
-                    deadOutput.Add(path);
-                }
-                else 
+                // Sort in
+                if(gen.IsLive)
                 {
                     liveOutput.Add(path);
                 }
-
-                // Debug.Log($"{action.Connection.Min} -> {action.Connection.Max}, {action.Edge}");
+                else 
+                {
+                    deadOutput.Add(path);
+                }
             }
-
-            input.Clear();
         }
     }
 }

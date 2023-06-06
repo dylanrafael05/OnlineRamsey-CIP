@@ -211,10 +211,51 @@ namespace Ramsey.Utilities
             
             return v;
         }
+
+        public static void PadDefaultUpto<T>(this IList<T> t, int index)
+        {
+            while(t.Count <= index) 
+            {
+                t.Add(default);
+            }
+        }
+        public static void PadNewUpto<T>(this IList<T> t, int index) 
+            where T : new()
+        {
+            while(t.Count <= index) 
+            {
+                t.Add(new());
+            }
+        }
+        public static void PadUpto<T>(this IList<T> t, int index, Func<T> cons)
+        {
+            while(t.Count <= index) 
+            {
+                t.Add(cons());
+            }
+        }
     }
 
-    public static class MathUtils
+    public static class mathutils
     {
+        public static ulong bitposmask(int b)
+            => 1ul << b;
+        public static bool bit(ulong ul, int b) 
+            => (ul & bitposmask(b)) != 0;
+
+        public static ulong setbit(ulong ul, int b)
+            => ul | bitposmask(b);
+        public static ulong unsetbit(ulong ul, int b)
+            => ul & ~bitposmask(b);
+        public static ulong flipbit(ulong ul, int b) 
+            => ul ^ bitposmask(b);
+        public static void setbit(ref ulong ul, int b)
+            => ul = setbit(ul, b);
+        public static void unsetbit(ref ulong ul, int b)
+            => ul = unsetbit(ul, b);
+        public static void flipbit(ref ulong ul, int b)
+            => ul = flipbit(ul, b);
+
         public static float3 xyz(this float2 v) 
             => float3(v.x, v.y, 0);
         public static float4 xyzw(this float2 v)
@@ -240,12 +281,12 @@ namespace Ramsey.Utilities
         public static float3 rescale(this float3 xy, float2 inSize, float2 outSize)
             => xy.div(float3(inSize, 1)).mul(float3(outSize, 1));
 
-        public static IReadOnlyList<int> BitPositions(ulong mask) 
+        public static IReadOnlyList<int> BitPositions(Bit256 mask) 
         {
             var res = new List<int>();
             var i = 0;
 
-            while(i < sizeof(ulong) * 8)
+            while(i < 256)
             {
                 var b = mask & 1;
                 if(b == 1) res.Add(i);

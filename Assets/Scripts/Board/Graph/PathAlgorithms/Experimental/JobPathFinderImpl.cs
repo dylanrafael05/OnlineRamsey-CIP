@@ -2,91 +2,92 @@ using Unity.Jobs;
 using Unity.Collections;
 using Unity.Mathematics;
 using System.Linq;
+using Ramsey.Utilities;
+using System.Collections.Generic;
 
 namespace Ramsey.Graph.Experimental
 {
     internal static class JobPathFinderImpl
     {
-        internal static JobPathInternal[] FindAll(Graph graph, int type) 
+        internal static JobPathInternal[] FindAll(Graph graph, int type)
         {
             var nodeCount = graph.Nodes.Count;
 
-            NativeBitMatrix matrix = new(nodeCount, nodeCount, Allocator.Persistent);
-            NativeList<JobPathInternal> deadPaths = new(nodeCount * nodeCount, Allocator.Persistent);
-            NativeList<JobPathInternal> livePaths = new(nodeCount * nodeCount, Allocator.Persistent);
-            NativeQueue<JobPathInternal> actionQueue = new(Allocator.Persistent);
-            NativeReturn<bool> anyChangesWrap = new(Allocator.Persistent);
-
+            NativeBitMatrix matrix = graph.AdjacenciesForType(type).ToNative(Allocator.Persistent);
+            NativeList<JobPathInternal> startPaths = new(nodeCount * nodeCount, Allocator.Persistent);
+            
             foreach(var edge in graph.Edges.Where(e => e.Type == type))
             {
-                var min = math.min(edge.Start.ID, edge.End.ID);
-                var max = math.max(edge.Start.ID, edge.End.ID);
-
-                matrix[min, max] = true;
+                matrix[edge.Start.ID, edge.End.ID] = true;
+                matrix[edge.End.ID, edge.Start.ID] = true;
 
                 var p = new JobPathInternal
                 (
-                    (1UL << min) | (1UL << max),
+                    (Bit256.One << edge.Start.ID) | (Bit256.One << edge.End.ID),
                     1,
-                    min,
-                    max
+                    edge.Start.ID,
+                    edge.End.ID
                 );
 
-                livePaths.Add(p);
+                startPaths.Add(p);
             }
 
-            // var s = "";
-            // for(int j = 0; j < matrix.Height; j++)
-            // {
-            //     s += j + ": ";
-            //     for(int i = 0; i < matrix.Width; i++)
-            //     {
-            //         s += matrix[i, j] ? '#' : '-';
-            //     }
-            //     s += "\n";
-            // }
-            // Debug.Log(s);
+            return Find(matrix, startPaths);
+        }
+
+        internal static JobPathInternal[] FindIncr(Graph graph, IReadOnlyList<JobPath> existingPaths, Edge newEdge)
+        {
+            NativeBitMatrix matrix = graph.AdjacenciesForType(newEdge.Type).ToNative(Allocator.Persistent);
+            NativeList<JobPathInternal> startPaths = new(existingPaths.Count * 2 + 1, Allocator.Persistent);
+
+            foreach(var p in existingPaths)
+            {
+                startPaths.AddNoResize(p.Internal);
+            }
+
+            startPaths.AddNoResize(new JobPathInternal
+            (
+                (Bit256.One << newEdge.Start.ID) | (Bit256.One << newEdge.End.ID),
+                1,
+                newEdge.Start.ID,
+                newEdge.End.ID
+            ));
+
+            return Find(matrix, startPaths);
+        }
+
+        internal static JobPathInternal[] Find(NativeBitMatrix matrix, NativeList<JobPathInternal> startPaths) 
+        {
+            NativeList<JobPathInternal> livePaths = startPaths;
+            NativeList<JobPathInternal> deadPaths = new(matrix.Area, Allocator.Persistent);
+
+            NativeQueue<JobPathGeneration> generationQueue = new(Allocator.Persistent);
+            NativeReturn<bool> anyChanges = new(Allocator.Persistent, true);
             
-            var core = new PathGenerateJob
+            var gen = new PathGenerateJob
             {
                 matrix = matrix,
                 input = livePaths.AsParallelReader(),
-                output = actionQueue.AsParallelWriter(),
-                anyChanges = anyChangesWrap
+                output = generationQueue.AsParallelWriter(),
+                anyChanges = anyChanges
             };
-            var merge = new PathAggregateJob
+            var agg = new PathAggregateJob
             {
-                input = actionQueue,
+                input = generationQueue,
                 deadOutput = deadPaths,
                 liveOutput = livePaths
             };
 
-            var anyChanges = true;
-            var step = 1;
-
-            while(anyChanges)
+            while(anyChanges.Value)
             {
-                anyChangesWrap.Value = false;
+                anyChanges.Value = false;
 
-                core.output = actionQueue.AsParallelWriter();
-                core.input = livePaths.AsParallelReader();
-                core.matrix = matrix;
+                gen.input = livePaths.AsParallelReader();
+                gen.output = generationQueue.AsParallelWriter();
+                gen.matrix = matrix;
 
-                core.step = step;
-
-                var handle = core.Schedule(livePaths.Length, 16);
-                handle.Complete();
-
-                anyChanges = anyChangesWrap.Value;
-
-                merge.step = step;
-
-                handle = merge.Schedule();
-                handle.Complete();
-
-                step++;
-
-                if(step > 100) break;
+                gen.Schedule(livePaths.Length, 16).Complete();
+                agg.Schedule().Complete();
             }
 
             var pathlist = deadPaths.ToArray();
@@ -94,8 +95,8 @@ namespace Ramsey.Graph.Experimental
             matrix.Dispose();
             deadPaths.Dispose();
             livePaths.Dispose();
-            actionQueue.Dispose();
-            anyChangesWrap.Dispose();
+            generationQueue.Dispose();
+            anyChanges.Dispose();
 
             return pathlist;
         }

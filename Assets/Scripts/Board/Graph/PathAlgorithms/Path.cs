@@ -6,39 +6,6 @@ using UnityEngine;
 
 namespace Ramsey.Graph
 {
-    public interface IPath
-    {
-        int Type { get; }
-        IEnumerable<Node> Nodes { get; }
-
-        int Length { get; }
-        Node Start { get; }
-        Node End { get; }
-
-        IEnumerable<Edge> Edges { get; }
-
-        bool Contains(Node node);
-        bool IsEndpoint(Node node);
-    }
-
-    internal static class PathUtils
-    {
-        public static IEnumerable<Edge> GetEdgesConnecting(IEnumerable<Node> nodes) 
-        {
-            Node last = null;
-            foreach (var node in nodes.ToList())
-            {
-                if (last != null)
-                {
-                    yield return node.EdgeConnectedTo(last)
-                        ?? throw new InvalidOperationException("Edges must connect the nodes in a path.");
-                }
-
-                last = node;
-            }
-        }
-    }
-
     public class Path : IPath
     {
         internal Path(VennList<Node> nodes, BitSet nodeSet, int type)

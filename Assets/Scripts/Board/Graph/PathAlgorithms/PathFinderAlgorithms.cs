@@ -68,7 +68,7 @@ namespace Ramsey.Graph
                     await Task.WhenAll
                     ( 
                         // Perform<DefaultPathFinder>(), //,
-                        Perform<Experimental.JobsPathFinder>()
+                        Perform<Experimental.JobPathFinder>()
                     );
                 }
             });

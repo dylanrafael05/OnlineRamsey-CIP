@@ -11,6 +11,8 @@ namespace Ramsey.Gameplayer
 {
     public class UserBuilder : Builder, IUserMode
     {
+        public UserBuilder() : base(0) {}
+
         public override async Task<BuilderMove> GetMove(GameState gameState)
         {
             UserModeHandler.AddMode(this);
@@ -54,6 +56,8 @@ namespace Ramsey.Gameplayer
 
     public class UserPainter : Painter, IUserMode
     {
+        public UserPainter() : base(0) {}
+
         public override async Task<PainterMove> GetMove(GameState gameState)
         {
             UserModeHandler.AddMode(this);

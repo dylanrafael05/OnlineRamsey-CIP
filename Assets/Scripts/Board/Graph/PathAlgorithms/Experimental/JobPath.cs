@@ -10,7 +10,7 @@ namespace Ramsey.Graph.Experimental
     {
         internal JobPath(JobPathInternal from, Graph graph, int type)
         {
-            mask = from.Mask;
+            Internal = from;
 
             // Debug.Log(from);
 
@@ -19,38 +19,47 @@ namespace Ramsey.Graph.Experimental
 
             Length = from.Length;
 
-            IEnumerable<List<Node>> FindSequence(List<Node> nodesSoFar, List<Node> nodesRemaining)
+            IEnumerable<List<Node>> FindSequence(List<Node> nodesSoFar, HashSet<Node> nodesRemaining)
             {
                 if(nodesRemaining.Count == 0)
                 {
                     if(nodesSoFar.Last().ID == from.End)
                     {
-                        yield return nodesSoFar;
+                        yield return nodesSoFar.ToList();
                     }
 
                     yield break;
                 }
 
-                foreach(var node in nodesRemaining)
+                foreach(var node in nodesRemaining.ToList())
                 {
                     var edgeToNext = nodesSoFar.Last().EdgeConnectedTo(node);
                     if(edgeToNext != null && edgeToNext.Type == type)
                     {
-                        foreach(var seq in FindSequence(nodesSoFar.Append(node).ToList(), nodesRemaining.Where(n => n != node).ToList()))
+                        nodesRemaining.Remove(node);
+                        nodesSoFar.Add(node);
+
+                        foreach(var seq in FindSequence(nodesSoFar, nodesRemaining))
                         {
                             yield return seq;
                         }
+
+                        nodesRemaining.Add(node);
+                        nodesSoFar.RemoveAt(nodesSoFar.Count - 1);
                     }
                 }
             }
 
-            var allNodes = MathUtils.BitPositions(mask ^ (1UL << from.Start)).Select(graph.NodeFromID).ToList();
-            nodes = new(() => FindSequence(new() {Start}, allNodes).First());
+            nodes = new(() => 
+            {
+                var allNodes = mathutils.BitPositions(Internal.Mask ^ (Bit256.One << Start.ID)).Select(graph.NodeFromID).ToHashSet();
+                return FindSequence(new() {Start}, allNodes).First();
+            });
 
             Type = type;
         }
 
-        private readonly ulong mask;
+        internal JobPathInternal Internal { get; }
         private readonly Lazy<List<Node>> nodes;
 
         public int Type { get; }
@@ -64,7 +73,7 @@ namespace Ramsey.Graph.Experimental
             => PathUtils.GetEdgesConnecting(nodes.Value);
 
         public bool Contains(Node node)
-            => (mask | (1UL << node.ID)) == mask;
+            => (Internal.Mask & (Bit256.One << node.ID)) != 0;
 
         public bool IsEndpoint(Node node)
             => node == Start || node == End;

@@ -23,7 +23,7 @@ public class Main : MonoBehaviour
     void Awake()
     {
         
-        board = BoardManager.UsingAlgorithm<JobsPathFinder>(CameraManager.BoardCamera, new BoardPreferences()
+        board = BoardManager.UsingAlgorithm<JobPathFinder>(CameraManager.BoardCamera, new BoardPreferences()
         {
             drawingPreferences = new DrawingPreferences
             {
