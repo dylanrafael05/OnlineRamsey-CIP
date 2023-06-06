@@ -52,7 +52,7 @@ namespace Ramsey.Graph.Experimental
 
             nodes = new(() => 
             {
-                var allNodes = mathutils.BitPositions(Internal.Mask ^ (Bit256.One << Start.ID)).Select(graph.NodeFromID).ToHashSet();
+                var allNodes = MathUtils.BitPositions(Internal.Mask ^ (Bit256.One << Start.ID)).Select(graph.NodeFromID).ToHashSet();
                 return FindSequence(new() {Start}, allNodes).First();
             });
 

@@ -10,6 +10,7 @@ using Ramsey.UI;
 using Ramsey.Gameplayer;
 using Ramsey.Screen;
 using Ramsey.Graph.Experimental;
+using Ramsey.Visualization;
 
 public class Main : MonoBehaviour
 {
@@ -61,12 +62,18 @@ public class Main : MonoBehaviour
         UserModeHandler.AddMode(turnNavigatorMode);
 
         board.StartGame(10);
+
+        visualizer = new(CameraManager.BoardCamera, new() { position = new float2(0f), scale = new float2(1f), sizeBounds = new float2(10f) });
+        visualizer.AddCurve(new() { data = new() { new(0, 0), new(1, 2), new(2, 3), new(5, 2), new(10, 2) } }, new() { color = Color.red, lineThickness = .1f }, 0.2f);
     }
+    Visualizer visualizer;
 
     bool effectPlayed;
 
     void Update()
     {
+        visualizer.Draw();
+
         UserModeHandler.Update(InputManager.Update());
 
         turns.Update();
