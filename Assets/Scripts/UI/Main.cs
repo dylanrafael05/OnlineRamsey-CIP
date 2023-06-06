@@ -23,8 +23,8 @@ public class Main : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-
-        board = BoardManager.UsingAlgorithm<JobsPathFinder>(CameraManager.BoardCamera, new BoardPreferences()
+        
+        board = BoardManager.UsingAlgorithm<JobPathFinder>(CameraManager.BoardCamera, new BoardPreferences()
         {
             drawingPreferences = new DrawingPreferences
             {

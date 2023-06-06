@@ -5,6 +5,7 @@ using Unity.Collections;
 using Unity.Collections.LowLevel;
 using Unity.Mathematics;
 using Unity.Burst.Intrinsics;
+using Ramsey.Utilities;
 
 namespace Ramsey.Graph.Experimental
 {
@@ -12,45 +13,39 @@ namespace Ramsey.Graph.Experimental
     internal struct PathGenerateJob : IJobParallelFor
     {
         [ReadOnly, NativeDisableParallelForRestriction] public NativeBitMatrix matrix;
-        [ReadOnly] public int step;
 
         [ReadOnly, NativeMatchesParallelForLength] public NativeArray<JobPathInternal>.ReadOnly input;
-        [WriteOnly] public NativeQueue<JobPathInternal>.ParallelWriter output;
+        [WriteOnly] public NativeQueue<JobPathGeneration>.ParallelWriter output;
         [WriteOnly, NativeDisableParallelForRestriction] public NativeReturn<bool> anyChanges;
 
         public void Execute(int i)
         {
             JobPathInternal p = input[i];
-
-            if(p.Length < step) return;
-
-            var pcur = p.End;
-            var pother = p.Start;
-
+            
             var newChangesPresent = false;
 
             var w = matrix.Width;
+
+            var pcur = p.End;
+            var pother = p.Start;
     
             for(int other = 0; other < w; other++)
             {
                 if(other == pcur || other == pother) continue;
 
-                var min = math.min(pcur, other);
-                var max = math.max(pcur, other);
-
                 // Debug.Log($"Trying {min} -> {max}");
-                bool b = matrix[min, max];
+                bool b = matrix[pcur, other];
                 if (!b) continue;
 
                 // Debug.Log($"Checking {min} -> {max}");
                 
-                var othermask = 1UL << other;
+                var othermask = (Bit256)1 << other;
                 var newmask = p.Mask | othermask;
 
                 if(newmask != p.Mask) 
                 {
                     newChangesPresent = true;
-                    output.Enqueue(new(newmask, p.Length + 1, pother, other));
+                    output.Enqueue(new(newmask, p.Length + 1, pother, other, true));
                 }
             }
 
@@ -61,28 +56,22 @@ namespace Ramsey.Graph.Experimental
             {
                 if(other == pcur || other == pother) continue;
 
-                var min = math.min(pcur, other);
-                var max = math.max(pcur, other);
-
-                // Debug.Log($"Trying {min} -> {max}");
-                bool b = matrix[min, max];
+                bool b = matrix[pcur, other];
                 if (!b) continue;
                 
-                // Debug.Log($"Checking {min} -> {max}");
-                
-                var othermask = 1UL << other;
+                var othermask = (Bit256)1 << other;
                 var newmask = p.Mask | othermask;
 
                 if(newmask != p.Mask) 
                 {
                     newChangesPresent = true;
-                    output.Enqueue(new(newmask, p.Length + 1, pother, other));
+                    output.Enqueue(new(newmask, p.Length + 1, pother, other, true));
                 }
             }
             
             if(!newChangesPresent)
             {
-                output.Enqueue(p);
+                output.Enqueue(new(p, false));
             }
             else
             {

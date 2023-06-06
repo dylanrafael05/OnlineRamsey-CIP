@@ -84,7 +84,8 @@ namespace Ramsey.Graph
 
             foreach(var edge in ser.Edges)
             {
-                graph.CreateEdge(graph.NodeFromID(edge.Start), graph.NodeFromID(edge.End), edge.Type);
+                // graph.CreateEdge(graph.NodeFromID(edge.Start), graph.NodeFromID(edge.End), edge.Type);
+                // TODO: fix this!!!!
             }
 
             return graph;

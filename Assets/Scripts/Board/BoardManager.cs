@@ -40,6 +40,7 @@ namespace Ramsey.Board
         public IReadOnlyList<Node> Nodes => graphManager.Nodes;
         public IReadOnlyList<Edge> Edges => graphManager.Edges;
         public IEnumerable<IPath> Paths => graphManager.Paths;
+        public int? MaxNodeCount => graphManager.MaxNodeCount;
 
         private readonly GameState gameState;
 

@@ -3,6 +3,8 @@ using Newtonsoft.Json;
 using Unity.Mathematics;
 using UnityEngine.Assertions;
 using UnityEngine;
+using Ramsey.Utilities;
+using System.Linq;
 
 namespace Ramsey.Graph
 {
@@ -10,9 +12,25 @@ namespace Ramsey.Graph
     {
         private readonly List<Node> nodes = new();
         private readonly List<Edge> edges = new();
+        private readonly List<AdjacencyMatrix> matrices = new();
 
         public IReadOnlyList<Node> Nodes => nodes;
         public IReadOnlyList<Edge> Edges => edges;
+
+        private AdjacencyMatrix GetAdjacencyMatrix(int type)
+        {
+            matrices.PadUpto(type, () => 
+            {
+                var n = new AdjacencyMatrix();
+                n.Expand(nodes.Count);
+                return n;
+            });
+
+            return matrices[type];
+        }
+
+        public IReadOnlyAdjacencyMatrix AdjacenciesForType(int type)
+            => GetAdjacencyMatrix(type);
 
         public Node NodeFromID(int id) 
         {
@@ -34,10 +52,26 @@ namespace Ramsey.Graph
 
             return true;
         }
-
-        public Edge CreateEdge(Node start, Node end, int type = Edge.NullType)
+        public bool IsComplete()
         {
-            var edge = new Edge(start, end, type, edges.Count);
+            foreach(var node in nodes)
+            {
+                foreach(var other in nodes)
+                {
+                    if(node == other) continue;
+
+                    if(!node.IsConnectedTo(other)) return false;
+                }
+            }
+
+            return true;
+        }
+        public bool IsCompleteColored()
+            => IsComplete() && edges.All(e => e.Type != Edge.NullType);
+
+        public Edge CreateEdge(Node start, Node end)
+        {
+            var edge = new Edge(start, end, Edge.NullType, edges.Count);
             edges.Add(edge);
 
             start.RegisterToEdge(edge);
@@ -51,6 +85,9 @@ namespace Ramsey.Graph
             var node = new Node(nodes.Count) {Position = position};
             nodes.Add(node);
 
+            foreach(var m in matrices)
+                m.Expand(nodes.Count);
+
             return node;
         }
 
@@ -62,10 +99,13 @@ namespace Ramsey.Graph
         public void PaintEdge(Edge edge, int type)
         {
             Assert.AreEqual(edge.Type, Edge.NullType, "Cannot change the color of a painted edge!");
+
             edge.Type = type;
 
             edge.Start.PaintEdge(edge);
             edge.End.PaintEdge(edge);
+            
+            GetAdjacencyMatrix(type).AddAdjacency(edge.Start, edge.End);
         }
         
         public void Clear()

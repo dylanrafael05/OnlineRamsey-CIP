@@ -1,10 +1,11 @@
 using System;
+using Ramsey.Utilities;
 
 namespace Ramsey.Graph.Experimental
 {
     internal readonly struct JobPathInternal 
     {
-        public JobPathInternal(ulong mask, int count, int start, int end) 
+        public JobPathInternal(Bit256 mask, int count, int start, int end) 
         {
             Mask = mask;
             Length = count;
@@ -13,13 +14,13 @@ namespace Ramsey.Graph.Experimental
         }
 
         public int Length { get; }
-        public ulong Mask { get; }
+        public Bit256 Mask { get; }
         public int Start { get; }
         public int End { get; }
 
         public override string ToString()
         {
-            return $"{Start} -> {End} ; length {Length} [{Convert.ToString((long)Mask, 2).PadLeft(64, '-')}]";
+            return $"{Start} -> {End} ; length {Length} [{Convert.ToString((long)Mask, 2).PadLeft(32, '-')}]";
         }
     }
 }

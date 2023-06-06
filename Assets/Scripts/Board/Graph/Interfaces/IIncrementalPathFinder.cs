@@ -10,5 +10,7 @@ namespace Ramsey.Graph
 
         void HandleNodeAddition(Node node);
         Task HandlePaintedEdge(Edge edge, Graph graph);
+
+        int? MaxSupportedNodeCount { get; }
     }
 }

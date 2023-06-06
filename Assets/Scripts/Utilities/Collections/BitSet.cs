@@ -11,18 +11,30 @@ namespace Ramsey.Utilities
     public class BitSet : IEnumerable<bool>
     {
         private int count;
-        private uint[] values;
+        private ulong[] values;
+
+        public static int ElementsNeededForSize(int count)
+        {
+            return (count + ElementSize - 1) / ElementSize;
+        }
 
         /// <summary>
         /// The number of bits which can be stored in one
         /// "element" of this set.
         /// </summary>
-        public const int ElementSize = sizeof(uint) * 8;
+        public const int ElementSize = sizeof(ulong) * 8;
 
         /// <summary>
         /// The raw elements which make up this set.
         /// </summary>
-        public IReadOnlyList<uint> Elements => values;
+        public IReadOnlyList<ulong> Elements => values;
+
+        /// <summary>
+        /// Get the actual array which stores the elements 
+        /// of this set.
+        /// Modification of this array is unsafe.
+        /// </summary>
+        public ulong[] GetElementArray() => values;
 
         /// <summary>
         /// The number of elements within this set.
@@ -40,7 +52,13 @@ namespace Ramsey.Utilities
         public BitSet()
         {
             count = 0;
-            values = new uint[0];
+            values = new ulong[0];
+        }
+
+        public BitSet(ulong[] values, int count)
+        {
+            this.count = count;
+            this.values = values;
         }
 
         /// <summary>
@@ -56,7 +74,7 @@ namespace Ramsey.Utilities
         public BitSet Clone() 
             => new(this);
 
-        private void HandleIndex(int index, out int valueIndex, out uint mask) 
+        private void HandleIndex(int index, out int valueIndex, out ulong mask) 
         {   
             // INVARIANTS //
             if(index < 0) throw new IndexOutOfRangeException();
@@ -65,10 +83,10 @@ namespace Ramsey.Utilities
             valueIndex   = index / ElementSize;
             var subIndex = index % ElementSize;
 
-            mask = 1u << subIndex;
+            mask = 1ul << subIndex;
         }
 
-        private void HandleIndexMutable(int index, out int valueIndex, out uint mask) 
+        private void HandleIndexMutable(int index, out int valueIndex, out ulong mask) 
         {
             // INVARIANTS //
             if(index < 0) throw new IndexOutOfRangeException();
@@ -156,7 +174,7 @@ namespace Ramsey.Utilities
             var neededCount = (count + ElementSize - 1) / ElementSize;
 
             var oldValues = values;
-            values = new uint[neededCount];
+            values = new ulong[neededCount];
 
             oldValues.CopyTo(values, 0);
         }
@@ -169,7 +187,7 @@ namespace Ramsey.Utilities
         public IEnumerator<bool> GetEnumerator()
         {
             var i = 0;
-            var c = 0u;
+            var c = 0ul;
 
             while(i < count)
             {

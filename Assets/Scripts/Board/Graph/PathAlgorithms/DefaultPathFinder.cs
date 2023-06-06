@@ -16,6 +16,8 @@ namespace Ramsey.Graph
         internal Dictionary<Node, List<HashSet<Path>>> PathsByColorByEndpoint { get; private set; }
         public IReadOnlyList<IPath> MaxPathsByType => maxLengthPathByType;
 
+        int? IIncrementalPathFinder.MaxSupportedNodeCount => null;
+
         public DefaultPathFinder()
         {
             PathsByColorByEndpoint = new();

@@ -7,8 +7,12 @@ namespace Ramsey.Graph
     {
         IReadOnlyList<Node> Nodes {get;}
         IReadOnlyList<Edge> Edges {get;}
+        
+        IReadOnlyAdjacencyMatrix AdjacenciesForType(int type);
 
         bool IsValidEdge(Node start, Node end);
+        bool IsComplete();
+        bool IsCompleteColored();
 
         Node NodeFromID(int id);
         Edge EdgeFromID(int id);
