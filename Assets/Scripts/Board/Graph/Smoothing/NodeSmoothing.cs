@@ -3,8 +3,9 @@ using Unity.Collections;
 using Unity.Jobs;
 using System.Linq;
 using Ramsey.Utilities;
+using Ramsey.Graph.Experimental;
 
-namespace Ramsey.Graph
+namespace Ramsey.Graph.Experimental
 {
     public static class NodeSmoothing
     {
@@ -14,9 +15,11 @@ namespace Ramsey.Graph
                 gm.Graph.Nodes.Select(n => n.Position).ToArray(),
                 Allocator.TempJob);
             var outPositions = new NativeArray<float2>(positions, Allocator.TempJob);
+            var matrix = gm.Graph.TotalAdjacencies.ToNative(Allocator.TempJob);
 
             var ns = new NodeSmootherJob
             {
+                matrix = matrix,
                 positions = positions,
                 outPositions = outPositions,
             };
@@ -34,6 +37,7 @@ namespace Ramsey.Graph
 
             positions.Dispose();
             outPositions.Dispose();
+            matrix.Dispose();
         }
     }
 }

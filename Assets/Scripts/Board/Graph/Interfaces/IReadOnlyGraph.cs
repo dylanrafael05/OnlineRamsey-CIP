@@ -9,6 +9,7 @@ namespace Ramsey.Graph
         IReadOnlyList<Edge> Edges {get;}
         
         IReadOnlyAdjacencyMatrix AdjacenciesForType(int type);
+        IReadOnlyAdjacencyMatrix TotalAdjacencies { get; }
 
         bool IsValidEdge(Node start, Node end);
         bool IsComplete();
