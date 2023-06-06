@@ -215,12 +215,22 @@ namespace Ramsey.Utilities
 
     public static class MathUtils
     {
+        public static float2 xy(this float3 v)
+            => float2(v.x, v.y);
         public static float3 xyz(this float2 v) 
             => float3(v.x, v.y, 0);
+        public static float3 xyz(this float2 v, float z)
+            => float3(v.x, v.y, z);
+        public static Vector3 xyzV(this float2 v)
+            => new(v.x, v.y, 0f);
         public static float4 xyzw(this float2 v)
             => float4(v.x, v.y, 0, 0);
         public static float4 xyzw(this float3 v) 
             => float4(v.x, v.y, v.z, 0);
+
+        public static float2 perp(this float2 v)
+            => cross(v.xyz(), new float3(0f, 0f, -1f)).xy();
+        
         
         public static float2 mul(this float2 self, float2 other) 
             => float2(self.x * other.x, self.y * other.y);
