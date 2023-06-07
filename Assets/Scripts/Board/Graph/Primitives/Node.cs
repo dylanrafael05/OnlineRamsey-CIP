@@ -20,6 +20,7 @@ namespace Ramsey.Graph
 
         public IEnumerable<Edge> ConnectedEdges => edgesByOpposingID.Values;
         public IEnumerable<Node> Neighbors => edgesByOpposingID.Keys;
+        public int NeighborCount => edgesByOpposingID.Count;
         
         public int ID { get; }
         public float2 Position { get; internal set; }

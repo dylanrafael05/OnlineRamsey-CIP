@@ -14,7 +14,8 @@ namespace Ramsey.Graph.Experimental
             var nodeCount = graph.Nodes.Count;
 
             NativeBitMatrix matrix = graph.AdjacenciesForType(type).ToNative(Allocator.Persistent);
-            NativeList<JobPathInternal> startPaths = new(nodeCount * nodeCount, Allocator.Persistent);
+            NativeList<JobPathInternal> livePaths = new(nodeCount * nodeCount, Allocator.Persistent);
+            NativeHashSet<JobPathInternal> deadPaths = new(nodeCount * nodeCount, Allocator.Persistent);
             
             foreach(var edge in graph.Edges.Where(e => e.Type == type))
             {
@@ -29,37 +30,47 @@ namespace Ramsey.Graph.Experimental
                     edge.End.ID
                 );
 
-                startPaths.Add(p);
+                livePaths.Add(p);
             }
 
-            return Find(matrix, startPaths);
+            return Find(matrix, livePaths, deadPaths);
         }
 
         internal static JobPathInternal[] FindIncr(Graph graph, IReadOnlyList<JobPath> existingPaths, Edge newEdge)
         {
             NativeBitMatrix matrix = graph.AdjacenciesForType(newEdge.Type).ToNative(Allocator.Persistent);
-            NativeList<JobPathInternal> startPaths = new(existingPaths.Count * 2 + 1, Allocator.Persistent);
+            NativeList<JobPathInternal> livePaths = new(existingPaths.Count * 2 + 1, Allocator.Persistent);
+            NativeHashSet<JobPathInternal> deadPaths = new(existingPaths.Count * 2 + 1, Allocator.Persistent);
 
             foreach(var p in existingPaths)
             {
-                startPaths.AddNoResize(p.Internal);
+                if(p.Start == newEdge.Start || p.Start == newEdge.End || p.End == newEdge.Start || p.End == newEdge.End)
+                {
+                    livePaths.AddNoResize(p.Internal);
+                }
+                else 
+                {
+                    deadPaths.Add(p.Internal);
+                }
             }
 
-            startPaths.AddNoResize(new JobPathInternal
+            var edgepath = new JobPathInternal
             (
                 (Bit256.One << newEdge.Start.ID) | (Bit256.One << newEdge.End.ID),
                 1,
                 newEdge.Start.ID,
                 newEdge.End.ID
-            ));
+            );
+            
+            livePaths.Add(edgepath);
 
-            return Find(matrix, startPaths);
+            return Find(matrix, livePaths, deadPaths);
         }
 
-        internal static JobPathInternal[] Find(NativeBitMatrix matrix, NativeList<JobPathInternal> startPaths) 
+        internal static JobPathInternal[] Find(NativeBitMatrix matrix, NativeList<JobPathInternal> startLivePaths, NativeHashSet<JobPathInternal> startDeadPaths) 
         {
-            NativeList<JobPathInternal> livePaths = startPaths;
-            NativeList<JobPathInternal> deadPaths = new(matrix.Area, Allocator.Persistent);
+            NativeList<JobPathInternal> livePaths = startLivePaths;
+            NativeHashSet<JobPathInternal> deadPaths = startDeadPaths;
 
             NativeQueue<JobPathGeneration> generationQueue = new(Allocator.Persistent);
             NativeReturn<bool> anyChanges = new(Allocator.Persistent, true);
@@ -78,7 +89,7 @@ namespace Ramsey.Graph.Experimental
                 liveOutput = livePaths
             };
 
-            while(anyChanges.Value)
+            while(livePaths.Length > 0)
             {
                 anyChanges.Value = false;
 
@@ -90,7 +101,9 @@ namespace Ramsey.Graph.Experimental
                 agg.Schedule().Complete();
             }
 
-            var pathlist = deadPaths.ToArray();
+            var pathlistn = deadPaths.ToNativeArray(Allocator.TempJob);
+            var pathlist = pathlistn.ToArray();
+            pathlistn.Dispose();
 
             matrix.Dispose();
             deadPaths.Dispose();

@@ -82,7 +82,7 @@ namespace Ramsey.Utilities
         public override bool Equals(object obj)
             => obj is Bit256 b && this == b;
         public override int GetHashCode()
-            => HashCode.Combine(l1, l2, l3, l4);
+            => l1.GetHashCode() ^ l2.GetHashCode() ^ l3.GetHashCode() ^ l4.GetHashCode();
         public override string ToString()
             => Convert.ToString((long)l1, 2).PadLeft(64, '0') 
             + Convert.ToString((long)l2, 2).PadLeft(64, '0') 

@@ -17,11 +17,14 @@ namespace Ramsey.Board
         public IReadOnlyList<Node> Nodes => Board.Nodes;
 
         public int TargetPathLength { get; internal set; }
+        public bool GraphTooComplex { get; internal set; }
         public int TurnNum { get; internal set; }
 
         public IReadOnlyList<IPath> MaxPaths { get; internal set; }
         public IPath MaxPath { get; internal set; }
-        public bool IsGameDone => MaxPath is not null && MaxPath.Length >= TargetPathLength;
+
+        public bool IsGameWon => MaxPath is not null && MaxPath.Length >= TargetPathLength;
+        public bool IsGameDone => GraphTooComplex || IsGameWon;
 
         public Edge EdgeStart(int i) => MaxPaths[i].Edges.First();
         public Edge EdgeEnd(int i)   => MaxPaths[i].Edges.Last();
@@ -30,8 +33,6 @@ namespace Ramsey.Board
         public int NewestPaint { get; internal set; }
 
         //Painter Commands
-        public Path MaxPathConnectedToNull(int i) => throw new System.NotImplementedException(); //shouldnt be array dont think
-
         public Node CreateNode()
         {
             return Board.CreateNode();

@@ -55,14 +55,14 @@ namespace Ramsey.Visualization
         static Material GetCurveMaterial(GraphPreferences graphPrefs, CurvePreferences curvePrefs)
         {
             var m = curvePrefs.GetMaterial();
-            m.SetVector("_Scale", graphPrefs.scale.xyz().xyzw());
-            m.SetVector("_SizeBounds", graphPrefs.sizeBounds.xyz().xyzw());
+            m.SetVector("_Scale", graphPrefs.scale.xyzw());
+            m.SetVector("_SizeBounds", graphPrefs.sizeBounds.xyzw());
             return m;
         }
         static Material GetCurveMaterial(Material m, GraphPreferences graphPrefs)
         {
-            m.SetVector("_Scale", graphPrefs.scale.xyz().xyzw());
-            m.SetVector("_SizeBounds", graphPrefs.sizeBounds.xyz().xyzw());
+            m.SetVector("_Scale", graphPrefs.scale.xyzw());
+            m.SetVector("_SizeBounds", graphPrefs.sizeBounds.xyzw());
             return m;
         }
         static Material GetCurveMaterial(Material m, CurvePreferences curvePrefs)
