@@ -30,16 +30,16 @@ namespace Ramsey.Graph
                 Edges = graph.Edges.Select(Serialize).ToArray()
             };  
         }
-        public static SerializedPath Serialize(Path path, int id)
-        {
-            return new()
-            {
-                Nodes = path.Nodes.Select(n => n.ID).ToArray(),
-                End   = path.End.ID,
-                Type  = path.Type,
-                ID    = id
-            };
-        }
+        // public static SerializedPath Serialize(Path path, int id)
+        // {
+        //     return new()
+        //     {
+        //         Nodes = path.Nodes.Select(n => n.ID).ToArray(),
+        //         End   = path.End.ID,
+        //         Type  = path.Type,
+        //         ID    = id
+        //     };
+        // }
         // public static SerializedPathFinder Serialize(IncrementalPathFinder finder) 
         // {
         //     var ids = finder.AllPaths.AssignUniqueIDs();

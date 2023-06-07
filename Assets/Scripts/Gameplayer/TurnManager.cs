@@ -11,9 +11,14 @@ using UnityEngine.Assertions;
 
 namespace Ramsey.UI 
 {
-    public class TurnManager
+    public class GameManager
     {
         private BoardManager board;
+
+        private bool inGame;
+
+        public BoardManager Board => board;
+        public GameState State => board.GameState;
 
         private Builder builder;
         private Painter painter;
@@ -23,16 +28,23 @@ namespace Ramsey.UI
 
         public float Delay { get; set; } = 1.5f;
 
-        public int TurnNumber { get; private set; }
-
-        public TurnManager(BoardManager board, Builder builder, Painter painter)
+        public void StartGame(int target, Builder builder, Painter painter) 
         {
-            this.board = board;
+            board.StartGame(target);
 
             this.builder = builder;
             this.painter = painter;
 
             isBuilderTurn = true;
+            inGame = true;
+        }
+
+        public GameManager(BoardManager board)
+        {
+            this.board = board;
+
+            isBuilderTurn = true;
+            inGame = false;
         }
 
         public async Task RunMoveAsync(bool skipWaits = false)
@@ -110,89 +122,24 @@ namespace Ramsey.UI
             }
         }
 
-        public void Update() 
+        public void UpdateGameplay() 
         {
-            if(currentTask is null || currentTask.IsCompleted)
+            inGame &= !State.IsGameDone;
+
+            if(inGame)
             {
-                currentTask = RunMoveAsync();
+                if(currentTask is null || currentTask.IsCompleted)
+                {
+                    currentTask = RunMoveAsync();
+                }
             }
 
-            // if(GraphTooComplex) return;
+            board.Update();
+        }
 
-            // if(board.Nodes.Count == board.MaxNodeCount && board.Graph.IsCompleteColored())
-            // {
-            //     GraphTooComplex = true;
-            //     return;
-            // }
-
-            // if(isAwaiting)
-            // {
-            //     if(isAwaitingMove)
-            //     {
-            //         if(awaitingMove.IsCompleted)
-            //         {
-            //             IMove move;
-
-            //             try 
-            //             {
-            //                 move = awaitingMove.Result;
-            //             }
-            //             catch(GraphTooComplexException) 
-            //             {
-            //                 GraphTooComplex = true;
-            //                 return;
-            //             }
-
-            //             if(move.MakeMove(board))
-            //             {
-            //                 isBuilderTurn = !isBuilderTurn;
-            //                 if (isBuilderTurn) 
-            //                 {
-            //                     board.MarkNewTurn();
-            //                 }
-            //                 Debug.Log("Game End: " + board.GameState.IsGameDone);
-            //                 Debug.Log("Current Turn: " + board.GameState.TurnNum);
-            //             }
-
-            //             if(board.IsAwaitingPathTask)
-            //             {
-            //                 awaiting = board.AwaitPathTask();
-            //             }
-            //             else
-            //             {
-            //                 isAwaiting = false;
-            //             }
-                        
-            //             awaitingMove = null;
-            //             isAwaitingMove = false;
-            //         }
-            //     }
-            //     else if(awaiting.IsCompleted)
-            //     {
-            //         isAwaiting = false;
-            //         awaiting = null;
-            //     }
-            // }
-            // else 
-            // {
-            //     async Task<IMove> Move(IPlayer player)
-            //     {
-            //         if(player.CanDelay) await Task.Delay((int)(Delay * 1000));
-            //         return await player.GetMove(board.GameState);
-            //     }
-
-            //     if(isBuilderTurn)
-            //     {
-            //         awaitingMove = Move(builder);
-            //     }
-            //     else 
-            //     {
-            //         awaitingMove = Move(painter);
-            //     }
-
-            //     isAwaiting = true;
-            //     isAwaitingMove = true;
-            // }
+        public void Cleanup()
+        {
+            board.Cleanup();
         }
     }
 }
