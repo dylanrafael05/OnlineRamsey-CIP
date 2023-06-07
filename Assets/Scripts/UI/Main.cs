@@ -23,7 +23,6 @@ public class Main : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        
         board = BoardManager.UsingAlgorithm<JobPathFinder>(CameraManager.BoardCamera, new BoardPreferences()
         {
             drawingPreferences = new DrawingPreferences
@@ -47,8 +46,11 @@ public class Main : MonoBehaviour
 
         new CameraManager(screenCamera, boardCamera);
 
-        var ub = new RandomBuilder(.4f, .55f, .05f); var up = new RandomPainter();
-        turns = new TurnManager(board, ub, up);
+        var ub = new RandomBuilder(.4f, .55f, .05f); var up = new AlternatingPainter();
+        turns = new TurnManager(board, ub, up)
+        {
+            Delay = 0.0f
+        };
 
         TextRenderer.Create();
 
@@ -62,9 +64,10 @@ public class Main : MonoBehaviour
         UserModeHandler.AddMode(turnNavigatorMode);
 
         board.StartGame(10);
+        // turns.RunUntilDone();
 
-        visualizer = new(CameraManager.BoardCamera, new() { position = new float2(0f), scale = new float2(1f), sizeBounds = new float2(10f) });
-        visualizer.AddCurve(new() { data = new() { new(0, 0), new(1, 2), new(2, 3), new(5, 2), new(10, 2) } }, new() { color = Color.red, lineThickness = .1f }, 0.2f);
+        visualizer = new(CameraManager.BoardCamera, new() { position = new float2(0f), scale = new float2(1f), sizeBounds = new float2(3.4f, 8f) , color = Color.black, drawSize = 5f, thickness = 1f});
+        visualizer.AddCurve(new() { data = new() { new(0, 0), new(1, 2), new(2, 3), new(3,4), new(4,-2), new(5,1)} }, new() { color = Color.red, lineThickness = .3f }, 2f);
     }
     Visualizer visualizer;
 
@@ -72,14 +75,14 @@ public class Main : MonoBehaviour
 
     void Update()
     {
-        visualizer.Draw();
+        //visualizer.Draw();
 
         UserModeHandler.Update(InputManager.Update());
 
         turns.Update();
         board.Update();
 
-        NodeSmoothing.Smooth(board);
+        // NodeSmoothing.Smooth(board, 100);
 
         if (board.GameState.IsGameDone && !effectPlayed)
         {

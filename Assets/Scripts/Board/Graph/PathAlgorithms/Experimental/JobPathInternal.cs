@@ -3,7 +3,7 @@ using Ramsey.Utilities;
 
 namespace Ramsey.Graph.Experimental
 {
-    internal readonly struct JobPathInternal 
+    internal readonly struct JobPathInternal : IEquatable<JobPathInternal>
     {
         public JobPathInternal(Bit256 mask, int count, int start, int end) 
         {
@@ -17,6 +17,14 @@ namespace Ramsey.Graph.Experimental
         public Bit256 Mask { get; }
         public int Start { get; }
         public int End { get; }
+
+        public bool Equals(JobPathInternal other) 
+            => Mask == other.Mask && (Start == other.Start || Start == other.End) && (End == other.Start || End == other.End);
+
+        public override int GetHashCode()
+        {
+            return Mask.GetHashCode() ^ Start ^ End;
+        }
 
         public override string ToString()
         {

@@ -5,11 +5,13 @@ using Unity.Jobs;
 using Random = Unity.Mathematics.Random;
 using System.Linq;
 using UnityEngine;
+using Ramsey.Graph.Experimental;
 
-namespace Ramsey.Graph
+namespace Ramsey.Graph.Experimental
 {
     public struct NodeSmootherJob : IJobParallelFor
     {
+        [ReadOnly] public NativeBitMatrix matrix;
         [NativeMatchesParallelForLength, ReadOnly] public NativeArray<float2> positions;
         [NativeMatchesParallelForLength, WriteOnly] public NativeArray<float2> outPositions;
 
@@ -39,6 +41,8 @@ namespace Ramsey.Graph
                 var delta = pos - other;
                 var lendel = math.lengthsq(delta);
 
+                var areconnected = matrix[i, index];
+
                 if(lendel == 0)
                 {
                     lendel = 0.01f;
@@ -46,6 +50,10 @@ namespace Ramsey.Graph
                 }
 
                 var scale = 0.15f * GetScaleFromRadiusSquared(lendel * 0.6f);
+                if(areconnected)
+                {
+                    scale -= math.clamp(math.log(lendel) - 2.8f, -0.1f, 0.15f);
+                }
 
                 if(math.abs(scale) > 0.005f)
                 {

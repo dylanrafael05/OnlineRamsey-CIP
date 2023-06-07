@@ -6,6 +6,7 @@ using Unity.Collections.LowLevel;
 using Unity.Mathematics;
 using Unity.Burst.Intrinsics;
 using Ramsey.Utilities;
+using Unity.Profiling;
 
 namespace Ramsey.Graph.Experimental
 {
@@ -20,14 +21,14 @@ namespace Ramsey.Graph.Experimental
 
         public void Execute(int i)
         {
-            JobPathInternal p = input[i];
+            JobPathInternal path = input[i];
             
             var newChangesPresent = false;
 
             var w = matrix.Width;
 
-            var pcur = p.End;
-            var pother = p.Start;
+            var pcur = path.End;
+            var pother = path.Start;
     
             for(int other = 0; other < w; other++)
             {
@@ -40,17 +41,17 @@ namespace Ramsey.Graph.Experimental
                 // Debug.Log($"Checking {min} -> {max}");
                 
                 var othermask = (Bit256)1 << other;
-                var newmask = p.Mask | othermask;
+                var newmask = path.Mask | othermask;
 
-                if(newmask != p.Mask) 
+                if(newmask != path.Mask) 
                 {
                     newChangesPresent = true;
-                    output.Enqueue(new(newmask, p.Length + 1, pother, other, true));
+                    output.Enqueue(new(newmask, path.Length + 1, pother, other, true));
                 }
             }
 
-            pcur = p.Start;
-            pother = p.End;
+            pcur = path.Start;
+            pother = path.End;
 
             for(int other = 0; other < w; other++)
             {
@@ -60,23 +61,21 @@ namespace Ramsey.Graph.Experimental
                 if (!b) continue;
                 
                 var othermask = (Bit256)1 << other;
-                var newmask = p.Mask | othermask;
+                var newmask = path.Mask | othermask;
 
-                if(newmask != p.Mask) 
+                if(newmask != path.Mask) 
                 {
                     newChangesPresent = true;
-                    output.Enqueue(new(newmask, p.Length + 1, pother, other, true));
+                    output.Enqueue(new(newmask, path.Length + 1, pother, other, true));
                 }
             }
             
-            if(!newChangesPresent)
-            {
-                output.Enqueue(new(p, false));
-            }
-            else
+            if(newChangesPresent)
             {
                 anyChanges.Value = true;
             }
+            
+            output.Enqueue(new(path, false));
         }
     }
 }

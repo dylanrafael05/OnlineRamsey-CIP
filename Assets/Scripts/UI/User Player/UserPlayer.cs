@@ -11,7 +11,7 @@ namespace Ramsey.Gameplayer
 {
     public class UserBuilder : Builder, IUserMode
     {
-        public UserBuilder() : base(0) {}
+        public override bool CanDelay => false;
 
         public override async Task<BuilderMove> GetMove(GameState gameState)
         {
@@ -56,7 +56,7 @@ namespace Ramsey.Gameplayer
 
     public class UserPainter : Painter, IUserMode
     {
-        public UserPainter() : base(0) {}
+        public override bool CanDelay => false;
 
         public override async Task<PainterMove> GetMove(GameState gameState)
         {

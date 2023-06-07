@@ -99,5 +99,4 @@ namespace Ramsey.Graph
             return graph.IsValidEdge(start, end);
         }
     }
-
 }

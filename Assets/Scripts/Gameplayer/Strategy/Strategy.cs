@@ -7,16 +7,15 @@ namespace Ramsey.Gameplayer
 {
     public interface IPlayer
     {
-        public float Delay { get; }
+        public bool CanDelay { get; }
 
         Task<IMove> GetMove(GameState gameState);
     }
 
     public abstract class Builder : IPlayer
     {
-        public float Delay { get; private set; } = 1f;
+        public virtual bool CanDelay => true;
         public Builder() { }
-        public Builder(float Delay) => this.Delay = Delay;
 
         async Task<IMove> IPlayer.GetMove(GameState gameState)
         {
@@ -28,9 +27,8 @@ namespace Ramsey.Gameplayer
 
     public abstract class Painter : IPlayer
     {
-        public float Delay { get; private set; } = 1f;
+        public virtual bool CanDelay => true;
         public Painter() { }
-        public Painter(float Delay) => this.Delay = Delay;
 
         async Task<IMove> IPlayer.GetMove(GameState gameState)
         {

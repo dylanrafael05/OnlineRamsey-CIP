@@ -70,8 +70,6 @@ namespace Ramsey.Board
         public BoardManager(Camera camera, BoardPreferences prefs, IIncrementalPathFinder pathFinder) : this(camera, prefs, new GraphManager(pathFinder))
         { }
 
-        public bool GameOver => GameState.MaxPaths.Any(a => a.Length >= TargetPathLength);
-
         public static BoardManager UsingAlgorithm<TAlgo>(Camera camera, BoardPreferences prefs)
             where TAlgo : IIncrementalPathFinder, new()
         {
@@ -117,6 +115,11 @@ namespace Ramsey.Board
         public void UnhighlightNode(Node n)
         {
             renderManager.IOInterface.UnhighlightNode(n);
+        }
+
+        public void MarkGraphTooComplex()
+        {
+            gameState.GraphTooComplex = true;
         }
 
         public void Update()

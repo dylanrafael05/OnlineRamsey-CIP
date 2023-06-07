@@ -51,7 +51,7 @@ namespace Ramsey.Visualization
             float2 p1, p2, p3, p4, p;
             float yOn, yBa, yFo;
             int vertCount;
-            float dist;
+            float2 to;
 
             for (int i = 0; i < points.Count; i++)
             {
@@ -60,11 +60,12 @@ namespace Ramsey.Visualization
                 p3 = points[min(points.Count - 1, i + 1)] + new float2(i + 1 >= points.Count ? 1 : 0, 0f);
                 p4 = points[min(points.Count - 1, i + 2)] + new float2(i + 2 >= points.Count ? 1 : 0, 0f);
 
-                dist = length(p3 - p2);
-                vertCount = (int) ceil(vertDistDensity * dist);
+                to = p3 - p2;
+                vertCount = (int)ceil(vertDistDensity * length(to));
+
                 for (int v = 0; v < vertCount; v++)
                 {
-                    p = p2 + (dist * v) / (float) vertCount;
+                    p = p2 + to * ((float)v / (float)vertCount);
 
                     yBa = GetPointOnLine(p1, p2, p.x);
                     yOn = GetPointOnLine(p2, p3, p.x);
@@ -72,7 +73,7 @@ namespace Ramsey.Visualization
 
                     float interpolate = (p.x - p2.x) / (p3.x - p2.x);
 
-                    smoothedPoints.Add(new float2(p.x, p.y));// Smooth(yOn, yBa, k) * (1f - interpolate) + Smooth(yOn, yFo, k) * interpolate));
+                    smoothedPoints.Add(float2(p.x, Smooth(yOn, yBa, k) * (1f - interpolate) + Smooth(yOn, yFo, k) * interpolate));
                 }
 
             }
@@ -84,10 +85,13 @@ namespace Ramsey.Visualization
 
             smoothedPoints.ForEachIndex((point, i) =>
             {
-                normal = i+1 < smoothedPoints.Count ? normalize((smoothedPoints[i + 1] - point).perp()) : float2(0f, 1f);
+                float2 normal1 = i - 1 >= 0 ? normalize((smoothedPoints[i] - smoothedPoints[i - 1]).perp()) : float2(0f);
+                float2 normal2 = i + 1 < smoothedPoints.Count ? normalize((smoothedPoints[i + 1] - smoothedPoints[i]).perp()) : float2(0f);
 
-                vertices.Add((point - normal).xyzV()); uvs.Add(new(0f, -1));
-                vertices.Add((point + normal).xyzV()); uvs.Add(new(0f,  1));
+                normal = normalize(normal1 + normal2);
+
+                vertices.Add((point - normal*.1f).xyzV()); uvs.Add(new(0f, -1));
+                vertices.Add((point + normal*.1f).xyzV()); uvs.Add(new(0f,  1));
             });
 
             List<int> triangles = new();
@@ -102,12 +106,19 @@ namespace Ramsey.Visualization
                 triangles.Add(i + 2);
             }
 
-            return new()
+            var mesh = new Mesh();
+            mesh.SetVertices(vertices);
+            mesh.SetUVs(0, uvs);
+            mesh.SetTriangles(triangles, 0);
+
+            return mesh;
+
+            /*return new()
             {
                 vertices = vertices.ToArray(),
                 triangles = triangles.ToArray(),
                 uv = uvs.ToArray()
-            };
+            };*/
 
         }
     }

@@ -13,9 +13,11 @@ namespace Ramsey.Graph
         private readonly List<Node> nodes = new();
         private readonly List<Edge> edges = new();
         private readonly List<AdjacencyMatrix> matrices = new();
+        private readonly AdjacencyMatrix totalMatrix = new();
 
         public IReadOnlyList<Node> Nodes => nodes;
         public IReadOnlyList<Edge> Edges => edges;
+        public IReadOnlyAdjacencyMatrix TotalAdjacencies => totalMatrix;
 
         private AdjacencyMatrix GetAdjacencyMatrix(int type)
         {
@@ -76,6 +78,8 @@ namespace Ramsey.Graph
 
             start.RegisterToEdge(edge);
             end.RegisterToEdge(edge);
+            
+            totalMatrix.AddAdjacency(edge.Start, edge.End);
 
             return edge;
         }
@@ -87,6 +91,8 @@ namespace Ramsey.Graph
 
             foreach(var m in matrices)
                 m.Expand(nodes.Count);
+            
+            totalMatrix.Expand(nodes.Count);
 
             return node;
         }
