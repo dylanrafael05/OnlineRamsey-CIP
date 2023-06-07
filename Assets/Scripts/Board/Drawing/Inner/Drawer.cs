@@ -52,10 +52,10 @@ namespace Ramsey.Drawing
             //
             argsArrayEdge = new uint[5]
             {
-                UnityReferences.QuadMesh.GetIndexCount(0),
+                MeshUtils.QuadMesh.GetIndexCount(0),
                 0,
-                UnityReferences.QuadMesh.GetIndexStart(0),
-                UnityReferences.QuadMesh.GetBaseVertex(0),
+                MeshUtils.QuadMesh.GetIndexStart(0),
+                MeshUtils.QuadMesh.GetBaseVertex(0),
                 0
             };
             argsArrayNode = new uint[5]; argsArrayEdge.CopyTo(argsArrayNode, 0);
@@ -141,13 +141,13 @@ namespace Ramsey.Drawing
 
             UnityReferences.NodeMaterial.SetVector("_Mouse", Mouse.xyzw());
 
-            Graphics.DrawMeshInstancedIndirect(UnityReferences.QuadMesh, 0, UnityReferences.EdgeMaterial, UnityReferences.Bounds, argsBufferEdge, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
-            Graphics.DrawMeshInstancedIndirect(UnityReferences.QuadMesh, 0, UnityReferences.NodeMaterial, UnityReferences.Bounds, argsBufferNode, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
-            Graphics.DrawMesh(UnityReferences.QuadMesh, UnityReferences.RecordingTransform.WorldMatrix(), UnityReferences.RecorderMaterial, LayerMask.NameToLayer("Board"), camera);
+            Graphics.DrawMeshInstancedIndirect(MeshUtils.QuadMesh, 0, UnityReferences.EdgeMaterial, UnityReferences.Bounds, argsBufferEdge, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
+            Graphics.DrawMeshInstancedIndirect(MeshUtils.QuadMesh, 0, UnityReferences.NodeMaterial, UnityReferences.Bounds, argsBufferNode, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
+            Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.RecordingTransform.WorldMatrix(), UnityReferences.RecorderMaterial, LayerMask.NameToLayer("Board"), camera);
 
             if (presentStorage.IsLoading)
             {
-                Graphics.DrawMesh(UnityReferences.QuadMesh, UnityReferences.LoadingTransform.WorldMatrix(), UnityReferences.LoadingMaterial, LayerMask.NameToLayer("Board"), camera);
+                Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.LoadingTransform.WorldMatrix(), UnityReferences.LoadingMaterial, LayerMask.NameToLayer("Board"), camera);
             }
 
             for(var i = 0; i < currentStorage.NodePositions.Count; i++) 
