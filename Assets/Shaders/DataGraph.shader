@@ -1,12 +1,15 @@
 Shader "Unlit/DataGraph"
 {
-    Properties
+    Properties //massive quad we'll cut UV ~ [-A, A]
     {
-        _Color ("Color", Color) = (1., 0., 0., 1.)
-        _Thickness ("Thickness", Float) = 1.
 
-        _Scale ("Scale", Vector) = (1., 1., 0., 0.)
-        _SizeBounds ("Scale Bounds", Vector) = (10., 10., 0., 0.)
+        _Color ("Color", Color) = (0.,0.,0.,1.)
+
+        _TickCount ("Tick Count", Vector) = (4., 4., 0., 0.) //[xTick, yTick]
+        _Scale ("Scale", Vector) = (1., 1., 0., 0.) //[xScale, yScale]
+        _Thickness ("Thickness", Float) = 1.
+        _Triangle ("Triangle Dimensions", Vector) = (1., 1., 0., 0.) //[width, height]
+
     }
     SubShader
     {
@@ -34,29 +37,19 @@ Shader "Unlit/DataGraph"
             {
                 float4 vertex : SV_POSITION;
                 float2 uv : TEXCOORD0;
-                float2 graphSpacePos : TEXCOORD1;
             };
-
-            float2 _Scale;
-            float2 _SizeBounds;
 
             vOut vert (vIn v)
             {
                 vOut o;
-                o.graphSpacePos = v.vertex.xy * _Scale;
-                o.vertex = UnityObjectToClipPos(v.vertex * float4(_Scale.x, _Scale.y, 1., 1.));
+                o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = v.uv;
                 return o;
             }
 
-            float4 _Color;
-            float _Thickness;
-
-            fixed4 frag (vOut i) : SV_Target
+            fixed4 frag(vOut i) : SV_Target 
             {
-                float exists = step(abs(i.uv.y), _Thickness);
-
-                return exists * _Color;
+                return float4(1.,1.,1.,1.);
             }
             ENDCG
         }

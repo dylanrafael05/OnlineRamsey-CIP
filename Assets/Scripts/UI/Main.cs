@@ -66,8 +66,8 @@ public class Main : MonoBehaviour
         board.StartGame(10);
         // turns.RunUntilDone();
 
-        visualizer = new(CameraManager.BoardCamera, new() { position = new float2(0f), scale = new float2(1f), sizeBounds = new float2(10f) });
-        visualizer.AddCurve(new() { data = new() { new(0, 0), new(1, 2), new(2, 3), new(5, 2), new(10, 2) } }, new() { color = Color.red, lineThickness = .1f }, 0.2f);
+        visualizer = new(CameraManager.BoardCamera, new() { position = new float2(0f), scale = new float2(1f), sizeBounds = new float2(3.4f, 8f) });
+        visualizer.AddCurve(new() { data = new() { new(0, 0), new(1, 2), new(2, 3), new(3,4), new(4,-2), new(5,1)} }, new() { color = Color.red, lineThickness = .3f }, 2f);
     }
     Visualizer visualizer;
 
@@ -75,11 +75,11 @@ public class Main : MonoBehaviour
 
     void Update()
     {
-        // visualizer.Draw();
+        visualizer.Draw();
 
         UserModeHandler.Update(InputManager.Update());
 
-        turns.Update();
+        //turns.Update();
         board.Update();
 
         // NodeSmoothing.Smooth(board, 100);

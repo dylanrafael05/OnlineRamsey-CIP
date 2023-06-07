@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Mathematics;
 using Ramsey.Utilities;
+using Ramsey.Drawing;
 
 namespace Ramsey.Visualization
 {
     public struct GraphPreferences
     {
 
-        public float2 sizeBounds; //could add some dithering on the curve as it leaves
+        static Shader shader = Shader.Find("Unlit/DataGraph");
+
+        public float2 sizeBounds; //could add some dithering on the curve as it leaves ok i did but barely visible since the line is so thin
         public float2 scale;
         public float2 position;
         //rotation, tick stuff..
@@ -17,11 +20,18 @@ namespace Ramsey.Visualization
         public Matrix4x4 GetMatrix()
             => Matrix4x4.TRS(position.xyz(Visualizer.Depth), Quaternion.identity, Vector3.one);
 
+        public Material GetMaterial()
+        {
+            Material m = new(shader);
+            //set uniforms.. later
+            return m;
+        }
+
     }
 
     public struct CurvePreferences
     {
-        static Shader shader = Shader.Find("Unlit/DataGraph");
+        static Shader shader = Shader.Find("Unlit/DataCurve");
 
         public float lineThickness;
         public Color color;
@@ -84,6 +94,7 @@ namespace Ramsey.Visualization
             Matrix4x4 matrix = graphPrefs.GetMatrix();
 
             //Draw Graph
+            //Graphics.DrawMesh(UnityReferences.QuadMesh, matrix, )
 
             //Draw Curves
             graphs.ForEach(tup =>
