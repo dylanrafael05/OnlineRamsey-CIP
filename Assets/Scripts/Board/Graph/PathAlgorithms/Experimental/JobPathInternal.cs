@@ -5,25 +5,25 @@ namespace Ramsey.Graph.Experimental
 {
     internal readonly struct JobPathInternal : IEquatable<JobPathInternal>
     {
-        public JobPathInternal(Bit256 mask, int count, int start, int end) 
+        public JobPathInternal(Bit256 mask, byte start, byte end) 
         {
             Mask = mask;
-            Length = count;
             Start = start;
             End = end;
         }
 
-        public int Length { get; }
         public Bit256 Mask { get; }
-        public int Start { get; }
-        public int End { get; }
+        public byte Start { get; }
+        public byte End { get; }
+
+        public int Length => Bit256.Bitcount(Mask);
 
         public bool Equals(JobPathInternal other) 
-            => Mask == other.Mask && (Start == other.Start || Start == other.End) && (End == other.Start || End == other.End);
+            => (Mask == other.Mask) & ((Start == other.Start) | (Start == other.End)) & ((End == other.Start) | (End == other.End));
 
         public override int GetHashCode()
         {
-            return Mask.GetHashCode() ^ Start ^ End;
+            return Mask.GetHashCode() ^ (Start * 899) ^ (End * 567);
         }
 
         public override string ToString()

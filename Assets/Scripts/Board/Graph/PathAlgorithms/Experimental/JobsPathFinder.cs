@@ -2,19 +2,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Ramsey.Utilities;
+using Unity.Profiling;
 using UnityEngine;
 
 namespace Ramsey.Graph.Experimental
 {
     public class JobPathFinder : IIncrementalPathFinder
     {
-        private readonly List<JobPath[]> paths = new();
-        private readonly List<IPath> maxPaths = new();
+        private Graph graph;
+
+        private readonly List<JobPathInternal[]> pathsInternal = new();
+        private readonly List<JobPath> maxPaths = new();
 
         int? IIncrementalPathFinder.MaxSupportedNodeCount => 256;
 
-        public IEnumerable<IPath> AllPaths => paths.Merge().Select(t => (IPath)t);
-        public IReadOnlyList<IPath> MaxPathsByType => maxPaths;
+        public IEnumerable<IPath> AllPaths => pathsInternal.SelectMany((ps, i) => ps.Select(j => new JobPath(j, i, graph)));
+        public IReadOnlyList<IPath> MaxPathsByType => maxPaths.Cast<IPath>().ToList();
 
         public void HandleNodeAddition(Node node)
         {}
@@ -22,7 +25,7 @@ namespace Ramsey.Graph.Experimental
         private void EnsurePathTypeAvailable(int type)
         {
             maxPaths.PadDefaultUpto(type);
-            paths.PadUpto(type, () => new JobPath[0]);
+            pathsInternal.PadUpto(type, () => new JobPathInternal[0]);
         }
 
         public async Task HandlePaintedEdge(Edge edge, Graph graph)
@@ -32,27 +35,36 @@ namespace Ramsey.Graph.Experimental
             EnsurePathTypeAvailable(type);
 
             // Find all
-            var pathsInternal = await Task.Run(() => JobPathFinderImpl.FindIncr(graph, paths[type], edge));
+            var pathsInternalThisType = await Task.Run(() => JobPathFinderImpl.FindIncr(graph, pathsInternal[type], edge));
             // var pathsInternal = await Task.Run(() => JobPathFinderImpl.FindAll(graph, type));
 
             // Update data
-            paths[type] = new JobPath[pathsInternal.Length];
-            maxPaths[type] = null;
-
-            var block = new CellBlock<List<Node>>(pathsInternal.Length);
-
-            for(int i = 0; i < pathsInternal.Length; i++) 
+            using(Collect.Auto()) 
             {
-                var p = pathsInternal[i];
-                var jp = new JobPath(p, block.GetCell(i), graph, type);
+                pathsInternal[type] = pathsInternalThisType;
 
-                if(maxPaths[type] == null || p.Length > maxPaths[type].Length)
+                var maxpath = (JobPathInternal?)null;
+
+                for(int i = 0; i < pathsInternalThisType.Length; i++) 
                 {
-                    maxPaths[type] = jp;
+                    var p = pathsInternalThisType[i];
+
+                    if(maxpath is null || p.Length > maxpath.Value.Length)
+                    {
+                        maxpath = p;
+                    }
+
+                    // _ = new JobPath(p, graph).Nodes;
                 }
 
-                paths[type][i] = jp;
+                this.graph = graph;
+
+                Debug.Log(maxpath);
+
+                maxPaths[type] = new JobPath(maxpath.Value, type, graph);
             }
         }
+
+        private static ProfilerMarker Collect = new("JobPathFinder.Collect");
     }
 }

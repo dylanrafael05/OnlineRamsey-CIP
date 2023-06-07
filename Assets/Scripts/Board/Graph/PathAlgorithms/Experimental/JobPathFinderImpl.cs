@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using System.Linq;
 using Ramsey.Utilities;
 using System.Collections.Generic;
+using Unity.Burst;
 
 namespace Ramsey.Graph.Experimental
 {
@@ -13,103 +14,99 @@ namespace Ramsey.Graph.Experimental
         {
             var nodeCount = graph.Nodes.Count;
 
-            NativeBitMatrix matrix = graph.AdjacenciesForType(type).ToNative(Allocator.Persistent);
+            NativeAdjacencyList adjList = graph.GetNativeAdjacencyList(Allocator.Persistent, type);
             NativeList<JobPathInternal> livePaths = new(nodeCount * nodeCount, Allocator.Persistent);
             NativeHashSet<JobPathInternal> deadPaths = new(nodeCount * nodeCount, Allocator.Persistent);
             
             foreach(var edge in graph.Edges.Where(e => e.Type == type))
             {
-                matrix[edge.Start.ID, edge.End.ID] = true;
-                matrix[edge.End.ID, edge.Start.ID] = true;
-
                 var p = new JobPathInternal
                 (
                     (Bit256.One << edge.Start.ID) | (Bit256.One << edge.End.ID),
-                    1,
-                    edge.Start.ID,
-                    edge.End.ID
+                    (byte)edge.Start.ID,
+                    (byte)edge.End.ID
                 );
 
                 livePaths.Add(p);
             }
 
-            return Find(matrix, livePaths, deadPaths);
+            return Find(adjList, livePaths, deadPaths, type);
         }
 
-        internal static JobPathInternal[] FindIncr(Graph graph, IReadOnlyList<JobPath> existingPaths, Edge newEdge)
+        internal static JobPathInternal[] FindIncr(Graph graph, IReadOnlyList<JobPathInternal> existingPaths, Edge newEdge)
         {
-            NativeBitMatrix matrix = graph.AdjacenciesForType(newEdge.Type).ToNative(Allocator.Persistent);
+            NativeAdjacencyList adjList = graph.GetNativeAdjacencyList(Allocator.Persistent, newEdge.Type);
             NativeList<JobPathInternal> livePaths = new(existingPaths.Count * 2 + 1, Allocator.Persistent);
             NativeHashSet<JobPathInternal> deadPaths = new(existingPaths.Count * 2 + 1, Allocator.Persistent);
 
             foreach(var p in existingPaths)
             {
-                if(p.Start == newEdge.Start || p.Start == newEdge.End || p.End == newEdge.Start || p.End == newEdge.End)
+                if(p.Start == newEdge.Start.ID || p.Start == newEdge.End.ID || p.End == newEdge.Start.ID || p.End == newEdge.End.ID)
                 {
-                    livePaths.AddNoResize(p.Internal);
+                    livePaths.AddNoResize(p);
                 }
                 else 
                 {
-                    deadPaths.Add(p.Internal);
+                    deadPaths.Add(p);
                 }
             }
 
             var edgepath = new JobPathInternal
             (
                 (Bit256.One << newEdge.Start.ID) | (Bit256.One << newEdge.End.ID),
-                1,
-                newEdge.Start.ID,
-                newEdge.End.ID
+                (byte)newEdge.Start.ID,
+                (byte)newEdge.End.ID
             );
             
-            livePaths.Add(edgepath);
+            // if(newEdge.Start.NeighborCount == 1 && newEdge.End.NeighborCount == 1)
+            livePaths.Add(edgepath); 
+            // else deadPaths.Add(edgepath);
 
-            return Find(matrix, livePaths, deadPaths);
+            return Find(adjList, livePaths, deadPaths, newEdge.Type);
         }
 
-        internal static JobPathInternal[] Find(NativeBitMatrix matrix, NativeList<JobPathInternal> startLivePaths, NativeHashSet<JobPathInternal> startDeadPaths) 
+        internal static JobPathInternal[] Find(NativeAdjacencyList adjacencies, NativeList<JobPathInternal> startLivePaths, NativeHashSet<JobPathInternal> startDeadPaths, int type) 
         {
             NativeList<JobPathInternal> livePaths = startLivePaths;
             NativeHashSet<JobPathInternal> deadPaths = startDeadPaths;
 
+            NativeHashSet<JobPathInternal> liveSet = new(startLivePaths.Length, Allocator.Persistent);
             NativeQueue<JobPathGeneration> generationQueue = new(Allocator.Persistent);
-            NativeReturn<bool> anyChanges = new(Allocator.Persistent, true);
             
-            var gen = new PathGenerateJob
-            {
-                matrix = matrix,
-                input = livePaths.AsParallelReader(),
-                output = generationQueue.AsParallelWriter(),
-                anyChanges = anyChanges
-            };
-            var agg = new PathAggregateJob
-            {
-                input = generationQueue,
-                deadOutput = deadPaths,
-                liveOutput = livePaths
-            };
+            var gen = new PathGenerateJob();
+            var agg = new PathAggregateJob();
 
             while(livePaths.Length > 0)
             {
-                anyChanges.Value = false;
-
                 gen.input = livePaths.AsParallelReader();
                 gen.output = generationQueue.AsParallelWriter();
-                gen.matrix = matrix;
+                gen.adjacencies = adjacencies;
+                gen.type = type;
 
                 gen.Schedule(livePaths.Length, 16).Complete();
+
+                agg.input = generationQueue;
+                agg.liveSet = liveSet;
+                agg.liveOutput = livePaths;
+                agg.deadOutput = deadPaths;
+
                 agg.Schedule().Complete();
             }
 
-            var pathlistn = deadPaths.ToNativeArray(Allocator.TempJob);
-            var pathlist = pathlistn.ToArray();
-            pathlistn.Dispose();
+            var pathlist = new JobPathInternal[deadPaths.Count()];
+            var i = 0;
 
-            matrix.Dispose();
+            var iter = deadPaths.GetEnumerator();
+            while(iter.MoveNext())
+            {
+                pathlist[i++] = iter.Current;
+            }
+
+            adjacencies.Dispose();
+            liveSet.Dispose();
             deadPaths.Dispose();
             livePaths.Dispose();
             generationQueue.Dispose();
-            anyChanges.Dispose();
 
             return pathlist;
         }

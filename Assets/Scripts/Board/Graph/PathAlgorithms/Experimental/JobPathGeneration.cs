@@ -10,8 +10,8 @@ namespace Ramsey.Graph.Experimental
             IsLive = isLive;
         }
 
-        public JobPathGeneration(Bit256 mask, int count, int start, int end, bool isLive) 
-            : this(new(mask, count, start, end), isLive)
+        public JobPathGeneration(Bit256 mask, byte start, byte end, bool isLive) 
+            : this(new(mask, start, end), isLive)
         {}
 
         public JobPathInternal Path { get; }
