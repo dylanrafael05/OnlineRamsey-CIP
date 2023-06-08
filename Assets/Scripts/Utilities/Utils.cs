@@ -12,6 +12,9 @@ namespace Ramsey.Utilities
 {
     public static class Utils
     {
+        public static void ForLength(int length, Action<int> action)
+        { for (int i = 0; i < length; i++) action(i); }
+
         public static void Swap<T>(ref T a, ref T b)
         {
             T tempA = a;

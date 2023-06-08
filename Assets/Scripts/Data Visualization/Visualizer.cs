@@ -108,7 +108,15 @@ namespace Ramsey.Visualization
             => graphs[i] = (graphs[i].Item1, GetCurveMaterial(graphs[i].Item2, curvePrefs));
 
         public void SetPreferences(GraphPreferences graphPrefs)
-            => graphs.ForEachIndex((g, i) => graphs[i] = (g.Item1, GetCurveMaterial(g.Item2, graphPrefs)));
+        { this.graphPrefs = graphPrefs; Utils.ForLength(graphs.Count, (i) => graphs[i] = (graphs[i].Item1, GetCurveMaterial(graphs[i].Item2, graphPrefs))); }
+
+        float zoom = 8f;
+        public void UpdateInput(float dt, float change)
+        {
+            zoom += change * dt;
+            graphPrefs.tickCount = (int)zoom;
+            SetPreferences(graphPrefs);
+        }
 
         public void Draw()
         {

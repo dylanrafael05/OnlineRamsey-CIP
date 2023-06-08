@@ -118,6 +118,8 @@ public class Main : MonoBehaviour
             CameraManager.BoardCamera.orthographicSize += scl * -0.5f;
         }
 
+        visualizer.UpdateInput(1f, Input.mouseScrollDelta.y); //TODO: not here and make only scroll when mouse hovering over kinda generous range prolly the square not the width 
+
         if (board.GameState.IsGameDone && !effectPlayed)
         {
             UnityReferences.GoalText.text = "Game Over";
