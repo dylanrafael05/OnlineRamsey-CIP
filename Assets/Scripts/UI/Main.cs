@@ -68,14 +68,14 @@ public class Main : MonoBehaviour
         var builder = new CapBuilder(game.State); //new RandomBuilder(.15f, .8f, .05f); 
         var painter = new RandomPainter();
 
-        game.StartGame(40, builder, painter);
-        //game.RunUntilDone();
+        game.StartGame(20, builder, painter);
 
         // prefs = new() { position = new float2(0f), axisScale = new float2(2f), sizeBounds = new float2(3.4f, 8f), color = Color.black, drawSize = 5f, thickness = .075f, tickCount = 8 };
         // visualizer = new(CameraManager.BoardCamera, prefs);
         // visualizer.AddCurve(new() { data = new() { new(0, 0), new(1, 2), new(2, 3), new(3,25), new(4,-5), new(5,1), new(6,1),new(7,1),new(8,1),new(9,2)} }, new() { color = Color.red, lineThickness = .9f }, 4f);
         // visualizer.AddCurve(new() { data = new() { new(0, 0), new(1, 5), new(2, 4), new(3,5), new(4,7), new(5,2), new(6,4),new(7,1),new(8,1),new(9,2)} }, new() { color = Color.blue, lineThickness = .9f }, 4f);
     }
+
     Visualizer visualizer;
     GraphPreferences prefs;
 
@@ -88,6 +88,7 @@ public class Main : MonoBehaviour
         // visualizer.Draw();
 
         UserModeHandler.Update(InputManager.Update());
+        UnityReferences.TurnText.text = "" + game.State.TurnNum;
 
         game.UpdateGameplay();
 
@@ -95,11 +96,41 @@ public class Main : MonoBehaviour
 
         if (game.State.IsGameDone && !effectPlayed)
         {
-            UnityReferences.GoalText.text = "Game Over";
+            UnityReferences.OverText.text = game.State.IsGameWon ? "Game Over" : "Graph too Large";
+            UnityReferences.OverText.gameObject.SetActive(true);
+
+            IEnumerator Coro() 
+            {
+                const float Len = 4f;
+                const float Size = 100f;
+
+                var start = Time.time;
+
+                while((Time.time - start) < Len)
+                {
+                    var t = (Time.time - start) / Len;
+
+                    var f = 1 - (1 - t) * (1 - t);
+
+                    UnityReferences.OverText.fontSize = Size * f;
+                    UnityReferences.OverText.color = new Color(
+                        UnityReferences.OverText.color.r, 
+                        UnityReferences.OverText.color.g, 
+                        UnityReferences.OverText.color.b, 
+                        Mathf.Clamp01((1-f)*3));
+
+                    yield return null;
+                }
+
+                UnityReferences.OverText.gameObject.SetActive(false);
+            }
+
+            UnityReferences.OverText.StartCoroutine(Coro());
+
             UnityReferences.ScreenMaterial.SetFloat("_TimeStart", Time.timeSinceLevelLoad);
             effectPlayed = true;
 
-            NodeSmoothing.Smooth(game.Board, 1000);
+            // NodeSmoothing.Smooth(game.Board, 1000);
 
             // TODO: not this
             // turns.builder = new UserBuilder();
@@ -159,9 +190,8 @@ internal class GameBehavior : IBehavior
 
         for(int t = startTarget; t <= endTarget; t += step)
         {
-            game.StartGame(t, builder, painter);
-            game.RunUntilDone();
-            matchupData.data.Add(game.GetMatchupData());
+            var s = game.SimulateGame(t, builder, painter);
+            if(s is int2 i) matchupData.data.Add(i);
         }
 
         //menubehavior may want a different init for gathering vs realtime.. how will i store realtime? a dictionary? well i should prolly store matchupdata out of the curves anyways

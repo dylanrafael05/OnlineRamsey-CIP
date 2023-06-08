@@ -71,17 +71,20 @@ namespace Ramsey.Graph
             return e;
         }
 
-        public void PaintEdge(Edge e, int type) //Will start background task
+        public void PaintEdge(Edge e, int type, bool synchronous = false) //Will start background task
         {   
             graph.PaintEdge(e, type);
 
-            currentPathTask = Task.Run(async () => 
+            void PathFind()
             {
-                await pathFinder.HandlePaintedEdge(e, graph).UnityReport(); 
+                pathFinder.HandlePaintedEdge(e, graph); 
                 currentPathTask = null; 
 
                 OnFinishPathCalculation?.Invoke();
-            }).UnityReport();
+            }
+
+            if(synchronous) PathFind();
+            else currentPathTask = Task.Run(PathFind).UnityReport();
         }
 
         public void MoveNode(Node n, float2 position)

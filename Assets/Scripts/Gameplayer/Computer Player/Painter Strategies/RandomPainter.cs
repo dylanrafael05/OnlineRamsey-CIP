@@ -8,6 +8,8 @@ namespace Ramsey.Gameplayer
 {
     public class RandomPainter : Painter
     {
+        public override bool IsDeterministic => false;
+        
         public override Task<PainterMove> GetMove(GameState gameState)
         {
             return Task.FromResult<PainterMove>(

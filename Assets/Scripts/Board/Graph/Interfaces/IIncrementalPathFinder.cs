@@ -9,7 +9,7 @@ namespace Ramsey.Graph
         IReadOnlyList<IPath> MaxPathsByType { get; }
 
         void HandleNodeAddition(Node node);
-        Task HandlePaintedEdge(Edge edge, Graph graph);
+        void HandlePaintedEdge(Edge edge, Graph graph);
 
         int? MaxSupportedNodeCount { get; }
 

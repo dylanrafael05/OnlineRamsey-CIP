@@ -10,6 +10,7 @@ using System.Linq;
 
 public class RandomBuilder : Builder
 {
+    public override bool IsDeterministic => false;
 
     float pendantProb;
     float internalProb;

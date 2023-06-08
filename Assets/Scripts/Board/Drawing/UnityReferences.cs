@@ -11,6 +11,8 @@ namespace Ramsey.Drawing
         public static RectTransform RecordingTransform { get; private set; }
         public static RectTransform LoadingTransform { get; private set; }
         public static Text GoalText { get; private set; }
+        public static Text TurnText { get; private set; }
+        public static Text OverText { get; private set; }
 
         public static Material EdgeMaterial { get; private set; }
         public static Material NodeMaterial { get; private set; }
@@ -30,6 +32,10 @@ namespace Ramsey.Drawing
             LoadingTransform = lgo.GetComponent<RectTransform>();
 
             GoalText = GameObject.Find("Goal Text").GetComponent<Text>();
+            TurnText = GameObject.Find("Turn Text").GetComponent<Text>();
+            OverText = GameObject.Find("Over Text").GetComponent<Text>();
+
+            OverText.gameObject.SetActive(false);
 
             EdgeMaterial = new(Shader.Find("Unlit/GraphShaders/EdgeShader")) { enableInstancing = true };
             NodeMaterial = new(Shader.Find("Unlit/GraphShaders/NodeShader"));

@@ -8,7 +8,7 @@ namespace Ramsey.Gameplayer
     public interface IMove
     {
         static bool Enable = true;
-        bool MakeMove(BoardManager board);
+        bool MakeMove(BoardManager board, bool synchronous = false);
     }
 
     public readonly struct BuilderMove : IMove
@@ -27,7 +27,7 @@ namespace Ramsey.Gameplayer
         bool IsValid(BoardManager board)
             => IMove.Enable && n1 is not null && n2 is not null && board.IsValidEdge(n1, n2);
 
-        public bool MakeMove(BoardManager board)
+        public bool MakeMove(BoardManager board, bool synchronous = false)
         {
             if (!IsValid(board))
                 return false;
@@ -50,14 +50,14 @@ namespace Ramsey.Gameplayer
         }
 
         bool IsValid(BoardManager board)
-            => IMove.Enable && this.edge.Type == Edge.NullType;
+            => IMove.Enable && edge.Type == Edge.NullType;
 
-        public bool MakeMove(BoardManager board)
+        public bool MakeMove(BoardManager board, bool synchronous = false)
         {
             if (!IsValid(board))
                 return false;
 
-            board.PaintEdge(edge, type);
+            board.PaintEdge(edge, type, synchronous);
             return true;
         }
     }

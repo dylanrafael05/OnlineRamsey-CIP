@@ -38,6 +38,18 @@ namespace Ramsey.UI
 
             isBuilderTurn = true;
             InGame = true;
+
+            currentTask = null;
+        }
+
+        public int2? SimulateGame(int target, Builder builder, Painter painter) 
+        {
+            Assert.IsTrue(builder.IsAutomated, "Cannot simulate a game to its end with non-automated platers!");
+            Assert.IsTrue(painter.IsAutomated, "Cannot simulate a game to its end with non-automated platers!");
+
+            StartGame(target, builder, painter);
+            RunUntilDone();
+            return GetMatchupData();
         }
 
         public GameManager(BoardManager board)
@@ -47,11 +59,19 @@ namespace Ramsey.UI
             isBuilderTurn = true;
             InGame = false;
         }
-
-        public async Task RunMoveAsync(bool skipWaits = false)
+        
+        internal void RunUntilDone()
         {
+            while(!board.GameState.IsGameDone)
+                RunMove(synchronous: true).Wait();
+        }
+
+        internal async Task RunMove(bool synchronous = false)
+        {
+            InGame = !State.IsGameDone;
+
             // Early exit if cannot update
-            if(board.GameState.GraphTooComplex) return;
+            if(!InGame) return;
 
             // Check for game end by force
             if(board.Nodes.Count == board.MaxNodeCount && board.Graph.IsCompleteColored())
@@ -63,8 +83,8 @@ namespace Ramsey.UI
             // Get next move
             async Task<IMove> GetMove(IPlayer player)
             {
-                if(player.CanDelay && !skipWaits) await Task.Delay((int)(Delay * 1000));
-                return await player.GetMove(board.GameState);
+                if(player.IsAutomated && !synchronous) await Task.Delay((int)(Delay * 1000));
+                return await player.GetMove(board.GameState).ConfigureAwait(false);
             }
             
             // Repeat until move is valid
@@ -76,11 +96,11 @@ namespace Ramsey.UI
                 {
                     if(isBuilderTurn)
                     {
-                        move = await GetMove(builder);
+                        move = await GetMove(builder).ConfigureAwait(false);
                     }
                     else 
                     {
-                        move = await GetMove(painter);
+                        move = await GetMove(painter).ConfigureAwait(false);
                     }
                 }
                 catch(GraphTooComplexException) 
@@ -90,50 +110,39 @@ namespace Ramsey.UI
                 }
 
                 // Run move
-                if(move.MakeMove(board))
+                if(move.MakeMove(board, synchronous))
                 {
                     isBuilderTurn = !isBuilderTurn;
                     
                     if (isBuilderTurn) 
                         board.MarkNewTurn();
-
-                    Debug.Log("Game End: " + board.GameState.IsGameDone);
-                    Debug.Log("Current Turn: " + board.GameState.TurnNum);
                     
                     break;
                 }
             }
 
             // Wait for path task to complete
-            await board.AwaitPathTask();
-        }
-
-        public void RunMove()
-            => RunMoveAsync(true).Wait();
-
-        public void RunUntilDone()
-        {
-            while(!board.GameState.IsGameDone)
-                RunMove();
+            if(!synchronous) await board.AwaitPathTask();
         }
 
         public void UpdateGameplay() 
         {
-            InGame &= !State.IsGameDone;
-
             if(InGame)
             {
                 if(currentTask is null || currentTask.IsCompleted)
                 {
-                    currentTask = RunMoveAsync();
+                    currentTask = RunMove();
                 }
             }
 
             board.Update();
         }
 
-        public int2 GetMatchupData()
-            => new(State.TurnNum, State.TargetPathLength);
+        public int2? GetMatchupData()
+        {
+            if(State.GraphTooComplex || InGame) return null;
+            return new(State.TurnNum, State.TargetPathLength);
+        }
 
         public void Cleanup()
             => board.Cleanup();

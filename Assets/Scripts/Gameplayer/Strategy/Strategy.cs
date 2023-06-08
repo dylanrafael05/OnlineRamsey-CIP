@@ -7,14 +7,17 @@ namespace Ramsey.Gameplayer
 {
     public interface IPlayer
     {
-        public bool CanDelay { get; }
+        bool IsDeterministic { get; }
+        bool IsAutomated { get; }
 
         Task<IMove> GetMove(GameState gameState);
     }
 
     public abstract class Builder : IPlayer
     {
-        public virtual bool CanDelay => true;
+        public virtual bool IsDeterministic => true;
+        public virtual bool IsAutomated => true;
+
         public Builder() { }
 
         async Task<IMove> IPlayer.GetMove(GameState gameState)
@@ -27,7 +30,9 @@ namespace Ramsey.Gameplayer
 
     public abstract class Painter : IPlayer
     {
-        public virtual bool CanDelay => true;
+        public virtual bool IsDeterministic => true;
+        public virtual bool IsAutomated => true;
+
         public Painter() { }
 
         async Task<IMove> IPlayer.GetMove(GameState gameState)

@@ -99,12 +99,12 @@ namespace Ramsey.Board
             graphManager.MoveNode(node, position);
             renderManager.IOInterface.UpdateNodePosition(node);
         }
-        public void PaintEdge(Edge edge, int type)
+        public void PaintEdge(Edge edge, int type, bool synchronous = false)
         {
             GameState.NewestEdge = null;
             GameState.NewestPaint = type;
 
-            graphManager.PaintEdge(edge, type);
+            graphManager.PaintEdge(edge, type, synchronous);
             renderManager.IOInterface.UpdateEdgeType(edge);
         }
 

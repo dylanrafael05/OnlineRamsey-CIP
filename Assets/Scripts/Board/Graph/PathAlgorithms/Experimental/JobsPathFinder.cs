@@ -28,22 +28,18 @@ namespace Ramsey.Graph.Experimental
             pathsInternal.PadUpto(type, () => new JobPathInternal[0]);
         }
 
-        public async Task HandlePaintedEdge(Edge edge, Graph graph)
+        public void HandlePaintedEdge(Edge edge, Graph graph)
         {
             // Prepare type
             var type = edge.Type;
             EnsurePathTypeAvailable(type);
 
-            // Find all
-            var (pathsInternalThisType, maxpath) = await Task.Run(() => JobPathFinderImpl.FindIncr(graph, maxPaths[type], pathsInternal[type], edge));
-            // var (pathsInternalThisType, maxpath) = await Task.Run(() => JobPathFinderImpl.FindAll(graph, type));
+            // Find incremental
+            var (pathsInternalThisType, maxpath) = JobPathFinderImpl.FindIncr(graph, maxPaths[type], pathsInternal[type], edge);
 
             // Update data
             pathsInternal[type] = pathsInternalThisType;
-
             this.graph = graph;
-
-            Debug.Log(maxpath);
 
             maxPaths[type] = new JobPath(maxpath, type, graph);
         }
