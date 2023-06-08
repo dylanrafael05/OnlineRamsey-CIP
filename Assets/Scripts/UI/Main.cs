@@ -89,8 +89,6 @@ public class Main : MonoBehaviour
 
         game.UpdateGameplay();
 
-        // NodeSmoothing.Smooth(board, 100);
-
         if (game.State.IsGameDone && !effectPlayed)
         {
             UnityReferences.GoalText.text = "Game Over";
