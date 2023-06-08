@@ -49,6 +49,16 @@ Shader "Unlit/Fullscreen/Pulse"
                 return val - fmod(val, step);
             }
 
+            float min(float2 v)
+            {
+                return min(v.x, v.y);
+            }
+
+            float linearstep(float start, float end, float i)
+            {
+                return clamp((i-start)/(end-start), 0., 1.);
+            }
+
             fixed4 frag (vOut i) : SV_Target
             {
                 //return tex2D(_ScreenTexture, 1. - i.uv);
@@ -74,7 +84,9 @@ Shader "Unlit/Fullscreen/Pulse"
                 //if(fmod(-r + s*_Time.y+100., repLen) < .01) return float4(1.0, 1.0, 1.0, 1.0);
 
                 float o = atan2(uvc.y, uvc.x);
-                return tex2D(_ScreenTexture, 1. - (float2(r * cos(o), r * sin(o))*float2(9./16., 1.0)*.5+.5));
+                float4 col = tex2D(_ScreenTexture, 1. - (float2(r * cos(o), r * sin(o))*float2(9./16., 1.0)*.5+.5));
+                col = lerp(col, float4(0.,0.,0.,1.), .2*linearstep(.15, .0, pow(min(float2(16./9., 1.) - abs(uvc)),2.0)));
+                return col;
             }
             ENDCG
         }
