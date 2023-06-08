@@ -20,6 +20,27 @@ public class Bit256Tests
         new object[] {712381, 9},
         new object[] {912831799, 123817}
     };
+
+    [Test]
+    public void Bit256IteratorWorks()
+    {
+        var bits = (Bit256.One << 3) | (Bit256.One << 1) | Bit256.One;
+        var iter = Bit256.IterateBitpos(bits);
+
+        int idx;
+
+        Assert.True(iter.GetNext(out idx));
+        Assert.AreEqual(0, idx);
+
+        Assert.True(iter.GetNext(out idx));
+        Assert.AreEqual(1, idx);
+
+        Assert.True(iter.GetNext(out idx));
+        Assert.AreEqual(3, idx);
+
+        Assert.False(iter.GetNext(out idx));
+        Assert.AreEqual(-1, idx);
+    }
     
     [TestCaseSource(nameof(Integers))]
     public void Bit256ShlrWorks(int x)
