@@ -73,13 +73,14 @@ Shader "Unlit/DataCurve"
                 float ditherStart = 0.4;
 
                 float2 p = i.graphSpacePos;
-                p = amod(p+size*.5, size)-size*.5;
+                p = amod(p+size*.5 + .3*float2(_Time.y*0.07, _Time.y*.13), size)-size*.5;
                 float sdBound = min(_SizeBounds - i.graphSpacePos);
                 float r = smoothstep(ditherStart, 0., sdBound)* size * .9;
                 float sd = length(p) - r;
 
                 float exists = step(abs(i.uv.y), _Thickness) * smoothstep(0., ditherStart, sdBound) * step(0., sd);
-                
+                exists *= step(0., i.graphSpacePos.x) * step(0., i.graphSpacePos.y);
+
                 //if(abs(i.uv.y) <= .050) return float4(0.,0.,0.,1.);
 
                 return exists* _Color;

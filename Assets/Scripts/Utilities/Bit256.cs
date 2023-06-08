@@ -5,7 +5,7 @@ using Unity.Mathematics;
 
 namespace Ramsey.Utilities
 {
-    [BurstCompile]
+    [BurstCompile(CompileSynchronously = true)]
     [StructLayout(LayoutKind.Explicit)]
     public readonly struct Bit256
     {

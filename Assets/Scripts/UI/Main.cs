@@ -47,7 +47,6 @@ public class Main : MonoBehaviour
 
         new CameraManager(screenCamera, boardCamera);
 
-        var ub = new CapBuilder(board.GameState)/*new RandomBuilder(.15f, .8f, .05f)*/; var up = new RandomPainter();
         game = new GameManager(board)
         {
             Delay = 0.0f
@@ -66,19 +65,25 @@ public class Main : MonoBehaviour
         UserModeHandler.AddMode(turnNavigatorMode);
         UserModeHandler.AddMode(cameraControlMode);
 
-        game.StartGame(40, ub, up);
-        // turns.RunUntilDone();
+        var builder = new RandomBuilder(.15f, .8f, .05f); 
+        var painter = new RandomPainter();
 
-        // visualizer = new(CameraManager.BoardCamera, new() { position = new float2(0f), scale = new float2(1f), sizeBounds = new float2(3.4f, 8f) , color = Color.black, drawSize = 5f, thickness = 1f});
-        // visualizer.AddCurve(new() { data = new() { new(0, 0), new(1, 2), new(2, 3), new(3,4), new(4,-2), new(5,1)} }, new() { color = Color.red, lineThickness = .3f }, 2f);
+        game.StartGame(40, builder, painter);
+        // game.RunUntilDone();
+
+        // prefs = new() { position = new float2(0f), axisScale = new float2(2f), sizeBounds = new float2(3.4f, 8f), color = Color.black, drawSize = 5f, thickness = .075f, tickCount = 8 };
+        // visualizer = new(CameraManager.BoardCamera, prefs);
+        // visualizer.AddCurve(new() { data = new() { new(0, 0), new(1, 2), new(2, 3), new(3,25), new(4,-5), new(5,1), new(6,1),new(7,1),new(8,1),new(9,2)} }, new() { color = Color.red, lineThickness = .9f }, 4f);
+        // visualizer.AddCurve(new() { data = new() { new(0, 0), new(1, 5), new(2, 4), new(3,5), new(4,7), new(5,2), new(6,4),new(7,1),new(8,1),new(9,2)} }, new() { color = Color.blue, lineThickness = .9f }, 4f);
     }
     Visualizer visualizer;
+    GraphPreferences prefs;
 
     bool effectPlayed;
 
     void Update()
     {
-        //visualizer.Draw();
+        // visualizer.Draw();
 
         UserModeHandler.Update(InputManager.Update());
 
