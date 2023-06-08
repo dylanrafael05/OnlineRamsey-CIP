@@ -2,7 +2,7 @@ using Unity.Burst;
 
 namespace Ramsey.Utilities
 {
-    [BurstCompile]
+    [BurstCompile(CompileSynchronously = true)]
     public static class BitOps
     {
         public static void SplitShift64(int s, out int s1, out int s2) 
