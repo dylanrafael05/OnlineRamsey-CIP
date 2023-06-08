@@ -15,7 +15,7 @@ namespace Ramsey.Graph.Experimental
                 gm.Graph.Nodes.Select(n => n.Position).ToArray(),
                 Allocator.TempJob);
             var outPositions = new NativeArray<float2>(positions, Allocator.TempJob);
-            var matrix = gm.Graph.TotalAdjacencies.ToNative(Allocator.TempJob);
+            var matrix = gm.Graph.GetNativeAdjacencyMatrix(Allocator.TempJob);
 
             var ns = new NodeSmootherJob
             {

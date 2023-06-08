@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using Unity.Burst;
+using Unity.Mathematics;
 
 namespace Ramsey.Utilities
 {
@@ -36,8 +37,6 @@ namespace Ramsey.Utilities
 
         public static Bit256 operator <<(Bit256 a, int b) 
         {
-            ulong l1, l2, l3, l4;
-            
             if (b >= 256) return Zero;
 
             while (b >= 64)
@@ -46,18 +45,18 @@ namespace Ramsey.Utilities
                 b -= 64;
             }
 
-            l1 = (a.l1 << b) | (a.l2 << (64 - b));
-            l2 = (a.l2 << b) | (a.l3 << (64 - b));
-            l3 = (a.l3 << b) | (a.l4 << (64 - b));
-            l4 = (a.l4 << b);
+            ulong l4 = 0;
+
+            l4 |= BitOps.ShlCarry(a.l4, b, out var l3);
+            l3 |= BitOps.ShlCarry(a.l3, b, out var l2);
+            l2 |= BitOps.ShlCarry(a.l2, b, out var l1);
+            l1 |= a.l1 << b;
 
             return new(l1, l2, l3, l4);
         }
 
         public static Bit256 operator >>(Bit256 a, int b) 
         {
-            ulong l1, l2, l3, l4;
-            
             if (b >= 256) return Zero;
 
             while (b >= 64)
@@ -66,10 +65,12 @@ namespace Ramsey.Utilities
                 b -= 64;
             }
 
-            l1 = (a.l1 >> b);
-            l2 = (a.l2 >> b) | (a.l1 >> (64 - b));
-            l3 = (a.l3 >> b) | (a.l2 >> (64 - b));
-            l4 = (a.l4 >> b) | (a.l3 >> (64 - b));
+            ulong l1 = 0;
+
+            l1 |= BitOps.ShrCarry(a.l1, b, out var l2);
+            l2 |= BitOps.ShrCarry(a.l2, b, out var l3);
+            l3 |= BitOps.ShrCarry(a.l3, b, out var l4);
+            l4 |= a.l4 >> b;
 
             return new(l1, l2, l3, l4);
         }
@@ -93,6 +94,9 @@ namespace Ramsey.Utilities
             => new(a.l2, a.l3, a.l4, 0);
         public static Bit256 Shr64(Bit256 a)
             => new(0, a.l1, a.l2, a.l3);
+
+        public static int Bitcount(Bit256 a) 
+            => math.countbits(a.l1) + math.countbits(a.l2) + math.countbits(a.l3) + math.countbits(a.l4);
 
         public static explicit operator long(Bit256 b) 
             => (long)b.l4;

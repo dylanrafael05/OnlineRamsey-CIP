@@ -75,6 +75,8 @@ Shader "Unlit/UIShaders/RecordingShader"
 
             fixed4 frag(vOut i) : SV_Target
             {
+                i.uv.y *= 2.;
+
                 float o = sin(_Time.y*2.)*.07;
                 float2 ri = float2(cos(o), sin(o));
                 float2 up = float2(cos(o+PI*.5), sin(o+PI*.5));

@@ -1,23 +1,47 @@
 using Unity.Collections;
 using System;
+using System.Linq;
 
 namespace Ramsey.Graph.Experimental
 {
-    public static class AdjacencyMatrixUtils
+    public static class AdjacencyUtils
     {
-        public static NativeBitMatrix ToNative(this IReadOnlyAdjacencyMatrix mat, Allocator alloc)
+        public static NativeAdjacencyList GetNativeAdjacencyList(this IReadOnlyGraph g, Allocator alloc, int? type = null)
         {
-            var n = new NativeBitMatrix(mat.Size, mat.Size, alloc);
+            var nodes = g.Nodes.Select(n => n.ID).ToList();
+            var mlen = g.Nodes.Max(n => n.NeighborCount);
 
-            for(int i = 0; i < mat.Size; i++)
+            var list = new NativeAdjacencyList(nodes.Count, mlen, alloc);
+
+            for(int i = 0; i < nodes.Count; i++)
             {
-                for(int j = 0; j < mat.Size; j++)
+                var n = g.NodeFromID(i);
+
+                foreach(var neighbor in n.Neighbors)
                 {
-                    n[i, j] = mat.AreAdjacent(i, j);
+                    if(n.IsConnectedTo(neighbor) && (!type.HasValue || n.EdgeConnectedTo(neighbor).Type == type))
+                    {
+                        list.Add((byte)i, (byte)neighbor.ID);
+                    }
                 }
             }
 
-            return n;
+            return list;
+        }
+
+        public static NativeBitMatrix GetNativeAdjacencyMatrix(this IReadOnlyGraph g, Allocator alloc, int? type = null)
+        {
+            var am = new NativeBitMatrix(g.Nodes.Count, g.Nodes.Count, alloc);
+
+            foreach(var n1 in g.Nodes)
+            {
+                foreach(var n2 in g.Nodes)
+                {
+                    am[n1.ID, n2.ID] = n1.IsConnectedTo(n2) && (!type.HasValue || n1.EdgeConnectedTo(n2).Type == type);
+                }
+            }
+            
+            return am;
         }
     }
 

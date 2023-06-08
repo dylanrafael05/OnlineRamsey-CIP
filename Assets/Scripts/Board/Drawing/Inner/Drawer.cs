@@ -121,7 +121,7 @@ namespace Ramsey.Drawing
         public void UpdateNodeBuffer() => UpdateNodeBuffer(presentStorage);
         
 
-        public float RecordingScale 
+        public float RecordingScaleX 
         {
             get => UnityReferences.RecordingTransform.localScale.x;
             set => UnityReferences.RecordingTransform.localScale = new float3(value, ((float3)UnityReferences.RecordingTransform.localScale).yz);

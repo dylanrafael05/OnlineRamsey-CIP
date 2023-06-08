@@ -12,31 +12,13 @@ namespace Ramsey.Graph
     {
         private readonly List<Node> nodes = new();
         private readonly List<Edge> edges = new();
-        private readonly List<AdjacencyMatrix> matrices = new();
-        private readonly AdjacencyMatrix totalMatrix = new();
 
         public IReadOnlyList<Node> Nodes => nodes;
         public IReadOnlyList<Edge> Edges => edges;
-        public IReadOnlyAdjacencyMatrix TotalAdjacencies => totalMatrix;
-
-        private AdjacencyMatrix GetAdjacencyMatrix(int type)
-        {
-            matrices.PadUpto(type, () => 
-            {
-                var n = new AdjacencyMatrix();
-                n.Expand(nodes.Count);
-                return n;
-            });
-
-            return matrices[type];
-        }
-
-        public IReadOnlyAdjacencyMatrix AdjacenciesForType(int type)
-            => GetAdjacencyMatrix(type);
 
         public Node NodeFromID(int id) 
         {
-            Assert.IsTrue(nodes.Count > id, $"Cannot get a node of id {id} from this graph, it does not yet exist!");
+            // Assert.IsTrue(nodes.Count > id, $"Cannot get a node of id {id} from this graph, it does not yet exist!");
 
             return nodes[id];
         }
@@ -78,8 +60,6 @@ namespace Ramsey.Graph
 
             start.RegisterToEdge(edge);
             end.RegisterToEdge(edge);
-            
-            totalMatrix.AddAdjacency(edge.Start, edge.End);
 
             return edge;
         }
@@ -88,11 +68,6 @@ namespace Ramsey.Graph
         {
             var node = new Node(nodes.Count) {Position = position};
             nodes.Add(node);
-
-            foreach(var m in matrices)
-                m.Expand(nodes.Count);
-            
-            totalMatrix.Expand(nodes.Count);
 
             return node;
         }
@@ -110,8 +85,6 @@ namespace Ramsey.Graph
 
             edge.Start.PaintEdge(edge);
             edge.End.PaintEdge(edge);
-            
-            GetAdjacencyMatrix(type).AddAdjacency(edge.Start, edge.End);
         }
         
         public void Clear()

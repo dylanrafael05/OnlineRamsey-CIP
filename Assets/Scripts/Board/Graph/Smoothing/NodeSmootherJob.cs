@@ -17,7 +17,7 @@ namespace Ramsey.Graph.Experimental
 
         public float GetScaleFromRadiusSquared(float r2)
         {
-            return math.exp(-r2);
+            return math.exp(-r2) + 4f * math.max(0, 2f - r2 * 0.5f);
         }
 
         public float2 ModifyVelocity(float2 vel) 
@@ -49,10 +49,10 @@ namespace Ramsey.Graph.Experimental
                     delta = ran.NextFloat2Direction();
                 }
 
-                var scale = 0.15f * GetScaleFromRadiusSquared(lendel * 0.6f);
+                var scale = 0.3f * GetScaleFromRadiusSquared(lendel * 0.6f);
                 if(areconnected)
                 {
-                    scale -= math.clamp(math.log(lendel) - 2.8f, -0.1f, 0.15f);
+                    scale -= 3.0f * math.clamp(math.log(lendel) - 2.8f, -0.2f, 0.6f);
                 }
 
                 if(math.abs(scale) > 0.005f)
