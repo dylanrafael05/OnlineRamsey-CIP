@@ -57,10 +57,10 @@ Shader "Unlit/DataGraph"
             }
 
             //im calling this sb instead of sd like sample binary cuz we're not raymarching
-            float sbTickLine(float2 p, float2 fo, float tickCount, float scale, float barThick, float2 tickDim)
+            float sbTickLine(float2 p, float2 fo, float2 up, float tickCount, float scale, float barThick, float2 tickDim)
             {
 
-                p = float2(dot(p, fo), dot(p, perp(fo)));
+                p = float2(dot(p, fo), dot(p, up)); //doesnt like the perp float2(0.,1.) well that's fine because i dont like it fuck uglsl!!! >:D hehe, devilish
 
                 float exists = 1.0; //Exists = InZone && (InBar || InTick)
                 exists *= step(0., p.x) * step(p.x, scale);
@@ -110,19 +110,18 @@ Shader "Unlit/DataGraph"
                 //p -= offset;
                 float2 p = i.uv * _UVScale;
 
+                _TickDim.x /= clamp(_TickCount.x / 8., 1., 4.);
 
                 //X
-                exists += sbTickLine(p - float2(0., _Thickness*.5), float2(1., 0.), _TickCount.x, _Scale.x, _Thickness, _TickDim.xy);
+                exists += sbTickLine(p - float2(0., _Thickness*.5), float2(1., 0.), float2(0., 1.), _TickCount.x, _Scale.x, _Thickness, _TickDim.xy);
                 exists += sbETri(p - float2(_Scale.x, _Thickness*.5), float2(1., 0.), _TriangleDim);
 
                 //Y
-                exists += sbTickLine(p - float2(_Thickness*.5, 0.), float2(0., 1.), _TickCount.y, _Scale.y, _Thickness, _TickDim.xy);
+                exists += sbTickLine(p - float2(_Thickness*.5, 0.), float2(0., 1.), float2(1., 0.), _TickCount.y, _Scale.y, _Thickness, _TickDim.xy);
                 exists += sbETri(p - float2(_Thickness*.5, _Scale.y), float2(0., 1.), _TriangleDim);
 
                 exists *= step(length(p - _Thickness*.5) - _Thickness*.5, 0.) + step(_Thickness*.5, p.y) + step(_Thickness*.5, p.x);
                 exists += step(-length(p - _Thickness*1.5) + _Thickness*.5, 0.) * step(p.x, _Thickness*1.5) * step(p.y, _Thickness*1.5) * step(length(p - _Thickness*1.5) - _Thickness, 0.);
-
-
 
                 exists = min(exists, 1.);
 

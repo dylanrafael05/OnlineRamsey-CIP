@@ -10,10 +10,25 @@ namespace Ramsey.Visualization
     public struct GraphPreferences
     {
 
+        /// <summary>
+        /// Size Bounds are where the curves on the graph start to get dithered. 
+        /// Axis Scale is the scale of the actual graph geometry. 
+        /// Draw Size is how large the quad will be drawn in space, shouldn't be touched unless you encounter clipping.
+        /// </summary>
+        /// <param name="sizeBounds"></param>
+        /// <param name="axisScale"></param>
+        /// <param name="position"></param>
+        /// <param name="tickCount"></param>
+        /// <param name="color"></param>
+        /// <param name="thickness"></param>
+        /// <param name="drawSize"></param>
+        public GraphPreferences(float2 sizeBounds, float2 axisScale, float2 position, int2 tickCount, Color color, float thickness, float drawSize = 5f)
+        { this.sizeBounds= sizeBounds; this.axisScale = axisScale; this.position = position; this.tickCount= tickCount; this.color = color; this.thickness = thickness; this.drawSize= drawSize; }
+
         static Material material = new(Shader.Find("Unlit/DataGraph"));
 
         public float2 sizeBounds; //could add some dithering on the curve as it leaves ok i did but barely visible since the line is so thin
-        public float2 scale;
+        public float2 axisScale;
         public float2 position;
 
         public int2 tickCount;
@@ -24,13 +39,13 @@ namespace Ramsey.Visualization
         public float drawSize;
 
         public Matrix4x4 GetCurveMatrix()
-            => Matrix4x4.TRS((position+thickness*.5f).xyz(Visualizer.Depth), Quaternion.identity, Vector3.one);
+            => Matrix4x4.TRS((position+.5f*thickness).xyz(Visualizer.Depth), Quaternion.identity, Vector3.one);
 
         public Matrix4x4 GetGraphMatrix()
             => Matrix4x4.TRS((position).xyz(Visualizer.Depth), Quaternion.identity, drawSize * Vector3.one);
 
         public float2 PartitionSize
-            => 2f * (scale - thickness*.5f) / (float2) tickCount;
+            => 2f * (axisScale) / (float2) tickCount;
 
         public Material GetMaterial() //not necessary to update all uniforms everytime but for now
         {
@@ -38,7 +53,7 @@ namespace Ramsey.Visualization
             material.SetColor("_Color", color);
             material.SetVector("_TickCount", ((float2) tickCount).xyzw());
             //material.SetVector("_TickDim", new float4(.035f, 0.16f, 0f, 0f));
-            material.SetVector("_Scale", scale.xyzw());
+            material.SetVector("_Scale", axisScale.xyzw());
             material.SetFloat("_Thickness", thickness);
             material.SetFloat("_UVScale", .5f*drawSize);
 
@@ -104,16 +119,16 @@ namespace Ramsey.Visualization
         public void AddCurve(MatchupData data, CurvePreferences curvePrefs, float k = 1f)
             => graphs.Add((MeshGenerator.GenerateCurveMesh(data, k), GetCurveMaterial(graphPrefs, curvePrefs)));
 
-        public void SetPreferences(int i, CurvePreferences curvePrefs)
+        void SetPreferences(int i, CurvePreferences curvePrefs)
             => graphs[i] = (graphs[i].Item1, GetCurveMaterial(graphs[i].Item2, curvePrefs));
 
-        public void SetPreferences(GraphPreferences graphPrefs)
+        void SetPreferences(GraphPreferences graphPrefs)
         { this.graphPrefs = graphPrefs; Utils.ForLength(graphs.Count, (i) => graphs[i] = (graphs[i].Item1, GetCurveMaterial(graphs[i].Item2, graphPrefs))); }
 
         float zoom = 8f;
-        public void UpdateInput(float dt, float change)
+        public void UpdateInput(float dt, float change, float2 mouse) //need to organize and stuff
         {
-            zoom += change * dt;
+            zoom += math.step(math.abs(mouse - (graphPrefs.position + graphPrefs.drawSize * .5f)), graphPrefs.drawSize*.5f).mul() != 0 ? change * dt : 0f;
             graphPrefs.tickCount = (int)zoom;
             SetPreferences(graphPrefs);
         }
@@ -123,8 +138,8 @@ namespace Ramsey.Visualization
 
             Matrix4x4 curveMatrix = graphPrefs.GetCurveMatrix();
 
-            //Draw Graph (ima fix shader later)
-            Graphics.DrawMesh(MeshUtils.QuadMesh, graphPrefs.GetGraphMatrix(), graphPrefs.GetMaterial(), layer); //need to make tick count consistent with meshes and stuff.. uniforming curve scale and like ye
+            //Draw Graph (curves need to be scaled and aligned better)
+            Graphics.DrawMesh(MeshUtils.QuadMesh, graphPrefs.GetGraphMatrix(), graphPrefs.GetMaterial(), layer); 
 
             //Draw Curves
             graphs.ForEach(tup =>

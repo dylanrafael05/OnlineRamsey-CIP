@@ -79,7 +79,8 @@ Shader "Unlit/DataCurve"
                 float sd = length(p) - r;
 
                 float exists = step(abs(i.uv.y), _Thickness) * smoothstep(0., ditherStart, sdBound) * step(0., sd);
-                
+                exists *= step(0., i.graphSpacePos.x) * step(0., i.graphSpacePos.y);
+
                 //if(abs(i.uv.y) <= .050) return float4(0.,0.,0.,1.);
 
                 return exists* _Color;
