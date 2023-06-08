@@ -6,6 +6,7 @@ using Ramsey.Board;
 using Ramsey.Gameplayer;
 using Ramsey.Graph;
 using Ramsey.Utilities;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -15,7 +16,7 @@ namespace Ramsey.UI
     {
         private BoardManager board;
 
-        private bool inGame;
+        public bool InGame { get; private set; }
 
         public BoardManager Board => board;
         public GameState State => board.GameState;
@@ -36,7 +37,7 @@ namespace Ramsey.UI
             this.painter = painter;
 
             isBuilderTurn = true;
-            inGame = true;
+            InGame = true;
         }
 
         public GameManager(BoardManager board)
@@ -44,7 +45,7 @@ namespace Ramsey.UI
             this.board = board;
 
             isBuilderTurn = true;
-            inGame = false;
+            InGame = false;
         }
 
         public async Task RunMoveAsync(bool skipWaits = false)
@@ -94,9 +95,7 @@ namespace Ramsey.UI
                     isBuilderTurn = !isBuilderTurn;
                     
                     if (isBuilderTurn) 
-                    {
                         board.MarkNewTurn();
-                    }
 
                     Debug.Log("Game End: " + board.GameState.IsGameDone);
                     Debug.Log("Current Turn: " + board.GameState.TurnNum);
@@ -110,23 +109,19 @@ namespace Ramsey.UI
         }
 
         public void RunMove()
-        {
-            RunMoveAsync(true).Wait();
-        }
+            => RunMoveAsync(true).Wait();
 
         public void RunUntilDone()
         {
             while(!board.GameState.IsGameDone)
-            {
                 RunMove();
-            }
         }
 
         public void UpdateGameplay() 
         {
-            inGame &= !State.IsGameDone;
+            InGame &= !State.IsGameDone;
 
-            if(inGame)
+            if(InGame)
             {
                 if(currentTask is null || currentTask.IsCompleted)
                 {
@@ -137,9 +132,10 @@ namespace Ramsey.UI
             board.Update();
         }
 
+        public int2 GetMatchupData()
+            => new(State.TurnNum, State.TargetPathLength);
+
         public void Cleanup()
-        {
-            board.Cleanup();
-        }
+            => board.Cleanup();
     }
 }

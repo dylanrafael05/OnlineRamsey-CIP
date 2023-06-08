@@ -69,7 +69,7 @@ public class Main : MonoBehaviour
         var painter = new RandomPainter();
 
         game.StartGame(40, builder, painter);
-        // game.RunUntilDone();
+        //game.RunUntilDone();
 
         prefs = new() { position = new float2(0f), axisScale = new float2(2f), sizeBounds = new float2(3.4f, 8f), color = Color.black, drawSize = 5f, thickness = .075f, tickCount = 8 };
         visualizer = new(CameraManager.BoardCamera, prefs);
@@ -83,6 +83,8 @@ public class Main : MonoBehaviour
 
     void Update()
     {
+        
+
         // visualizer.Draw();
 
         UserModeHandler.Update(InputManager.Update());
@@ -105,7 +107,114 @@ public class Main : MonoBehaviour
     }
 
     void OnDestroy() 
-    {
-        game.Cleanup();
-    }
+        => game.Cleanup();
 }
+
+internal class GameBehavior : IBehavior
+{
+
+    //
+    MenuBehavior menuBehavior;
+
+    GameManager game;
+
+    bool effectPlayed;
+
+    public GameBehavior(Builder builder, Painter painter)
+    {
+        var board = BoardManager.UsingAlgorithm<JobPathFinder>(CameraManager.BoardCamera, new BoardPreferences()
+        {
+            drawingPreferences = new DrawingPreferences
+            {
+                nullColor = Color.black,
+                colors = new[] { Color.blue, Color.red, Color.green, Color.yellow },
+                edgeThickness = 0.15f,
+                highlightThickness = 0.1f,
+
+                nodeColor = Color.white,
+                nodeRadius = 0.3f,
+                highlightRadius = 0.5f,
+                highlightColor = Color.green,
+
+                recorderColor = Color.white,
+
+                loadingCircleOuterRadius = 1.0f,
+                loadingCircleInnerRadius = 0.7f,
+            }
+        });
+
+        game = new(board)
+        {
+            Delay = 0f
+        };
+    }
+
+    public void InitRealtime(int target, Builder builder, Painter painter)
+        => game.StartGame(target, builder, painter);
+
+    public void InitGather(int startTarget, int endTarget, int step, Builder builder, Painter painter)
+    {
+
+        MatchupData matchupData = new() { data = new() };
+
+        for(int t = startTarget; t <= endTarget; t += step)
+        {
+            game.StartGame(t, builder, painter);
+            game.RunUntilDone();
+            matchupData.data.Add(game.GetMatchupData());
+        }
+
+        //menubehavior may want a different init for gathering vs realtime.. how will i store realtime? a dictionary? well i should prolly store matchupdata out of the curves anyways
+        //slight variations of builder and painter, probability distributions, parameters like double alternating, give reason to gathering the data now
+    }
+
+    public void Loop()
+    {
+
+    }
+
+    public void EndRealtime()
+    {
+
+    }
+
+    public void EndGather()
+    {
+        IBehavior.Current = menuBehavior;
+        //menuBehavior.Init(..);
+    }
+
+}
+
+internal class MenuBehavior : IBehavior
+{
+
+    //
+    GameBehavior gameBehavior;
+
+    //
+    Visualizer visualizer;
+
+    public MenuBehavior(GraphPreferences graphPreferences)
+    {
+        visualizer = new(CameraManager.BoardCamera, graphPreferences);
+    }
+
+    public void InitAfterRealtime(int2 gameData)
+    {
+
+    }
+
+    public void InitAfterGather(MatchupData data)
+    {
+
+    }
+
+    public void Loop()
+    {
+
+    }
+
+}
+
+internal interface IBehavior { static IBehavior Current; void Loop(); }

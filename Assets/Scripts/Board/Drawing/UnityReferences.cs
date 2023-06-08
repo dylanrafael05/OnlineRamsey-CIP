@@ -18,6 +18,9 @@ namespace Ramsey.Drawing
         public static Material LoadingMaterial { get; private set; }
         public static Material ScreenMaterial { get; private set; }
 
+        public static MaterialPropertyBlock EdgeBlock { get; private set; } = new();
+        public static MaterialPropertyBlock NodeBlock { get; private set; } = new();
+
         public static void Initialize()
         {
             var rgo = GameObject.Find("Recording");
@@ -28,7 +31,7 @@ namespace Ramsey.Drawing
 
             GoalText = GameObject.Find("Goal Text").GetComponent<Text>();
 
-            EdgeMaterial = new(Shader.Find("Unlit/GraphShaders/EdgeShader"));
+            EdgeMaterial = new(Shader.Find("Unlit/GraphShaders/EdgeShader")) { enableInstancing = true };
             NodeMaterial = new(Shader.Find("Unlit/GraphShaders/NodeShader"));
             RecorderMaterial = new(Shader.Find("Unlit/UIShaders/RecordingShader"));
             LoadingMaterial = new(Shader.Find("Unlit/UIShaders/LoadingCircle"));
