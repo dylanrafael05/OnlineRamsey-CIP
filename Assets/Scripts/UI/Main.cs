@@ -65,7 +65,7 @@ public class Main : MonoBehaviour
         UserModeHandler.AddMode(turnNavigatorMode);
         UserModeHandler.AddMode(cameraControlMode);
 
-        var builder = new RandomBuilder(.15f, .8f, .05f); 
+        var builder = new CapBuilder(game.State); //new RandomBuilder(.15f, .8f, .05f); 
         var painter = new RandomPainter();
 
         game.StartGame(40, builder, painter);
