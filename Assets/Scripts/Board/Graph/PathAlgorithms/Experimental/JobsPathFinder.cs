@@ -35,36 +35,17 @@ namespace Ramsey.Graph.Experimental
             EnsurePathTypeAvailable(type);
 
             // Find all
-            var pathsInternalThisType = await Task.Run(() => JobPathFinderImpl.FindIncr(graph, pathsInternal[type], edge));
-            // var pathsInternal = await Task.Run(() => JobPathFinderImpl.FindAll(graph, type));
+            var (pathsInternalThisType, maxpath) = await Task.Run(() => JobPathFinderImpl.FindIncr(graph, maxPaths[type], pathsInternal[type], edge));
+            // var (pathsInternalThisType, maxpath) = await Task.Run(() => JobPathFinderImpl.FindAll(graph, type));
 
             // Update data
-            using(Collect.Auto()) 
-            {
-                pathsInternal[type] = pathsInternalThisType;
+            pathsInternal[type] = pathsInternalThisType;
 
-                var maxpath = (JobPathInternal?)null;
+            this.graph = graph;
 
-                for(int i = 0; i < pathsInternalThisType.Length; i++) 
-                {
-                    var p = pathsInternalThisType[i];
+            Debug.Log(maxpath);
 
-                    if(maxpath is null || p.Length > maxpath.Value.Length)
-                    {
-                        maxpath = p;
-                    }
-
-                    // _ = new JobPath(p, graph).Nodes;
-                }
-
-                this.graph = graph;
-
-                Debug.Log(maxpath);
-
-                maxPaths[type] = new JobPath(maxpath.Value, type, graph);
-            }
+            maxPaths[type] = new JobPath(maxpath, type, graph);
         }
-
-        private static ProfilerMarker Collect = new("JobPathFinder.Collect");
     }
 }

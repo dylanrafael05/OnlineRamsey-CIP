@@ -10,7 +10,7 @@ namespace Ramsey.Graph.Experimental
 {
     internal static class JobPathFinderImpl
     {
-        internal static JobPathInternal[] FindAll(Graph graph, int type)
+        internal static (JobPathInternal[] paths, JobPathInternal longest) FindAll(Graph graph, int type)
         {
             var nodeCount = graph.Nodes.Count;
 
@@ -30,10 +30,10 @@ namespace Ramsey.Graph.Experimental
                 livePaths.Add(p);
             }
 
-            return Find(adjList, livePaths, deadPaths, type);
+            return Find(adjList, livePaths, deadPaths, default, type);
         }
 
-        internal static JobPathInternal[] FindIncr(Graph graph, IReadOnlyList<JobPathInternal> existingPaths, Edge newEdge)
+        internal static (JobPathInternal[] paths, JobPathInternal longest) FindIncr(Graph graph, JobPath longest, IReadOnlyList<JobPathInternal> existingPaths, Edge newEdge)
         {
             NativeAdjacencyList adjList = graph.GetNativeAdjacencyList(Allocator.Persistent, newEdge.Type);
             NativeList<JobPathInternal> livePaths = new(existingPaths.Count * 2 + 1, Allocator.Persistent);
@@ -62,16 +62,18 @@ namespace Ramsey.Graph.Experimental
             livePaths.Add(edgepath); 
             // else deadPaths.Add(edgepath);
 
-            return Find(adjList, livePaths, deadPaths, newEdge.Type);
+            return Find(adjList, livePaths, deadPaths, longest?.Internal ?? default, newEdge.Type);
         }
 
-        internal static JobPathInternal[] Find(NativeAdjacencyList adjacencies, NativeList<JobPathInternal> startLivePaths, NativeHashSet<JobPathInternal> startDeadPaths, int type) 
+        internal static (JobPathInternal[] paths, JobPathInternal longest) Find(NativeAdjacencyList adjacencies, NativeList<JobPathInternal> startLivePaths, NativeHashSet<JobPathInternal> startDeadPaths, JobPathInternal longest, int type) 
         {
             NativeList<JobPathInternal> livePaths = startLivePaths;
             NativeHashSet<JobPathInternal> deadPaths = startDeadPaths;
 
             NativeHashSet<JobPathInternal> liveSet = new(startLivePaths.Length, Allocator.Persistent);
             NativeQueue<JobPathGeneration> generationQueue = new(Allocator.Persistent);
+
+            NativeValue<JobPathInternal> longestWrap = new(Allocator.Persistent, longest);
             
             var gen = new PathGenerateJob();
             var agg = new PathAggregateJob();
@@ -89,8 +91,11 @@ namespace Ramsey.Graph.Experimental
                 agg.liveSet = liveSet;
                 agg.liveOutput = livePaths;
                 agg.deadOutput = deadPaths;
+                agg.longest = longestWrap;
 
                 agg.Schedule().Complete();
+
+                longest = agg.longest.Value;
             }
 
             var pathlist = new JobPathInternal[deadPaths.Count()];
@@ -107,8 +112,9 @@ namespace Ramsey.Graph.Experimental
             deadPaths.Dispose();
             livePaths.Dispose();
             generationQueue.Dispose();
+            longestWrap.Dispose();
 
-            return pathlist;
+            return (pathlist, longest);
         }
     }
 }
