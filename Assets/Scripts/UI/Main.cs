@@ -68,8 +68,8 @@ public class Main : MonoBehaviour
         board.StartGame(40);
         // turns.RunUntilDone();
 
-        visualizer = new(CameraManager.BoardCamera, new() { position = new float2(0f), scale = new float2(1f), sizeBounds = new float2(3.4f, 8f) , color = Color.black, drawSize = 5f, thickness = 1f});
-        visualizer.AddCurve(new() { data = new() { new(0, 0), new(1, 2), new(2, 3), new(3,4), new(4,-2), new(5,1)} }, new() { color = Color.red, lineThickness = .3f }, 2f);
+        // visualizer = new(CameraManager.BoardCamera, new() { position = new float2(0f), scale = new float2(1f), sizeBounds = new float2(3.4f, 8f) , color = Color.black, drawSize = 5f, thickness = 1f});
+        // visualizer.AddCurve(new() { data = new() { new(0, 0), new(1, 2), new(2, 3), new(3,4), new(4,-2), new(5,1)} }, new() { color = Color.red, lineThickness = .3f }, 2f);
     }
     Visualizer visualizer;
 
