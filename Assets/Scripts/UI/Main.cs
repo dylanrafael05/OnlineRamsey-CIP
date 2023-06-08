@@ -59,14 +59,17 @@ public class Main : MonoBehaviour
 
         var nodeEditingMode = new NodeEditingMode();
         var turnNavigatorMode = new TurnNavigatorMode(new IUserMode[] { nodeEditingMode }); //put locks in here
+        var cameraControlMode = new CameraControlMode();
 
         UserModeHandler.AddMode(nodeEditingMode);
         UserModeHandler.AddMode(turnNavigatorMode);
+        UserModeHandler.AddMode(cameraControlMode);
 
         var builder = new RandomBuilder(.15f, .8f, .05f); 
         var painter = new RandomPainter();
 
-        game.StartGame(20, builder, painter);
+        game.StartGame(40, builder, painter);
+        // game.RunUntilDone();
 
         visualizer = new(CameraManager.BoardCamera, new() { position = new float2(0f), scale = new float2(1f), sizeBounds = new float2(3.4f, 8f) , color = Color.black, drawSize = 5f, thickness = 1f});
         visualizer.AddCurve(new() { data = new() { new(0, 0), new(1, 2), new(2, 3), new(3,4), new(4,-2), new(5,1)} }, new() { color = Color.red, lineThickness = .3f }, 2f);
@@ -84,33 +87,6 @@ public class Main : MonoBehaviour
         game.UpdateGameplay();
 
         // NodeSmoothing.Smooth(board, 100);
-
-        var scl = Input.GetKey(KeyCode.LeftShift).ToInt() * 2 + 1;
-
-        if (Input.GetKey(KeyCode.W))
-        {
-            CameraManager.BoardCamera.transform.position += scl * new Vector3(0, 0.05f, 0);
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            CameraManager.BoardCamera.transform.position += scl * new Vector3(0, -0.05f, 0);
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            CameraManager.BoardCamera.transform.position += scl * new Vector3(0.05f, 0, 0);
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            CameraManager.BoardCamera.transform.position += scl * new Vector3(-0.05f, 0, 0);
-        }
-        if (Input.GetKey(KeyCode.Q))
-        {
-            CameraManager.BoardCamera.orthographicSize += scl * 0.5f;
-        }
-        if (Input.GetKey(KeyCode.E))
-        {
-            CameraManager.BoardCamera.orthographicSize += scl * -0.5f;
-        }
 
         if (game.State.IsGameDone && !effectPlayed)
         {

@@ -55,6 +55,11 @@ namespace Ramsey.UI
             data.collidingNodes = board.Nodes.Where(n => CollideNode(data.mouse, n)).ToHashSet();
             data.collidingEdges = board.Edges.Where(e => CollideEdge(data.mouse, e)).ToHashSet();
 
+            data.wk = Input.GetKey(KeyCode.W);
+            data.ak = Input.GetKey(KeyCode.A);
+            data.sk = Input.GetKey(KeyCode.S);
+            data.dk = Input.GetKey(KeyCode.D);
+
             data.alt = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
             data.shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
 
@@ -74,6 +79,8 @@ namespace Ramsey.UI
         public bool lmb; public bool rmb; public bool mmb;
         public bool lmbp; public bool rmbp; public bool mmbp;
         public bool lmbu; public bool rmbu; public bool mmbu;
+
+        public bool wk; public bool ak; public bool sk; public bool dk;
 
         public bool alt; public bool shift;
 
