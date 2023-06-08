@@ -13,7 +13,6 @@ namespace Ramsey.Graph.Experimental
     [BurstCompile(CompileSynchronously = true)]
     internal struct PathGenerateJob : IJobParallelFor
     {
-        [ReadOnly] public int type;
         [ReadOnly, NativeDisableParallelForRestriction] public NativeAdjacencyList adjacencies;
 
         [ReadOnly, NativeMatchesParallelForLength] public NativeArray<JobPathInternal>.ReadOnly input;
@@ -32,7 +31,7 @@ namespace Ramsey.Graph.Experimental
             {
                 if(other == pcur | other == pother) continue;
                 
-                var othermask = (Bit256)1 << other;
+                var othermask = Bit256.One << other;
                 var newmask = path.Mask | othermask;
 
                 if(newmask != path.Mask) 
@@ -50,7 +49,7 @@ namespace Ramsey.Graph.Experimental
             {
                 if(other == pcur | other == pother) continue;
                 
-                var othermask = (Bit256)1 << other;
+                var othermask = Bit256.One << other;
                 var newmask = path.Mask | othermask;
 
                 if(newmask != path.Mask) 

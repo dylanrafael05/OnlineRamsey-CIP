@@ -39,10 +39,13 @@ namespace Ramsey.Utilities
         {
             if (b >= 256) return Zero;
 
-            while (b >= 64)
+            for(int i = 0; i < 4; i++)
             {
-                a = Shl64(a);
-                b -= 64;
+                if (b >= 64)
+                {
+                    a = Shl64(a);
+                    b -= 64;
+                }
             }
 
             ulong l4 = 0;
@@ -59,10 +62,13 @@ namespace Ramsey.Utilities
         {
             if (b >= 256) return Zero;
 
-            while (b >= 64)
+            for(int i = 0; i < 4; i++)
             {
-                a = Shr64(a);
-                b -= 64;
+                if (b >= 64)
+                {
+                    a = Shr64(a);
+                    b -= 64;
+                }
             }
 
             ulong l1 = 0;

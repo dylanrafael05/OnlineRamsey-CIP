@@ -83,7 +83,6 @@ namespace Ramsey.Graph.Experimental
                 gen.input = livePaths.AsParallelReader();
                 gen.output = generationQueue.AsParallelWriter();
                 gen.adjacencies = adjacencies;
-                gen.type = type;
 
                 gen.Schedule(livePaths.Length, 16).Complete();
 
