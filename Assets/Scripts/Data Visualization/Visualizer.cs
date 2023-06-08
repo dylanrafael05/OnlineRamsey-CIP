@@ -16,27 +16,39 @@ namespace Ramsey.Visualization
         public float2 scale;
         public float2 position;
 
+        public int2 tickCount;
+
         public Color color;
         public float thickness;
-
+        
         public float drawSize;
 
         public Matrix4x4 GetCurveMatrix()
-            => Matrix4x4.TRS(position.xyz(Visualizer.Depth), Quaternion.identity, Vector3.one);
+            => Matrix4x4.TRS((position+thickness*.5f).xyz(Visualizer.Depth), Quaternion.identity, Vector3.one);
 
         public Matrix4x4 GetGraphMatrix()
-            => Matrix4x4.TRS((position + drawSize * .5f).xyz(Visualizer.Depth), Quaternion.identity, drawSize * Vector3.one);
+            => Matrix4x4.TRS((position).xyz(Visualizer.Depth), Quaternion.identity, drawSize * Vector3.one);
 
-        public Material GetMaterial(int2 tickCount) //not necessary to update all uniforms everytime but for now
+        public float2 PartitionSize
+            => 2f * (scale - thickness*.5f) / (float2) tickCount;
+
+        public Material GetMaterial() //not necessary to update all uniforms everytime but for now
         {
 
             material.SetColor("_Color", color);
             material.SetVector("_TickCount", ((float2) tickCount).xyzw());
+            //material.SetVector("_TickDim", new float4(.035f, 0.16f, 0f, 0f));
             material.SetVector("_Scale", scale.xyzw());
             material.SetFloat("_Thickness", thickness);
-            material.SetFloat("_UVScale", drawSize);
+            material.SetFloat("_UVScale", .5f*drawSize);
 
             return material;
+        }
+
+        public void FillCurveMaterial(Material m)
+        {
+            m.SetVector("_Scale", PartitionSize.xyzw());
+            m.SetVector("_SizeBounds", sizeBounds.xyzw());
         }
 
     }
@@ -77,14 +89,12 @@ namespace Ramsey.Visualization
         static Material GetCurveMaterial(GraphPreferences graphPrefs, CurvePreferences curvePrefs)
         {
             var m = curvePrefs.GetMaterial();
-            m.SetVector("_Scale", graphPrefs.scale.xyzw());
-            m.SetVector("_SizeBounds", graphPrefs.sizeBounds.xyzw());
+            graphPrefs.FillCurveMaterial(m);
             return m;
         }
         static Material GetCurveMaterial(Material m, GraphPreferences graphPrefs)
         {
-            m.SetVector("_Scale", graphPrefs.scale.xyzw());
-            m.SetVector("_SizeBounds", graphPrefs.sizeBounds.xyzw());
+            graphPrefs.FillCurveMaterial(m);
             return m;
         }
         static Material GetCurveMaterial(Material m, CurvePreferences curvePrefs)
@@ -106,7 +116,7 @@ namespace Ramsey.Visualization
             Matrix4x4 curveMatrix = graphPrefs.GetCurveMatrix();
 
             //Draw Graph (ima fix shader later)
-            Graphics.DrawMesh(MeshUtils.QuadMesh, graphPrefs.GetGraphMatrix(), graphPrefs.GetMaterial(new(20)), layer); //need to make tick count consistent with meshes and stuff.. uniforming curve scale and like ye
+            Graphics.DrawMesh(MeshUtils.QuadMesh, graphPrefs.GetGraphMatrix(), graphPrefs.GetMaterial(), layer); //need to make tick count consistent with meshes and stuff.. uniforming curve scale and like ye
 
             //Draw Curves
             graphs.ForEach(tup =>

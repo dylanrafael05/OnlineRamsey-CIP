@@ -38,7 +38,7 @@ namespace Ramsey.Visualization
         {
             float d = abs(v1 - v2);
             float h = d * .5f * pow(max(0f, 1f - d / k), 2.0f);
-            return v1 > v2 ? max(v1, v2) : min(v1, v2) + h * sign(v2 - v1);
+            return (v1 > v2 ? max(v1, v2) : min(v1, v2)) + h * sign(v2 - v1);
         }
 
         public static Mesh GenerateCurveMesh(MatchupData matchupData, float k=1f)
