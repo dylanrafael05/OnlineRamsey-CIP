@@ -60,7 +60,7 @@ Shader "Unlit/DataGraph"
             float sbTickLine(float2 p, float2 fo, float2 up, float tickCount, float scale, float barThick, float2 tickDim)
             {
 
-                p = float2(dot(p, fo), dot(p, up)); //doesnt like the perp float2(0.,1.) well that's fine because i dont like it fuck uglsl!!! >:D hehe, devilish
+                p = float2(dot(p, fo), dot(p, up)); //doesnt like the perp float2(0.,1.)
 
                 float exists = 1.0; //Exists = InZone && (InBar || InTick)
                 exists *= step(0., p.x) * step(p.x, scale);

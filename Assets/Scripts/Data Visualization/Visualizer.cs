@@ -52,7 +52,6 @@ namespace Ramsey.Visualization
 
             material.SetColor("_Color", color);
             material.SetVector("_TickCount", ((float2) tickCount).xyzw());
-            //material.SetVector("_TickDim", new float4(.035f, 0.16f, 0f, 0f));
             material.SetVector("_Scale", axisScale.xyzw());
             material.SetFloat("_Thickness", thickness);
             material.SetFloat("_UVScale", .5f*drawSize);
@@ -96,9 +95,9 @@ namespace Ramsey.Visualization
         Camera camera;
 
         GraphPreferences graphPrefs;
-        List<(Mesh, Material)> graphs = new();
+        List<(Mesh, Material)> curves = new();
 
-        static int layer = LayerMask.NameToLayer("Visualization");
+        static readonly int layer = LayerMask.NameToLayer("Visualization");
 
         //
         static Material GetCurveMaterial(GraphPreferences graphPrefs, CurvePreferences curvePrefs)
@@ -116,14 +115,14 @@ namespace Ramsey.Visualization
             => curvePrefs.GetMaterial(m);
 
         //
-        public void AddCurve(MatchupData data, CurvePreferences curvePrefs, float k = 1f)
-            => graphs.Add((MeshGenerator.GenerateCurveMesh(data, k), GetCurveMaterial(graphPrefs, curvePrefs)));
+        public void AddCurve(MatchupData data, CurvePreferences curvePrefs, float k = 0f)
+            => curves.Add((MeshGenerator.GenerateCurveMesh(data, k), GetCurveMaterial(graphPrefs, curvePrefs)));
 
         void SetPreferences(int i, CurvePreferences curvePrefs)
-            => graphs[i] = (graphs[i].Item1, GetCurveMaterial(graphs[i].Item2, curvePrefs));
+            => curves[i] = (curves[i].Item1, GetCurveMaterial(curves[i].Item2, curvePrefs));
 
         void SetPreferences(GraphPreferences graphPrefs)
-        { this.graphPrefs = graphPrefs; Utils.ForLength(graphs.Count, (i) => graphs[i] = (graphs[i].Item1, GetCurveMaterial(graphs[i].Item2, graphPrefs))); }
+        { this.graphPrefs = graphPrefs; Utils.ForLength(curves.Count, (i) => curves[i] = (curves[i].Item1, GetCurveMaterial(curves[i].Item2, graphPrefs))); }
 
         float zoom = 8f;
         public void UpdateInput(float dt, float change, float2 mouse) //need to organize and stuff
@@ -138,11 +137,11 @@ namespace Ramsey.Visualization
 
             Matrix4x4 curveMatrix = graphPrefs.GetCurveMatrix();
 
-            //Draw Graph (curves need to be scaled and aligned better)
+            //Draw Graph
             Graphics.DrawMesh(MeshUtils.QuadMesh, graphPrefs.GetGraphMatrix(), graphPrefs.GetMaterial(), layer); 
 
             //Draw Curves
-            graphs.ForEach(tup =>
+            curves.ForEach(tup =>
             {
                 Graphics.DrawMesh(tup.Item1, curveMatrix, tup.Item2, layer, camera);
             });
