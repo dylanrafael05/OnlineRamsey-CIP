@@ -13,7 +13,7 @@ namespace Ramsey.UI
 {
     public class GameManager
     {
-        private readonly BoardManager board;
+        private BoardManager board;
 
         private bool inGame;
 
