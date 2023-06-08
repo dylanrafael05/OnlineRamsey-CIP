@@ -5,11 +5,11 @@ Shader "Unlit/DataGraph"
 
         _Color ("Color", Color) = (0.,0.,0.,1.)
 
-        _TickCount ("Tick Count", Vector) = (4., 4., 0., 0.) //[xTick, yTick]
-        _TickDim("Tick Dimensions", Vector) = (0.05, .2, 0., 0.)
-        _Scale ("Scale", Vector) = (1., 1., 0., 0.) //[xScale, yScale]
-        _Thickness ("Thickness", Float) = 1.
-        _TriangleDim ("Triangle Dimensions", Vector) = (1., 1., 0., 0.) //[width, height]
+        _TickCount ("Tick Count", Vector) = (8., 8., 0., 0.) //[xTick, yTick]
+        _TickDim("Tick Dimensions", Vector) = (0.035, .16, 0., 0.) //.16 y
+        _Scale ("Scale", Vector) = (5., .5, 0., 0.) //[xScale, yScale]
+        _Thickness ("Thickness", Float) = .3
+        _TriangleDim ("Triangle Dimensions", Vector) = (0.3, .3, 0., 0.) //[width, height]
 
         _UVScale ("UV Scale", Float) = 5.
 
@@ -57,19 +57,19 @@ Shader "Unlit/DataGraph"
             }
 
             //im calling this sb instead of sd like sample binary cuz we're not raymarching
-            float sbTickLine(float2 p, float2 fo, float tickCount, float scale, float barThick, float2 tickDim)
+            float sbTickLine(float2 p, float2 fo, float2 up, float tickCount, float scale, float barThick, float2 tickDim)
             {
 
-                p = float2(dot(p, fo), dot(p, perp(fo)));
+                p = float2(dot(p, fo), dot(p, up)); //doesnt like the perp float2(0.,1.) well that's fine because i dont like it fuck uglsl!!! >:D hehe, devilish
 
                 float exists = 1.0; //Exists = InZone && (InBar || InTick)
                 exists *= step(0., p.x) * step(p.x, scale);
 
-                float partitionSize = scale / tickCount;
-                p.x = fmod(p.x, partitionSize) - partitionSize * .5;
+                float partitionSize = scale / tickCount; float canTick = step(0., p.x-partitionSize*.5) * step(p.x, scale - partitionSize*.5);
+                p.x = fmod(p.x - partitionSize*.5, partitionSize) - partitionSize * .5;
                 p = abs(p);
 
-                exists *= step(p.x, tickDim.x * .5) * step(p.y, tickDim.y * .5) + step(p.y, barThick * .5);
+                exists *= step(p.y, barThick * .5) + canTick*(step(p.x, tickDim.x*.5) * step(p.y, tickDim.y * .5) * step(p.x, .15 - p.y * 2.));
 
                 return min(1., exists);
 
@@ -81,7 +81,7 @@ Shader "Unlit/DataGraph"
                 p = float2(dot(p, fo), dot(p, perp(fo)));
                 p.y = abs(p.y);
 
-                float m = -dim.y * .5 / dim.x;
+                float m = dim.y * .5 / dim.x;
                 float y = dim.y * .5 - m * p.x;
 
                 return step(0., p.x) * step(p.y, y);
@@ -91,7 +91,7 @@ Shader "Unlit/DataGraph"
             float4 _Color;
             
             float2 _TickCount;
-            float2 _TickDim;
+            float4 _TickDim;
 
             float2 _Scale;
             float _Thickness;
@@ -104,16 +104,24 @@ Shader "Unlit/DataGraph"
             {
 
                 float exists = 0.0;
+                float offset = (max(_TriangleDim.y, max(_Thickness, max(_TickDim.x, _TickDim.y))) - _Thickness)*.5;
 
-                float2 p = i.uv * .5 * _UVScale + _UVScale * .5; //UV ~ [-1, 1] -> [0, A] where A intuitively should be the actual scale
+                //float2 p = i.uv * .5 * _UVScale + _UVScale * .5; //UV ~ [-1, 1] -> [0, A] where A intuitively should be the actual scale
+                //p -= offset;
+                float2 p = i.uv * _UVScale;
+
+                _TickDim.x /= clamp(_TickCount.x / 8., 1., 4.);
 
                 //X
-                exists += sbTickLine(p - float2(0., _Thickness*.5), float2(1., 0.), _TickCount.x, _Scale.x, _Thickness, _TickDim.x);
-                exists += sbETri(p - float2(_Scale.x, 0.), float2(1., 0.), _TriangleDim);
+                exists += sbTickLine(p - float2(0., _Thickness*.5), float2(1., 0.), float2(0., 1.), _TickCount.x, _Scale.x, _Thickness, _TickDim.xy);
+                exists += sbETri(p - float2(_Scale.x, _Thickness*.5), float2(1., 0.), _TriangleDim);
 
                 //Y
-                exists += sbTickLine(p - float2(_Thickness * .5, 0.), float2(0., 1.), _TickCount.y, _Scale.y, _Thickness, _TickDim.y);
-                exists += sbETri(p - float2(0., _Scale.y), float2(0., 1.), _TriangleDim);
+                exists += sbTickLine(p - float2(_Thickness*.5, 0.), float2(0., 1.), float2(1., 0.), _TickCount.y, _Scale.y, _Thickness, _TickDim.xy);
+                exists += sbETri(p - float2(_Thickness*.5, _Scale.y), float2(0., 1.), _TriangleDim);
+
+                exists *= step(length(p - _Thickness*.5) - _Thickness*.5, 0.) + step(_Thickness*.5, p.y) + step(_Thickness*.5, p.x);
+                exists += step(-length(p - _Thickness*1.5) + _Thickness*.5, 0.) * step(p.x, _Thickness*1.5) * step(p.y, _Thickness*1.5) * step(length(p - _Thickness*1.5) - _Thickness, 0.);
 
                 exists = min(exists, 1.);
 

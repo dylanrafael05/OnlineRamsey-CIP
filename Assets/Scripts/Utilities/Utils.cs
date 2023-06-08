@@ -12,6 +12,9 @@ namespace Ramsey.Utilities
 {
     public static class Utils
     {
+        public static void ForLength(int length, Action<int> action)
+        { for (int i = 0; i < length; i++) action(i); }
+
         public static void Swap<T>(ref T a, ref T b)
         {
             T tempA = a;
@@ -271,8 +274,12 @@ namespace Ramsey.Utilities
 
         public static float2 perp(this float2 v)
             => cross(v.xyz(), new float3(0f, 0f, -1f)).xy();
-        
-        
+
+
+        public static float mul(this float2 v)
+            => v.x * v.y;
+        public static float mul(this float3 v)
+            => v.x * v.y * v.z;
         public static float2 mul(this float2 self, float2 other) 
             => float2(self.x * other.x, self.y * other.y);
         public static float2 div(this float2 self, float2 other)
