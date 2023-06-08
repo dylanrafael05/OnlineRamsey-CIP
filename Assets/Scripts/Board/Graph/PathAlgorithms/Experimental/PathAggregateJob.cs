@@ -12,6 +12,7 @@ namespace Ramsey.Graph.Experimental
         public NativeHashSet<JobPathInternal> deadOutput;
         public NativeList<JobPathInternal> liveOutput;
         public NativeHashSet<JobPathInternal> liveSet;
+        public NativeValue<JobPathInternal> longest;
 
         public void Execute()
         {
@@ -24,10 +25,14 @@ namespace Ramsey.Graph.Experimental
 
                 if(gen.IsLive)
                 {
-                    if(liveSet.Add(gen.Path)) liveOutput.Add(gen.Path);
+                    if(liveSet.Add(gen.Path)) 
+                    {
+                        liveOutput.Add(gen.Path);
+                    }
                 }
                 else 
                 {
+                    if(longest.Value.Length < gen.Path.Length) longest.Value = gen.Path;
                     deadOutput.Add(gen.Path);
                 }
             }

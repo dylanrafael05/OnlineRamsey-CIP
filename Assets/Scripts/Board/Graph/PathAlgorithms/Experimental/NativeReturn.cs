@@ -3,10 +3,10 @@ using System;
 
 namespace Ramsey.Graph.Experimental
 {
-    public struct NativeReturn<T> : IDisposable 
+    public struct NativeValue<T> : IDisposable 
         where T : unmanaged
     {
-        public NativeReturn(Allocator alloc, T start = default)
+        public NativeValue(Allocator alloc, T start = default)
         {
             arr = new(1, alloc);
             arr[0] = start;
