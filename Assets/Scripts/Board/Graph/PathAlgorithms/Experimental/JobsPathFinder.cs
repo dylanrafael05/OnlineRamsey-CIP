@@ -57,6 +57,8 @@ namespace Ramsey.Graph.Experimental
 
                 this.graph = graph;
 
+                // Debug.Log(maxpath);
+
                 maxPaths[type] = new JobPath(maxpath.Value, type, graph);
             }
         }

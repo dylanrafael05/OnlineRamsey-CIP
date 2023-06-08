@@ -133,8 +133,6 @@ namespace Ramsey.UI
                     currentTask = RunMoveAsync();
                 }
             }
-
-            board.Update();
         }
 
         public void Cleanup()
