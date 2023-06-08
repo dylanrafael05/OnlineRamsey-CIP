@@ -16,7 +16,6 @@ using System;
 
 public class Main : MonoBehaviour
 {
-    BoardManager board;
     GameManager game;
 
     [SerializeField] Camera boardCamera;
@@ -25,7 +24,7 @@ public class Main : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        board = BoardManager.UsingAlgorithm<JobPathFinder>(CameraManager.BoardCamera, new BoardPreferences()
+        var board = BoardManager.UsingAlgorithm<JobPathFinder>(CameraManager.BoardCamera, new BoardPreferences()
         {
             drawingPreferences = new DrawingPreferences
             {
@@ -61,9 +60,11 @@ public class Main : MonoBehaviour
 
         var nodeEditingMode = new NodeEditingMode();
         var turnNavigatorMode = new TurnNavigatorMode(new IUserMode[] { nodeEditingMode }); //put locks in here
+        var cameraControlMode = new CameraControlMode();
 
         UserModeHandler.AddMode(nodeEditingMode);
         UserModeHandler.AddMode(turnNavigatorMode);
+        UserModeHandler.AddMode(cameraControlMode);
 
         game.StartGame(40, ub, up);
         // turns.RunUntilDone();
@@ -83,42 +84,13 @@ public class Main : MonoBehaviour
 
         game.UpdateGameplay();
 
-        // NodeSmoothing.Smooth(board, 100);
-
-        var scl = Input.GetKey(KeyCode.LeftShift).ToInt() * 2 + 1;
-
-        if (Input.GetKey(KeyCode.W))
-        {
-            CameraManager.BoardCamera.transform.position += scl * new Vector3(0, 0.05f, 0);
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            CameraManager.BoardCamera.transform.position += scl * new Vector3(0, -0.05f, 0);
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            CameraManager.BoardCamera.transform.position += scl * new Vector3(0.05f, 0, 0);
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            CameraManager.BoardCamera.transform.position += scl * new Vector3(-0.05f, 0, 0);
-        }
-        if (Input.GetKey(KeyCode.Q))
-        {
-            CameraManager.BoardCamera.orthographicSize += scl * 0.5f;
-        }
-        if (Input.GetKey(KeyCode.E))
-        {
-            CameraManager.BoardCamera.orthographicSize += scl * -0.5f;
-        }
-
-        if (board.GameState.IsGameDone && !effectPlayed)
+        if (game.State.IsGameDone && !effectPlayed)
         {
             UnityReferences.GoalText.text = "Game Over";
             UnityReferences.ScreenMaterial.SetFloat("_TimeStart", Time.timeSinceLevelLoad);
             effectPlayed = true;
 
-            NodeSmoothing.Smooth(board, 1000);
+            NodeSmoothing.Smooth(game.Board, 1000);
 
             // TODO: not this
             // turns.builder = new UserBuilder();
@@ -127,6 +99,6 @@ public class Main : MonoBehaviour
 
     void OnDestroy() 
     {
-        board.Cleanup();
+        game.Cleanup();
     }
 }
