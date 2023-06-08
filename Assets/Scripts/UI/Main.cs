@@ -17,7 +17,7 @@ using System;
 public class Main : MonoBehaviour
 {
     BoardManager board;
-    TurnManager turns;
+    GameManager game;
 
     [SerializeField] Camera boardCamera;
     [SerializeField] Camera screenCamera;
@@ -49,7 +49,7 @@ public class Main : MonoBehaviour
         new CameraManager(screenCamera, boardCamera);
 
         var ub = new CapBuilder(board.GameState)/*new RandomBuilder(.15f, .8f, .05f)*/; var up = new RandomPainter();
-        turns = new TurnManager(board, ub, up)
+        game = new GameManager(board)
         {
             Delay = 0.0f
         };
@@ -65,7 +65,7 @@ public class Main : MonoBehaviour
         UserModeHandler.AddMode(nodeEditingMode);
         UserModeHandler.AddMode(turnNavigatorMode);
 
-        board.StartGame(40);
+        game.StartGame(40, ub, up);
         // turns.RunUntilDone();
 
         // visualizer = new(CameraManager.BoardCamera, new() { position = new float2(0f), scale = new float2(1f), sizeBounds = new float2(3.4f, 8f) , color = Color.black, drawSize = 5f, thickness = 1f});
@@ -81,8 +81,7 @@ public class Main : MonoBehaviour
 
         UserModeHandler.Update(InputManager.Update());
 
-        if(!board.GameState.IsGameDone) turns.Update();
-        board.Update();
+        game.UpdateGameplay();
 
         // NodeSmoothing.Smooth(board, 100);
 

@@ -47,5 +47,11 @@ namespace Ramsey.Graph.Experimental
 
             maxPaths[type] = new JobPath(maxpath, type, graph);
         }
+
+        public void Clear()
+        {
+            pathsInternal.Clear();
+            maxPaths.Clear();
+        }
     }
 }

@@ -163,8 +163,15 @@ namespace Ramsey.Board
 
         public void StartGame(int pathLength)
         {
+            graphManager.Clear();
+
+            gameState.GraphTooComplex = false;
+            gameState.MaxPaths = new List<IPath>();
+            gameState.MaxPath = null;
+
             gameState.TargetPathLength = pathLength;
             gameState.TurnNum = 0;
+
             UnityReferences.GoalText.text = "" + gameState.TargetPathLength;
         }
     }
