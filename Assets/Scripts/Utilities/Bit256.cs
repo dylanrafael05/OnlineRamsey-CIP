@@ -5,7 +5,7 @@ using Unity.Mathematics;
 
 namespace Ramsey.Utilities
 {
-    [BurstCompile]
+    [BurstCompile(CompileSynchronously = true)]
     [StructLayout(LayoutKind.Explicit)]
     public readonly struct Bit256
     {
@@ -108,5 +108,45 @@ namespace Ramsey.Utilities
             => new(0, 0, 0, a);
         public static explicit operator Bit256(int a)
             => new(0, 0, 0, (ulong)a);
+
+        public static BitposIterator IterateBitpos(Bit256 b) 
+            => new(b);
+        public static int FirstBitpos(Bit256 b) 
+        {
+            IterateBitpos(b).GetNext(out var x);
+            return x;
+        }
+
+        public struct BitposIterator
+        {
+            private Bit256 bits;
+            private int currentIndex;
+
+            internal BitposIterator(Bit256 bits) 
+            {
+                this.bits = bits;
+                currentIndex = 0;
+            }
+
+            public bool GetNext(out int pos)
+            {
+                pos = -1;
+
+                while((bits.l4 & 1) == 0)
+                {
+                    bits >>= 1;
+                    currentIndex++;
+
+                    if(bits == 0) return false;
+                }
+
+                pos = currentIndex;
+
+                bits >>= 1;
+                currentIndex++;
+
+                return true;
+            }
+        }
     }
 }

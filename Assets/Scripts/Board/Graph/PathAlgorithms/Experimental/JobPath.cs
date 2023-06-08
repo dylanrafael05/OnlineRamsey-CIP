@@ -25,53 +25,50 @@ namespace Ramsey.Graph.Experimental
             
             using(GetNodesMarker.Auto())
             {
-                var allNodes = MathUtils.BitPositions(Internal.Mask ^ (Bit256.One << Start.ID)).Select(graph.NodeFromID).ToHashSet();
+                var remainingNodes = Internal.Mask ^ (Bit256.One << Start.ID);
 
-                var reconstructedMask = Bit256.Zero;
-                foreach(var n in allNodes)
-                {
-                    reconstructedMask |= Bit256.One << n.ID;
-                }
+                nodes = new Node[Length + 1];
+                nodes[0]  = Start;
+                nodes[^1] = End;
 
-                Assert.AreEqual(Internal.Mask ^ (Bit256.One << Start.ID), reconstructedMask, "They must be equal!");
-
-                nodes = FindSequence(new() {Start}, allNodes).First();
+                Assert.IsTrue(
+                    FindSequence(graph, nodes, 1, remainingNodes), 
+                    "Must be able to find a sequence!");
             }
+        }
+
+        private bool FindSequence(Graph g, Node[] nodesOut, int startCount, Bit256 nodesRemaining)
+        {
+            if(Bit256.Bitcount(nodesRemaining) == 1)
+            {
+                var edgeToEnd = nodesOut[startCount-1].EdgeConnectedTo(End);
+
+                return Bit256.FirstBitpos(nodesRemaining) == End.ID && edgeToEnd != null && edgeToEnd.Type == Type;
+            }
+
+            var iter = Bit256.IterateBitpos(nodesRemaining);
+
+            while(iter.GetNext(out var nodeID))
+            {
+                var node = g.NodeFromID(nodeID);
+                var edgeToNext = nodesOut[startCount-1].EdgeConnectedTo(node);
+
+                if(edgeToNext != null && edgeToNext.Type == Type)
+                {
+                    nodesOut[startCount] = node;
+
+                    if(FindSequence(g, nodesOut, startCount + 1, nodesRemaining ^ (Bit256.One << nodeID)))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         internal JobPathInternal Internal { get; }
-        private List<Node> nodes;
-
-        private IEnumerable<List<Node>> FindSequence(List<Node> nodesSoFar, HashSet<Node> nodesRemaining)
-        {
-            if(nodesRemaining.Count == 0)
-            {
-                if(nodesSoFar.Last().ID == Internal.End)
-                {
-                    yield return nodesSoFar.ToList();
-                }
-
-                yield break;
-            }
-
-            foreach(var node in nodesRemaining.ToList())
-            {
-                var edgeToNext = nodesSoFar.Last().EdgeConnectedTo(node);
-                if(edgeToNext != null && edgeToNext.Type == Type)
-                {
-                    nodesRemaining.Remove(node);
-                    nodesSoFar.Add(node);
-
-                    foreach(var seq in FindSequence(nodesSoFar, nodesRemaining))
-                    {
-                        yield return seq;
-                    }
-
-                    nodesRemaining.Add(node);
-                    nodesSoFar.RemoveAt(nodesSoFar.Count - 1);
-                }
-            }
-        }
+        private readonly Node[] nodes;
 
         public IEnumerable<Node> Nodes => nodes;
 
