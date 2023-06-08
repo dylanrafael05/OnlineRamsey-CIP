@@ -92,6 +92,7 @@ namespace Ramsey.Graph
         public void Clear()
         {
             graph.Clear();
+            pathFinder.Clear();
         }
 
         public bool IsValidEdge(Node start, Node end)

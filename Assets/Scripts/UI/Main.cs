@@ -16,8 +16,7 @@ using System;
 
 public class Main : MonoBehaviour
 {
-    BoardManager board;
-    TurnManager turns;
+    GameManager game;
 
     [SerializeField] Camera boardCamera;
     [SerializeField] Camera screenCamera;
@@ -25,7 +24,7 @@ public class Main : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        board = BoardManager.UsingAlgorithm<JobPathFinder>(CameraManager.BoardCamera, new BoardPreferences()
+        var board = BoardManager.UsingAlgorithm<JobPathFinder>(CameraManager.BoardCamera, new BoardPreferences()
         {
             drawingPreferences = new DrawingPreferences
             {
@@ -48,8 +47,7 @@ public class Main : MonoBehaviour
 
         new CameraManager(screenCamera, boardCamera);
 
-        var ub = new CapBuilder(board.GameState)/*new RandomBuilder(.15f, .8f, .05f)*/; var up = new RandomPainter();
-        turns = new TurnManager(board, ub, up)
+        game = new GameManager(board)
         {
             Delay = 0.0f
         };
@@ -65,8 +63,10 @@ public class Main : MonoBehaviour
         UserModeHandler.AddMode(nodeEditingMode);
         UserModeHandler.AddMode(turnNavigatorMode);
 
-        board.StartGame(40);
-        // turns.RunUntilDone();
+        var builder = new RandomBuilder(.15f, .8f, .05f); 
+        var painter = new RandomPainter();
+
+        game.StartGame(20, builder, painter);
 
         prefs = new() { position = new float2(0f), scale = new float2(2f), sizeBounds = new float2(3.4f, 8f), color = Color.black, drawSize = 5f, thickness = .1f, tickCount = 8 };
         visualizer = new(CameraManager.BoardCamera, prefs);
@@ -84,8 +84,7 @@ public class Main : MonoBehaviour
 
         UserModeHandler.Update(InputManager.Update());
 
-        //if(!board.GameState.IsGameDone) turns.Update();
-        board.Update();
+        game.UpdateGameplay();
         prefs.tickCount = math.max(8, (int)Time.timeSinceLevelLoad);
         visualizer.SetPreferences(prefs);
 
@@ -120,13 +119,13 @@ public class Main : MonoBehaviour
 
         visualizer.UpdateInput(1f, Input.mouseScrollDelta.y); //TODO: not here and make only scroll when mouse hovering over kinda generous range prolly the square not the width 
 
-        if (board.GameState.IsGameDone && !effectPlayed)
+        if (game.State.IsGameDone && !effectPlayed)
         {
             UnityReferences.GoalText.text = "Game Over";
             UnityReferences.ScreenMaterial.SetFloat("_TimeStart", Time.timeSinceLevelLoad);
             effectPlayed = true;
 
-            NodeSmoothing.Smooth(board, 1000);
+            NodeSmoothing.Smooth(game.Board, 1000);
 
             // TODO: not this
             // turns.builder = new UserBuilder();
@@ -135,6 +134,6 @@ public class Main : MonoBehaviour
 
     void OnDestroy() 
     {
-        board.Cleanup();
+        game.Cleanup();
     }
 }

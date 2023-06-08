@@ -53,16 +53,18 @@ namespace Ramsey.Graph.Experimental
                     {
                         maxpath = p;
                     }
-
-                    // _ = new JobPath(p, graph).Nodes;
                 }
 
                 this.graph = graph;
 
-                Debug.Log(maxpath);
-
                 maxPaths[type] = new JobPath(maxpath.Value, type, graph);
             }
+        }
+
+        public void Clear()
+        {
+            pathsInternal.Clear();
+            maxPaths.Clear();
         }
 
         private static ProfilerMarker Collect = new("JobPathFinder.Collect");
