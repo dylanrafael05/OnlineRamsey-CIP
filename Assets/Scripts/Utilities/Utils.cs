@@ -319,6 +319,9 @@ namespace Ramsey.Utilities
 
             return res;
         }
+
+        public static float Round(float value, float amt)
+            => value - value % amt;
     }
 
     public class SequenceNavigator<T>

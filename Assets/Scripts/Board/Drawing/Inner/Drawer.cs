@@ -86,6 +86,9 @@ namespace Ramsey.Drawing
             UpdateEdgeBuffer();
             UpdateNodeBuffer();
 
+            // Setup canvas rendering
+            Canvas.preWillRenderCanvases += DrawUI;
+
         }
 
         public void UpdateAll(DrawingStorage storage)
@@ -129,9 +132,9 @@ namespace Ramsey.Drawing
         
         public float2 Mouse { get; set; }
 
-        public void Draw()
+        public void DrawBoard()
         {
-            TextRenderer.Flush();
+            TextRenderer.Begin();
 
             if(presentStorage.ShouldUpdateEdgeBuffer)
             {
@@ -143,15 +146,21 @@ namespace Ramsey.Drawing
 
             Graphics.DrawMeshInstancedIndirect(MeshUtils.QuadMesh, 0, UnityReferences.EdgeMaterial, UnityReferences.Bounds, argsBufferEdge, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
             Graphics.DrawMeshInstancedIndirect(MeshUtils.QuadMesh, 0, UnityReferences.NodeMaterial, UnityReferences.Bounds, argsBufferNode, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
+
+            for(var i = 0; i < currentStorage.NodePositions.Count; i++) 
+                TextRenderer.Draw(currentStorage.NodePositions[i], i.ToString());
+            
+            TextRenderer.End();
+        }
+
+        public void DrawUI()
+        {
             Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.RecordingTransform.WorldMatrix(), UnityReferences.RecorderMaterial, LayerMask.NameToLayer("Board"), camera);
 
             if (presentStorage.IsLoading)
             {
                 Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.LoadingTransform.WorldMatrix(), UnityReferences.LoadingMaterial, LayerMask.NameToLayer("Board"), camera);
             }
-
-            for(var i = 0; i < currentStorage.NodePositions.Count; i++) 
-                TextRenderer.Draw(currentStorage.NodePositions[i], i.ToString());
         }
 
         public void Cleanup()
@@ -165,6 +174,8 @@ namespace Ramsey.Drawing
 
             nodePositionBuffer.Dispose();
             nodeHighlightBuffer.Dispose();
+
+            Canvas.preWillRenderCanvases -= DrawUI;
         }
 
     }

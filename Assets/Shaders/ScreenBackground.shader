@@ -52,13 +52,45 @@ Shader "Unlit/Screen/Background"
             float4 _BaseColor;
             float4 _HighlightColor;
 
+            float mixsdf(float r1, float r2, float t) 
+            {
+                return step(lerp(r1, r2, t), 0);
+            }
+
+            float circle(float2 uv, float r)
+            {
+                return length(uv) - r;
+            }
+
+            float square(float2 uv, float r)
+            {
+                return abs(uv.x) + abs(uv.y) - r;
+            }
+
+            float2 rotate(float2 uv, float t)
+            {
+                float s = sin(t);
+                float c = cos(t);
+
+                float2x2 m = float2x2(c, s, -s, c);
+
+                return mul(m, uv);
+            }
+
             fixed4 frag (vOut i) : SV_Target
             {
                 float2 dir = float2(sin(_Time.x * 3.f), cos(_Time.x * 3.3f));
 
                 float2 uv = (fmod(i.uv + SCL * SCROLL * dir, SCL) / SCL) * 2.f - 1.f;
+                uv = rotate(uv, _Time.x);
 
-                float s = step(length(uv), 1.f - (_SinTime.y*_SinTime.y) * 0.2f);
+                float r = 1.f - (_SinTime.y*_SinTime.y) * 0.2f;
+
+                float s = mixsdf(
+                    circle(uv, r),
+                    square(uv, r),
+                    _SinTime.x * _SinTime.x
+                );
 
                 return _BaseColor * (1 - s) + _HighlightColor * s;
             }

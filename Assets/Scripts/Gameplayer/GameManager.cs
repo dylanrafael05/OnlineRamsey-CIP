@@ -137,8 +137,11 @@ namespace Ramsey.UI
                     currentTask = RunMove();
                 }
             }
+        }
 
-            board.Update();
+        public void Render() 
+        {
+            board.Render();
         }
 
         public int2? GetMatchupData()

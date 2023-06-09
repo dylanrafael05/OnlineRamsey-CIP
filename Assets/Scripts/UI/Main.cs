@@ -87,6 +87,8 @@ public class Main : MonoBehaviour
     void Update()
     {
         UserModeHandler.Update(InputManager.Update());
+        CameraManager.Update();
+
         UnityReferences.TurnText.text = "" + game.State.TurnNum;
 
         game.UpdateGameplay();
@@ -130,6 +132,8 @@ public class Main : MonoBehaviour
 
             effectPlayed = true;
         }
+        
+        game.Render();
     }
 
     void OnDestroy() 
