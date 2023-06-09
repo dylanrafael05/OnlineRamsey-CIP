@@ -52,7 +52,7 @@ public class Main : MonoBehaviour
 
         game = new GameManager(board)
         {
-            Delay = 0.0f
+            Delay = 0.2f
         };
 
         TextRenderer.Create();
@@ -86,16 +86,12 @@ public class Main : MonoBehaviour
 
     void Update()
     {
-        
-
-        // visualizer.Draw();
-
         UserModeHandler.Update(InputManager.Update());
         UnityReferences.TurnText.text = "" + game.State.TurnNum;
 
         game.UpdateGameplay();
 
-        // NodeSmoothing.Smooth(board, 100);
+        NodeSmoothing.Smooth(game.Board, 10);
 
         if (game.State.IsGameDone && !effectPlayed)
         {

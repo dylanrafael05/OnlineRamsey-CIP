@@ -84,7 +84,7 @@ namespace Ramsey.UI
             async Task<IMove> GetMove(IPlayer player)
             {
                 if(player.IsAutomated && !synchronous) await Task.Delay((int)(Delay * 1000));
-                return await player.GetMove(board.GameState).ConfigureAwait(false);
+                return await player.GetMove(board.GameState);
             }
             
             // Repeat until move is valid
@@ -96,11 +96,11 @@ namespace Ramsey.UI
                 {
                     if(isBuilderTurn)
                     {
-                        move = await GetMove(builder).ConfigureAwait(false);
+                        move = await GetMove(builder);
                     }
                     else 
                     {
-                        move = await GetMove(painter).ConfigureAwait(false);
+                        move = await GetMove(painter);
                     }
                 }
                 catch(GraphTooComplexException) 
