@@ -13,12 +13,14 @@ namespace Ramsey.Drawing
         public static Text GoalText { get; private set; }
         public static Text TurnText { get; private set; }
         public static Text OverText { get; private set; }
+        public static MeshRenderer BackgroundRenderer { get; private set; }
 
         public static Material EdgeMaterial { get; private set; }
         public static Material NodeMaterial { get; private set; }
         public static Material RecorderMaterial { get; private set; }
         public static Material LoadingMaterial { get; private set; }
         public static Material ScreenMaterial { get; private set; }
+        public static Material BackgroundMaterial { get; private set; }
 
         public static MaterialPropertyBlock EdgeBlock { get; private set; } = new();
         public static MaterialPropertyBlock NodeBlock { get; private set; } = new();
@@ -42,6 +44,10 @@ namespace Ramsey.Drawing
             RecorderMaterial = new(Shader.Find("Unlit/UIShaders/RecordingShader"));
             LoadingMaterial = new(Shader.Find("Unlit/UIShaders/LoadingCircle"));
             ScreenMaterial = new(Shader.Find("Unlit/Fullscreen/Pulse"));
+            BackgroundMaterial = new(Shader.Find("Unlit/Screen/Background"));
+
+            BackgroundRenderer = GameObject.Find("Background").GetComponent<MeshRenderer>();
+            BackgroundRenderer.material = BackgroundMaterial;
         }
     }
 }

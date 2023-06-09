@@ -36,12 +36,15 @@ public class Main : MonoBehaviour
                 nodeColor = Color.white,
                 nodeRadius = 0.3f,
                 highlightRadius = 0.5f,
-                highlightColor = Color.green,
+                nodeHighlightColor = Color.green,
 
                 recorderColor = Color.white,
 
                 loadingCircleOuterRadius = 1.0f,
                 loadingCircleInnerRadius = 0.7f,
+
+                backgroundColor = Utils.ColorFromHex("#957A5E"),
+                backgroundHighlightColor = Utils.ColorFromHex("#856A4E") * 0.5f + Utils.ColorFromHex("#957A5E") * 0.5f,
             }
         });
 
@@ -165,7 +168,7 @@ internal class GameBehavior : IBehavior
                 nodeColor = Color.white,
                 nodeRadius = 0.3f,
                 highlightRadius = 0.5f,
-                highlightColor = Color.green,
+                nodeHighlightColor = Color.green,
 
                 recorderColor = Color.white,
 

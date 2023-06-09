@@ -12,6 +12,12 @@ namespace Ramsey.Utilities
 {
     public static class Utils
     {
+        public static Color ColorFromHex(string hex)
+        {
+            ColorUtility.TryParseHtmlString(hex[0] == '#' ? hex : "#"+hex, out var c);
+            return c;
+        }
+
         public static void ForLength(int length, Action<int> action)
         { for (int i = 0; i < length; i++) action(i); }
 
