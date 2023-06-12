@@ -55,8 +55,6 @@ public class Main : MonoBehaviour
             Delay = 0.2f
         };
 
-        TextRenderer.Create();
-
         UserModeHandler.Create(board);
         InputManager.Create(board);
 
