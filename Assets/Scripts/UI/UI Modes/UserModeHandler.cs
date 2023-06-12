@@ -5,47 +5,50 @@ using System.Linq;
 
 namespace Ramsey.UI
 {
-    public static class UserModeHandler
+    public static class UserModeHandler<D>
     {
-        public static void Create(BoardManager board)
+        public static void Create(D data)
         {
-            UserModeHandler.board = board;
+            UserModeHandler<D>.data = data;
             currentModes = new();
         }
 
-        static BoardManager board;
-        static List<IUserMode> currentModes = new();
+        static D data;
+        static List<IUserMode<D>> currentModes = new();
         static List<bool> activationStatuses = new();
 
         public static void Update(InputData input)
-            => currentModes.ForEachIndex((m, i) => { if (activationStatuses[i]) m.Update(input, board); });
+            => currentModes.ForEachIndex((m, i) => { if (activationStatuses[i]) m.Update(input, data); });
 
-        public static void AddMode(IUserMode mode)
+        public static void AddMode(IUserMode<D> mode)
         {
             currentModes.Add(mode);
             activationStatuses.Add(true);
 
-            mode.Init(board);
+            mode.Init(data);
         }
 
-        public static void DelMode(IUserMode mode)
+        public static void DelMode(IUserMode<D> mode)
         {
             int i = currentModes.FindIndex(m => m == mode);
             currentModes.RemoveAt(i);
             activationStatuses.RemoveAt(i);
 
-            mode.End(board);
+            mode.End(data);
         }
 
-        public static void SetStatus(IUserMode mode, bool status)
+        public static void SetStatus(IUserMode<D> mode, bool status)
         { var i = currentModes.FindIndex(m => m == mode); if (i != -1) activationStatuses[i] = status; }
+
+        public static IEnumerable<IUserMode<D>> GameplayModes => currentModes.Where(m => m.IsGameplayMode);
 
     }
 
-    public interface IUserMode
+    public interface IUserMode<D>
     {
-        void Init(BoardManager board);
-        void Update(InputData input, BoardManager board);
-        void End(BoardManager board);
+        void Init(D data);
+        void Update(InputData input, D data);
+        void End(D data);
+        bool IsGameplayMode { get; }
     }
 }

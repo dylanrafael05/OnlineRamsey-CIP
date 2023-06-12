@@ -5,7 +5,7 @@ using Unity.Mathematics;
 
 namespace Ramsey.UI
 {
-    public class NodeEditingMode : IUserMode
+    public class NodeEditingMode : IUserMode<BoardManager>
     {
         private Node cnode;
         private float2 nodeOffset;
@@ -47,5 +47,7 @@ namespace Ramsey.UI
 
         public void End(BoardManager board)
         { }
+
+        public bool IsGameplayMode => true;
     }
 }

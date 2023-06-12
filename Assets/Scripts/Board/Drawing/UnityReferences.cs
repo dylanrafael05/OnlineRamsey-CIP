@@ -10,6 +10,7 @@ namespace Ramsey.Drawing
 
         public static RectTransform RecordingTransform { get; private set; }
         public static RectTransform LoadingTransform { get; private set; }
+        public static RectTransform WheelSelectTransform { get; private set; }
         public static Text GoalText { get; private set; }
         public static Text TurnText { get; private set; }
         public static Text OverText { get; private set; }
@@ -29,6 +30,9 @@ namespace Ramsey.Drawing
 
             var lgo = GameObject.Find("Loading");
             LoadingTransform = lgo.GetComponent<RectTransform>();
+
+            var wso = GameObject.Find("WheelSelect");
+            WheelSelectTransform = wso.GetComponent<RectTransform>();
 
             GoalText = GameObject.Find("Goal Text").GetComponent<Text>();
             TurnText = GameObject.Find("Turn Text").GetComponent<Text>();

@@ -9,15 +9,15 @@ using Ramsey.UI;
 
 namespace Ramsey.Gameplayer
 {
-    public class UserBuilder : Builder, IUserMode
+    public class UserBuilder : Builder, IUserMode<BoardManager>
     {
         public override bool IsAutomated => false;
 
         public override async Task<BuilderMove> GetMove(GameState gameState)
         {
-            UserModeHandler.AddMode(this);
+            UserModeHandler<BoardManager>.AddMode(this);
             await Utils.WaitUntil(() => currNode != null && prevNode != null);
-            UserModeHandler.DelMode(this);
+            UserModeHandler<BoardManager>.DelMode(this);
 
             return new BuilderMove(currNode, prevNode);
         }
@@ -52,17 +52,19 @@ namespace Ramsey.Gameplayer
                 board.UnhighlightNode(currNode);
         }
 
+        public bool IsGameplayMode => true;
+
     }
 
-    public class UserPainter : Painter, IUserMode
+    public class UserPainter : Painter, IUserMode<BoardManager>
     {
         public override bool IsAutomated => false;
 
         public override async Task<PainterMove> GetMove(GameState gameState)
         {
-            UserModeHandler.AddMode(this);
+            UserModeHandler<BoardManager>.AddMode(this);
             await Utils.WaitUntil(() => currEdge != null);
-            UserModeHandler.DelMode(this);
+            UserModeHandler<BoardManager>.DelMode(this);
 
             return new PainterMove(currEdge, currEdgeType);
         }
@@ -81,5 +83,7 @@ namespace Ramsey.Gameplayer
             }
         }
         public void End(BoardManager board) { }
+
+        public bool IsGameplayMode => true;
     }
 }

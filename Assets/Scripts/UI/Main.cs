@@ -57,16 +57,16 @@ public class Main : MonoBehaviour
 
         TextRenderer.Create();
 
-        UserModeHandler.Create(board);
+        UserModeHandler<BoardManager>.Create(board);
         InputManager.Create(board);
 
         var nodeEditingMode = new NodeEditingMode();
-        var turnNavigatorMode = new TurnNavigatorMode(new IUserMode[] { nodeEditingMode }); //put locks in here
+        var turnNavigatorMode = new TurnNavigatorMode(); //put locks in here
         var cameraControlMode = new CameraControlMode();
 
-        UserModeHandler.AddMode(nodeEditingMode);
-        UserModeHandler.AddMode(turnNavigatorMode);
-        UserModeHandler.AddMode(cameraControlMode);
+        UserModeHandler<BoardManager>.AddMode(nodeEditingMode);
+        UserModeHandler<BoardManager>.AddMode(turnNavigatorMode);
+        UserModeHandler<BoardManager>.AddMode(cameraControlMode);
 
         var builder = new CapBuilder(game.State); //new RandomBuilder(.15f, .8f, .05f); 
         var painter = new RandomPainter();
@@ -86,7 +86,7 @@ public class Main : MonoBehaviour
 
     void Update()
     {
-        UserModeHandler.Update(InputManager.Update());
+        UserModeHandler<BoardManager>.Update(InputManager.Update());
         CameraManager.Update();
 
         UnityReferences.TurnText.text = "" + game.State.TurnNum;
@@ -227,6 +227,11 @@ internal class MenuBehavior : IBehavior
     public MenuBehavior(GraphPreferences graphPreferences)
     {
         visualizer = new(CameraManager.BoardCamera, graphPreferences);
+    }
+
+    public void Init()
+    {
+        
     }
 
     public void InitAfterRealtime(int2 gameData)

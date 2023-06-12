@@ -15,9 +15,7 @@ namespace Ramsey.UI
         private static BoardManager board;
 
         public static void Create(BoardManager board)
-        {
-            InputManager.board = board;
-        }
+            => InputManager.board = board;
 
         public static float3 GetScreenMousePosition()
             => Input.mousePosition;
@@ -52,9 +50,6 @@ namespace Ramsey.UI
             data.rmbp = Input.GetMouseButtonDown(1);
             data.rmbu = Input.GetMouseButtonUp(1);
 
-            data.collidingNodes = board.Nodes.Where(n => CollideNode(data.mouse, n)).ToHashSet();
-            data.collidingEdges = board.Edges.Where(e => CollideEdge(data.mouse, e)).ToHashSet();
-
             data.wk = Input.GetKey(KeyCode.W);
             data.ak = Input.GetKey(KeyCode.A);
             data.sk = Input.GetKey(KeyCode.S);
@@ -65,6 +60,11 @@ namespace Ramsey.UI
 
             data.lkd = Input.GetKeyDown(KeyCode.LeftArrow);
             data.rkd = Input.GetKeyDown(KeyCode.RightArrow);
+
+            if (board is null) return data;
+
+            data.collidingNodes = board.Nodes.Where(n => CollideNode(data.mouse, n)).ToHashSet();
+            data.collidingEdges = board.Edges.Where(e => CollideEdge(data.mouse, e)).ToHashSet();
 
             board.SetMousePosition(data.normalizedMouse);
 

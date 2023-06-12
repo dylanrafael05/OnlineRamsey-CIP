@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Ramsey.UI
 {
-    public class CameraControlMode : IUserMode 
+    public class CameraControlMode : IUserMode<BoardManager>
     {
         public const float TranslationAmount = 0.05f;
         public const float BaseSize = 5f;
@@ -52,5 +52,7 @@ namespace Ramsey.UI
 
         public void End(BoardManager board)
         {}
+
+        public bool IsGameplayMode => false;
     }
 }

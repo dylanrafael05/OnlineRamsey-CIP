@@ -6,12 +6,8 @@ using System.Collections.Generic;
 
 namespace Ramsey.UI
 {
-    public class TurnNavigatorMode : IUserMode
+    public class TurnNavigatorMode : IUserMode<BoardManager>
     {
-        IUserMode[] pastLockModes;
-
-        public TurnNavigatorMode(IUserMode[] pastLockModes)
-            => this.pastLockModes = pastLockModes;
 
         public void Init(BoardManager board) { }
         public void Update(InputData input, BoardManager board)
@@ -20,9 +16,11 @@ namespace Ramsey.UI
             board.OffsetTurn(d);
 
             IMove.Enable = board.IsCurrentTurn;
-            pastLockModes.Foreach(m => UserModeHandler.SetStatus(m, board.IsCurrentTurn));
+            UserModeHandler<BoardManager>.GameplayModes.Foreach(m => UserModeHandler<BoardManager>.SetStatus(m, board.IsCurrentTurn));
         }
         public void End(BoardManager board) { }
+
+        public bool IsGameplayMode => false;
 
     }
 }
