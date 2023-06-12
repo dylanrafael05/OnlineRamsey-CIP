@@ -18,6 +18,9 @@ namespace Ramsey.Utilities
             return c;
         }
 
+        public static IEnumerable<(T value, int index)> Indexed<T>(this IEnumerable<T> e) 
+            => e.Select((v, i) => (v, i));
+
         public static void ForLength(int length, Action<int> action)
         { for (int i = 0; i < length; i++) action(i); }
 

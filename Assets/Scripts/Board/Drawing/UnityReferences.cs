@@ -22,9 +22,6 @@ namespace Ramsey.Drawing
         public static Material ScreenMaterial { get; private set; }
         public static Material BackgroundMaterial { get; private set; }
 
-        public static MaterialPropertyBlock EdgeBlock { get; private set; } = new();
-        public static MaterialPropertyBlock NodeBlock { get; private set; } = new();
-
         public static void Initialize()
         {
             var rgo = GameObject.Find("Recording");
