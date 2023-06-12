@@ -13,14 +13,17 @@ namespace Ramsey.UI
         public const float MinSize = 0.5f;
         public const float MaxSize = 20f;
 
+        bool IUserMode.AltersBoard => false;
+
         public void Init(BoardManager board) {}
 
         public void Update(InputData input, BoardManager board)
         {
             var scl = Input.GetKey(KeyCode.LeftShift).ToInt();
-            var mscl = (scl * 2 + 1) * CameraManager.BoardCamera.orthographicSize / BaseSize;
+            var tscl = Time.deltaTime * 60f;
 
-            var sscl = scl * 0.05f + 1;
+            var mscl = tscl * (scl * 2 + 1) * CameraManager.BoardCamera.orthographicSize / BaseSize;
+            var sscl = tscl * scl * 0.05f + 1;
 
             if (input.wk)
             {

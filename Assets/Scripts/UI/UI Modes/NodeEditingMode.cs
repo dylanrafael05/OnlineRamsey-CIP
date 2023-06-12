@@ -9,6 +9,8 @@ namespace Ramsey.UI
     {
         private Node cnode;
         private float2 nodeOffset;
+        
+        bool IUserMode.AltersBoard => true;
 
         public void Init(BoardManager board)
         {

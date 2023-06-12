@@ -17,6 +17,9 @@ namespace Ramsey.UI
         static List<IUserMode> currentModes = new();
         static List<bool> activationStatuses = new();
 
+        public static IEnumerable<IUserMode> Modes => currentModes;
+        public static IEnumerable<IUserMode> BoardAlteringModes => Modes.Where(b => b.AltersBoard);
+
         public static void Update(InputData input)
             => currentModes.ForEachIndex((m, i) => { if (activationStatuses[i]) m.Update(input, board); });
 
@@ -47,5 +50,7 @@ namespace Ramsey.UI
         void Init(BoardManager board);
         void Update(InputData input, BoardManager board);
         void End(BoardManager board);
+
+        bool AltersBoard { get; }
     }
 }

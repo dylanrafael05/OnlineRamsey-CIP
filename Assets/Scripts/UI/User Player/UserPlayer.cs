@@ -12,6 +12,7 @@ namespace Ramsey.Gameplayer
     public class UserBuilder : Builder, IUserMode
     {
         public override bool IsAutomated => false;
+        bool IUserMode.AltersBoard => true;
 
         public override async Task<BuilderMove> GetMove(GameState gameState)
         {
@@ -57,6 +58,7 @@ namespace Ramsey.Gameplayer
     public class UserPainter : Painter, IUserMode
     {
         public override bool IsAutomated => false;
+        bool IUserMode.AltersBoard => true;
 
         public override async Task<PainterMove> GetMove(GameState gameState)
         {

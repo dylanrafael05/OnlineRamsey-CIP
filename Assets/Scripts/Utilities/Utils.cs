@@ -7,9 +7,40 @@ using static Unity.Mathematics.math;
 using UnityEngine;
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
+using System.Collections;
 
 namespace Ramsey.Utilities
 {
+    internal class CoroRunner : MonoBehaviour
+    {
+        private static CoroRunner ins = null;
+        public static CoroRunner Instance 
+        {
+            get 
+            {
+                if(ins is null)
+                {
+                    var go = new GameObject("CoroRunner");
+                    ins = go.AddComponent<CoroRunner>();
+                }
+
+                return ins;
+            }
+        }
+    }
+
+    public static class Coroutines 
+    {
+        public static void StartCoroutine(IEnumerator coro) 
+            => CoroRunner.Instance.StartCoroutine(coro);
+        public static void StartCoroutine(Func<IEnumerator> coro) 
+            => CoroRunner.Instance.StartCoroutine(coro());
+        public static void KillCoroutine(IEnumerator coro) 
+            => CoroRunner.Instance.StopCoroutine(coro);
+        public static void KillCoroutine(Func<IEnumerator> coro) 
+            => CoroRunner.Instance.StopCoroutine(coro());
+    }
+
     public static class Utils
     {
         public static Color ColorFromHex(string hex)

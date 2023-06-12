@@ -35,27 +35,6 @@ namespace Ramsey.Drawing
             this.currentStorage = storage;
             this.preferences = preferences;
 
-            //
-            // argsArrayEdge = new uint[5]
-            // {
-            //     MeshUtils.QuadMesh.GetIndexCount(0),
-            //     0,
-            //     MeshUtils.QuadMesh.GetIndexStart(0),
-            //     MeshUtils.QuadMesh.GetBaseVertex(0),
-            //     0
-            // };
-            // argsArrayNode = new uint[5]; argsArrayEdge.CopyTo(argsArrayNode, 0);
-
-            // argsBufferEdge = new(MAXMESHCOUNT, sizeof(uint), ComputeBufferType.IndirectArguments);
-            // argsBufferNode = new(MAXMESHCOUNT, sizeof(uint), ComputeBufferType.IndirectArguments);
-
-            // edgeTransformBuffer = new(MAXMESHCOUNT, Marshal.SizeOf<Matrix4x4>());
-            // edgeTypeBuffer = new(MAXMESHCOUNT, Marshal.SizeOf<float4>());
-            // edgeHighlightBuffer = new(MAXMESHCOUNT, sizeof(float));
-
-            // nodePositionBuffer = new(MAXMESHCOUNT, Marshal.SizeOf<float2>());
-            // nodeHighlightBuffer = new(MAXMESHCOUNT, Marshal.SizeOf<float>());
-
             //Uniforms Prefs
             preferences.UniformPreferences();
 
