@@ -15,6 +15,9 @@ Shader "Unlit/GraphShaders/NodeShader"
 
         [HideInInspector] _Mouse ("Mouse", Vector) = (0., 0., 0., 0.)
 
+        [PerRendererData] _Positions ("Positions", Vector) = (0., 0., 0., 0.)
+        [PerRendererData] _IsHighlighted ("IsHighlighted", Float) = 0.
+
     }
     SubShader
     {
@@ -37,6 +40,8 @@ Shader "Unlit/GraphShaders/NodeShader"
             {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
+
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             struct vOut
@@ -47,22 +52,25 @@ Shader "Unlit/GraphShaders/NodeShader"
                 float2 mouse : TEXCOORD2;
             };
 
-            StructuredBuffer<float2> Positions;
-            StructuredBuffer<float> IsHighlighted;
+            UNITY_INSTANCING_BUFFER_START(NodeProperties)
+                UNITY_DEFINE_INSTANCED_PROP(float, _IsHighlighted)
+            UNITY_INSTANCING_BUFFER_END(props)
             
             float2 _Mouse;
 
-            vOut vert (vIn v, uint instanceID : SV_InstanceID)
+            vOut vert (vIn v)
             {
+                UNITY_SETUP_INSTANCE_ID(v);
+
                 vOut o;
 
-                o.vertex = mul(UNITY_MATRIX_VP, float4(v.vertex.xy + Positions[instanceID], 0., 1.));
+                o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = v.uv;
-                o.highlighted = IsHighlighted[instanceID];
+                o.highlighted = UNITY_ACCESS_INSTANCED_PROP(props, _IsHighlighted);
                 
-                o.mouse = (float2(_Mouse.x, -_Mouse.y) - UnityObjectToClipPos(float4(Positions[instanceID], 0., 1.))) * 8.; 
+                o.mouse = (float2(_Mouse.x, -_Mouse.y) - o.vertex.xy) * 6.; 
                 o.mouse.y = -o.mouse.y;
-                //TODO: 8 is a random ass number which might not work in other circumstances
+                //TODO: 6 is a random number which might not work in other circumstances
 
                 return o;
             }

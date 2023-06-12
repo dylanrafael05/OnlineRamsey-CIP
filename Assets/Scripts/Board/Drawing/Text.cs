@@ -11,10 +11,12 @@ namespace Ramsey.Drawing
 {
     public static class TextRenderer
     {
-        private static int lastUsedIndex;
+        private static int count;
+
         private static Canvas canvas;
         private static GameObject textPrefab;
         private static List<Text> texts = new();
+
 
         public static void Create()
         {
@@ -32,27 +34,30 @@ namespace Ramsey.Drawing
 
         public static void Draw(float2 position, string content) 
         {
-            if(lastUsedIndex >= texts.Count)
+            if(count >= texts.Count)
             {
                 texts.Add(CreateText());
             }
 
-            texts[lastUsedIndex].transform.position = new float3(position, -3f);
-            texts[lastUsedIndex].transform.localScale = new(1, 1, 1);
-            texts[lastUsedIndex].color = Color.black;
-            texts[lastUsedIndex].text = content;
-            texts[lastUsedIndex].gameObject.SetActive(true);
+            texts[count].transform.position = new float3(position, -3f);
+            texts[count].transform.localScale = new(1, 1, 1);
+            texts[count].color = Color.black;
+            texts[count].text = content;
+            texts[count].gameObject.SetActive(true);
 
-            lastUsedIndex++;
+            count++;
         }
 
-        public static void Flush()
+        public static void Begin()
         {
-            lastUsedIndex = 0;
+            count = 0;
+        }
 
-            foreach(var t in texts)
+        public static void End()
+        {
+            for(int i = count; i < texts.Count; i++)
             {
-                t.gameObject.SetActive(false);
+                texts[i].gameObject.SetActive(false);
             }
         }
     }

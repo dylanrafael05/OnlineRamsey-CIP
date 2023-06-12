@@ -29,7 +29,7 @@ public class Main : MonoBehaviour
             drawingPreferences = new DrawingPreferences
             {
                 nullColor = Color.black,
-                colors = new[] { Color.blue, Color.red, Color.green, Color.yellow },
+                colors = new[] { Color.blue * 0.9f, Color.red * 0.9f, Color.green * 0.9f, Color.yellow * 0.9f },
                 edgeThickness = 0.15f,
                 highlightThickness = 0.1f,
 
@@ -87,11 +87,13 @@ public class Main : MonoBehaviour
     void Update()
     {
         UserModeHandler.Update(InputManager.Update());
+        CameraManager.Update();
+
         UnityReferences.TurnText.text = "" + game.State.TurnNum;
 
         game.UpdateGameplay();
 
-        NodeSmoothing.Smooth(game.Board, 10);
+        NodeSmoothing.Smooth(game.Board, 2); //TODO: must be even in order to remove jitter
 
         if (game.State.IsGameDone && !effectPlayed)
         {
@@ -100,7 +102,7 @@ public class Main : MonoBehaviour
 
             IEnumerator Coro() 
             {
-                const float Len = 4f;
+                const float Len = 3.7f;
                 const float Size = 100f;
 
                 var start = Time.time;
@@ -127,13 +129,11 @@ public class Main : MonoBehaviour
             UnityReferences.OverText.StartCoroutine(Coro());
 
             UnityReferences.ScreenMaterial.SetFloat("_TimeStart", Time.timeSinceLevelLoad);
+
             effectPlayed = true;
-
-            // NodeSmoothing.Smooth(game.Board, 1000);
-
-            // TODO: not this
-            // turns.builder = new UserBuilder();
         }
+        
+        game.Render();
     }
 
     void OnDestroy() 

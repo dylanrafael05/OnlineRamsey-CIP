@@ -9,7 +9,7 @@ namespace Ramsey.UI
     {
         public const float TranslationAmount = 0.05f;
         public const float BaseSize = 5f;
-        public const float ScrollMultiplier = 1.04f;
+        public const float ScrollMultiplier = 1.025f;
         public const float MinSize = 0.5f;
         public const float MaxSize = 20f;
 
@@ -17,9 +17,10 @@ namespace Ramsey.UI
 
         public void Update(InputData input, BoardManager board)
         {
-            var scl = Input.GetKey(KeyCode.LeftShift).ToInt() * 2f + 1;
+            var scl = Input.GetKey(KeyCode.LeftShift).ToInt();
+            var mscl = (scl * 2 + 1) * CameraManager.BoardCamera.orthographicSize / BaseSize;
 
-            var mscl = scl * CameraManager.BoardCamera.orthographicSize / BaseSize;
+            var sscl = scl * 0.05f + 1;
 
             if (input.wk)
             {
@@ -39,11 +40,11 @@ namespace Ramsey.UI
             }
             if (Input.mouseScrollDelta.y < 0f)
             {
-                CameraManager.BoardCamera.orthographicSize *= scl * ScrollMultiplier;
+                CameraManager.BoardCamera.orthographicSize *= sscl * ScrollMultiplier;
             }
             if (Input.mouseScrollDelta.y > 0f)
             {
-                CameraManager.BoardCamera.orthographicSize *= scl / ScrollMultiplier;
+                CameraManager.BoardCamera.orthographicSize /= sscl * ScrollMultiplier;
             }
 
             CameraManager.BoardCamera.orthographicSize = Mathf.Clamp(CameraManager.BoardCamera.orthographicSize, MinSize, MaxSize);

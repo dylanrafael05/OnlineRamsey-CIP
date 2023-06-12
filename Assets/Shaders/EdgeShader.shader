@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 Shader "Unlit/GraphShaders/EdgeShader"
 {
     Properties
@@ -8,6 +10,10 @@ Shader "Unlit/GraphShaders/EdgeShader"
         [HideInInspector] _HighlightSize("Highlight Size", Float) = 0.2
         [HideInInspector] _HighlightRepLength("Highlight Repeat Length", Float) = 0.2
         [HideInInspector] _HighlightThickness("Highlight Thickness", Float) = 0.05
+
+        // [PerRendererData] _Transforms ("Transforms", Matrix) = 0.
+        [PerRendererData] _Colors ("Colors", Color) = (1., 1., 1., 1.)
+        [PerRendererData] _IsHighlighted ("IsHighlighted", Float) = 0.
     }
     SubShader
     {
@@ -26,9 +32,10 @@ Shader "Unlit/GraphShaders/EdgeShader"
 
             #include "UnityCG.cginc"
 
-            StructuredBuffer<float4x4> Transforms;
-            StructuredBuffer<float4> Colors;
-            StructuredBuffer<float> IsHighlighted;
+            UNITY_INSTANCING_BUFFER_START(EdgeProperties)
+                UNITY_DEFINE_INSTANCED_PROP(float4, _Colors)
+                UNITY_DEFINE_INSTANCED_PROP(float, _IsHighlighted)
+            UNITY_INSTANCING_BUFFER_END(props)
 
             float _Thickness;
 
@@ -41,6 +48,8 @@ Shader "Unlit/GraphShaders/EdgeShader"
             {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
+
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             struct vOut
@@ -58,20 +67,22 @@ Shader "Unlit/GraphShaders/EdgeShader"
                 length(float3(m[0].z, m[1].z, m[2].z))  // scale z axis
             ); }
 
-            vOut vert (vIn v, uint instanceID : SV_InstanceID)
+            vOut vert (vIn v)
             {
+                UNITY_SETUP_INSTANCE_ID(v);
+
                 vOut o;
 
-                o.vertex = mul(UNITY_MATRIX_VP, mul(Transforms[instanceID], v.vertex));
-                o.color = Colors[instanceID];
+                o.vertex = UnityObjectToClipPos(v.vertex);
+                o.color = UNITY_ACCESS_INSTANCED_PROP(props, _Colors);
                 o.uv = v.uv;
-                o.isHighlighted = IsHighlighted[instanceID];
-                o.length = worldScale(Transforms[instanceID]);
+                o.isHighlighted = UNITY_ACCESS_INSTANCED_PROP(props, _IsHighlighted);
+                o.length = worldScale(UNITY_MATRIX_M);
 
                 return o;
             }
 
-            fixed4 frag(vOut i, uint instanceID : SV_InstanceID) : SV_Target
+            fixed4 frag(vOut i) : SV_Target
             {
                 //Edge
                 float4 edgeCol = i.color * step(abs(i.uv.y), _Thickness*.5);

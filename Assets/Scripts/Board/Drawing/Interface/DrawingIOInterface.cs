@@ -30,17 +30,16 @@ namespace Ramsey.Drawing
             data.EdgeHighlights.Add(0);
 
             drawer.UpdateEdgeBuffer();
-            drawer.UpdateArgsBuffer();
         }
         public void AddNode(Node n)
         {
             Assert.AreEqual(data.NodePositions.Count, n.ID, "Nodes must be added to renderer upon creation!");
 
+            data.NodeTransforms.Add(Matrix4x4.Translate(n.Position.xyz()));
             data.NodePositions.Add(n.Position);
             data.NodeHighlights.Add(0);
 
             drawer.UpdateNodeBuffer();
-            drawer.UpdateArgsBuffer();
         }
 
         public void UpdateNodePosition(Node n)
@@ -48,6 +47,8 @@ namespace Ramsey.Drawing
             Assert.IsTrue(data.NodePositions.Count > n.ID, "Nodes must be added to renderer upon creation!");
 
             data.NodePositions[n.ID] = n.Position;
+            data.NodeTransforms[n.ID] = Matrix4x4.Translate(n.Position.xyz());
+
             foreach(var e in n.ConnectedEdges)
             {
                 UpdateEdgeTransform(e);

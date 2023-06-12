@@ -84,6 +84,9 @@ namespace Ramsey.UI
             async Task<IMove> GetMove(IPlayer player)
             {
                 if(player.IsAutomated && !synchronous) await Task.Delay((int)(Delay * 1000));
+
+                // TODO: how to handle these awaits while running syncronously?
+                // TODO: can we assume that these will always instant-return?
                 return await player.GetMove(board.GameState);
             }
             
@@ -134,8 +137,11 @@ namespace Ramsey.UI
                     currentTask = RunMove();
                 }
             }
+        }
 
-            board.Update();
+        public void Render() 
+        {
+            board.Render();
         }
 
         public int2? GetMatchupData()

@@ -122,7 +122,7 @@ namespace Ramsey.Board
             gameState.GraphTooComplex = true;
         }
 
-        public void Update()
+        public void Render()
         {
             RenderIO.SetLoading(graphManager.IsAwaitingPathTask);
             renderManager.ActionInterface.Update();

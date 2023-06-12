@@ -22,9 +22,6 @@ namespace Ramsey.Drawing
         public static Material ScreenMaterial { get; private set; }
         public static Material BackgroundMaterial { get; private set; }
 
-        public static MaterialPropertyBlock EdgeBlock { get; private set; } = new();
-        public static MaterialPropertyBlock NodeBlock { get; private set; } = new();
-
         public static void Initialize()
         {
             var rgo = GameObject.Find("Recording");
@@ -45,6 +42,9 @@ namespace Ramsey.Drawing
             LoadingMaterial = new(Shader.Find("Unlit/UIShaders/LoadingCircle"));
             ScreenMaterial = new(Shader.Find("Unlit/Fullscreen/Pulse"));
             BackgroundMaterial = new(Shader.Find("Unlit/Screen/Background"));
+
+            EdgeMaterial.enableInstancing = true;
+            NodeMaterial.enableInstancing = true;
 
             BackgroundRenderer = GameObject.Find("Background").GetComponent<MeshRenderer>();
             BackgroundRenderer.material = BackgroundMaterial;
