@@ -56,9 +56,10 @@ Shader "Unlit/Screen/Background"
             {
                 float2 dir = float2(sin(_Time.x * 3.f), cos(_Time.x * 3.3f));
 
-                float2 uv = (fmod(i.uv + SCL * SCROLL * dir, SCL) / SCL) * 2.f - 1.f;
+                float2 p = (fmod(i.uv + SCL * SCROLL * dir, SCL) / SCL) * 2.f - 1.f;
+                float2 id = (i.uv - (p * .5 + .5) * SCL) * float2(1., -1.) + .05*_Time.y;
 
-                float s = step(length(uv), 1.f - (_SinTime.y*_SinTime.y) * 0.2f);
+                float s = step(length(p), 1.f - ((_SinTime.y*_SinTime.y)-0.*(sin(length(id)*15.)*.5+.5)) * 0.2f);
 
                 return _BaseColor * (1 - s) + _HighlightColor * s;
             }
