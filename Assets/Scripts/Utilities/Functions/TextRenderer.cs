@@ -17,7 +17,6 @@ namespace Ramsey.Drawing
         private static GameObject textPrefab;
         private static List<Text> texts = new();
 
-
         public static void Create()
         {
             canvas = GameObject.Find("Board Canvas").GetComponent<Canvas>();
