@@ -12,13 +12,13 @@ namespace Ramsey.Drawing
     public static class TextRenderer
     {
         private static int count;
+        private static bool isSetup;
 
         private static Canvas canvas;
         private static GameObject textPrefab;
         private static List<Text> texts = new();
 
-
-        public static void Create()
+        private static void Create()
         {
             canvas = GameObject.Find("Board Canvas").GetComponent<Canvas>();
             textPrefab = Resources.Load<GameObject>("Prefabs/TextPrefab");
@@ -26,6 +26,7 @@ namespace Ramsey.Drawing
 
         private static Text CreateText()
         {
+
             var newgo = GameObject.Instantiate(textPrefab, Vector3.zero, Quaternion.identity);
             newgo.transform.SetParent(canvas.transform);
 
@@ -50,6 +51,12 @@ namespace Ramsey.Drawing
 
         public static void Begin()
         {
+            if(!isSetup)
+            {
+                Create();
+                isSetup = true;
+            }
+            
             count = 0;
         }
 

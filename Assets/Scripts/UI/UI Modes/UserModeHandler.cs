@@ -17,6 +17,8 @@ namespace Ramsey.UI
         static List<IUserMode<D>> currentModes = new();
         static List<bool> activationStatuses = new();
 
+        public static IEnumerable<IUserMode<D>> Modes => currentModes;
+
         public static void Update(InputData input)
             => currentModes.ForEachIndex((m, i) => { if (activationStatuses[i]) m.Update(input, data); });
 
@@ -40,7 +42,7 @@ namespace Ramsey.UI
         public static void SetStatus(IUserMode<D> mode, bool status)
         { var i = currentModes.FindIndex(m => m == mode); if (i != -1) activationStatuses[i] = status; }
 
-        public static IEnumerable<IUserMode<D>> GameplayModes => currentModes.Where(m => m.IsGameplayMode);
+        public static IEnumerable<IUserMode<D>> GameplayModes => Modes.Where(m => m.IsGameplayMode);
 
     }
 
@@ -49,6 +51,8 @@ namespace Ramsey.UI
         void Init(D data);
         void Update(InputData input, D data);
         void End(D data);
+
         bool IsGameplayMode { get; }
+
     }
 }

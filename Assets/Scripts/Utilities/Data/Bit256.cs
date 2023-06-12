@@ -24,7 +24,7 @@ namespace Ramsey.Utilities
         [FieldOffset(0)]  private readonly ulong l1; 
         [FieldOffset(8)]  private readonly ulong l2; 
         [FieldOffset(16)] private readonly ulong l3;
-        [FieldOffset(32)] private readonly ulong l4;
+        [FieldOffset(24)] private readonly ulong l4;
 
         public static Bit256 operator &(Bit256 a, Bit256 b) 
             => new(a.l1 & b.l1, a.l2 & b.l2, a.l3 & b.l3, a.l4 & b.l4);

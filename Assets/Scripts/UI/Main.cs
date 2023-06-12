@@ -55,13 +55,12 @@ public class Main : MonoBehaviour
             Delay = 0.2f
         };
 
-        TextRenderer.Create();
-
         UserModeHandler<BoardManager>.Create(board);
         InputManager.Create(board);
 
         var nodeEditingMode = new NodeEditingMode();
         var turnNavigatorMode = new TurnNavigatorMode(); //put locks in here
+
         var cameraControlMode = new CameraControlMode();
 
         UserModeHandler<BoardManager>.AddMode(nodeEditingMode);
@@ -100,7 +99,7 @@ public class Main : MonoBehaviour
             UnityReferences.OverText.text = game.State.IsGameWon ? "Game Over" : "Graph too Large";
             UnityReferences.OverText.gameObject.SetActive(true);
 
-            IEnumerator Coro() 
+            static IEnumerator Coro() 
             {
                 const float Len = 3.7f;
                 const float Size = 100f;
@@ -126,7 +125,7 @@ public class Main : MonoBehaviour
                 UnityReferences.OverText.gameObject.SetActive(false);
             }
 
-            UnityReferences.OverText.StartCoroutine(Coro());
+            Coroutines.StartCoroutine(Coro);
 
             UnityReferences.ScreenMaterial.SetFloat("_TimeStart", Time.timeSinceLevelLoad);
 
