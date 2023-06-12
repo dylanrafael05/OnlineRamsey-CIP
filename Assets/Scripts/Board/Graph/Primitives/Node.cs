@@ -36,6 +36,12 @@ namespace Ramsey.Graph
             return edgesByOpposingID[node];
         }
 
+        public DirectedEdge? DirectedEdgeConnectedTo(Node node) 
+        {
+            if(!IsConnectedTo(node)) return null;
+            return new(edgesByOpposingID[node], edgesByOpposingID[node].End == this);
+        }
+
         public IEnumerable<Edge> ConnectedEdgesOfType(int type)
             => type < edgesByType.Count ? edgesByType[type] : Enumerable.Empty<Edge>();
 

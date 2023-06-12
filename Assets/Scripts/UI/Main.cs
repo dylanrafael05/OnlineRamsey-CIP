@@ -87,46 +87,14 @@ public class Main : MonoBehaviour
         UserModeHandler.Update(InputManager.Update());
         CameraManager.Update();
 
-        UnityReferences.TurnText.text = "" + game.State.TurnNum;
-
         game.UpdateGameplay();
-
         NodeSmoothing.Smooth(game.Board, 2); //TODO: must be even in order to remove jitter
+
+        DisplayText.Update(game.State);
 
         if (game.State.IsGameDone && !effectPlayed)
         {
-            UnityReferences.OverText.text = game.State.IsGameWon ? "Game Over" : "Graph too Large";
-            UnityReferences.OverText.gameObject.SetActive(true);
-
-            static IEnumerator Coro() 
-            {
-                const float Len = 3.7f;
-                const float Size = 100f;
-
-                var start = Time.time;
-
-                while((Time.time - start) < Len)
-                {
-                    var t = (Time.time - start) / Len;
-
-                    var f = 1 - (1 - t) * (1 - t);
-
-                    UnityReferences.OverText.fontSize = Size * f;
-                    UnityReferences.OverText.color = new Color(
-                        UnityReferences.OverText.color.r, 
-                        UnityReferences.OverText.color.g, 
-                        UnityReferences.OverText.color.b, 
-                        Mathf.Clamp01((1-f)*3));
-
-                    yield return null;
-                }
-
-                UnityReferences.OverText.gameObject.SetActive(false);
-            }
-
-            Coroutines.StartCoroutine(Coro);
-
-            UnityReferences.ScreenMaterial.SetFloat("_TimeStart", Time.timeSinceLevelLoad);
+            GameOverHandler.Display(game.State);
 
             effectPlayed = true;
         }

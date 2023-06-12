@@ -20,5 +20,20 @@ namespace Ramsey.Graph
                 last = node;
             }
         }
+
+        public static IEnumerable<DirectedEdge> GetDirectedEdgesConnecting(IEnumerable<Node> nodes) 
+        {
+            Node last = null;
+            foreach (var node in nodes.ToList())
+            {
+                if (last != null)
+                {
+                    yield return node.DirectedEdgeConnectedTo(last)
+                        ?? throw new InvalidOperationException("Edges must connect the nodes in a path.");
+                }
+
+                last = node;
+            }
+        }
     }
 }

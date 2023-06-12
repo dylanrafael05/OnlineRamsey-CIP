@@ -59,6 +59,7 @@ namespace Ramsey.Drawing
 
             edgeProps.SetVectorArray("_Colors", storage.EdgeColors);
             edgeProps.SetFloatArray("_IsHighlighted", storage.EdgeHighlights);
+            edgeProps.SetFloatArray("_IsReversed", storage.EdgeReversal);
         }
         public void UpdateNodeBuffer(DrawingStorage storage) 
         { 

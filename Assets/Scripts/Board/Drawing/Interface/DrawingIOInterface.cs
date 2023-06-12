@@ -28,6 +28,7 @@ namespace Ramsey.Drawing
             data.EdgeTransforms.Add(DrawingTransformGenerator.GenerateEdgeTransform(e.Start, e.End, e.Type, preferences.edgeThickness));
             data.EdgeColors.Add(preferences.TypeToColor(e.Type));
             data.EdgeHighlights.Add(0);
+            data.EdgeReversal.Add(0);
 
             drawer.UpdateEdgeBuffer();
         }
@@ -96,9 +97,10 @@ namespace Ramsey.Drawing
                 data.EdgeHighlights[i] = 0.0f;
             }
 
-            foreach(var e in path.Edges)
+            foreach(var e in path.DirectedEdges)
             {
                 data.EdgeHighlights[e.ID] = 1.0f;
+                data.EdgeReversal[e.ID] = e.Reversed.ToInt();
             }
 
             data.ShouldUpdateEdgeBuffer = true;
