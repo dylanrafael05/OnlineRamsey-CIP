@@ -43,6 +43,9 @@ namespace Ramsey.Drawing
             ScreenMaterial = new(Shader.Find("Unlit/Fullscreen/Pulse"));
             BackgroundMaterial = new(Shader.Find("Unlit/Screen/Background"));
 
+            EdgeMaterial.enableInstancing = true;
+            NodeMaterial.enableInstancing = true;
+
             BackgroundRenderer = GameObject.Find("Background").GetComponent<MeshRenderer>();
             BackgroundRenderer.material = BackgroundMaterial;
         }

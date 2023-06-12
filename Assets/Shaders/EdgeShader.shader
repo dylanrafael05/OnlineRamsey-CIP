@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 Shader "Unlit/GraphShaders/EdgeShader"
 {
     Properties
@@ -31,7 +33,6 @@ Shader "Unlit/GraphShaders/EdgeShader"
             #include "UnityCG.cginc"
 
             UNITY_INSTANCING_BUFFER_START(EdgeProperties)
-                UNITY_DEFINE_INSTANCED_PROP(float4x4, _Transforms)
                 UNITY_DEFINE_INSTANCED_PROP(float4, _Colors)
                 UNITY_DEFINE_INSTANCED_PROP(float, _IsHighlighted)
             UNITY_INSTANCING_BUFFER_END(props)
@@ -72,13 +73,11 @@ Shader "Unlit/GraphShaders/EdgeShader"
 
                 vOut o;
 
-                float4x4 transform = UNITY_ACCESS_INSTANCED_PROP(props, _Transforms);
-
-                o.vertex = mul(UNITY_MATRIX_VP, mul(transform, v.vertex));
+                o.vertex = UnityObjectToClipPos(v.vertex);
                 o.color = UNITY_ACCESS_INSTANCED_PROP(props, _Colors);
                 o.uv = v.uv;
                 o.isHighlighted = UNITY_ACCESS_INSTANCED_PROP(props, _IsHighlighted);
-                o.length = worldScale(transform);
+                o.length = worldScale(UNITY_MATRIX_M);
 
                 return o;
             }

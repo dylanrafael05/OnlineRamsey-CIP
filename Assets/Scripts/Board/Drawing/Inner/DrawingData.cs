@@ -7,12 +7,13 @@ namespace Ramsey.Drawing
 {
     internal class DrawingStorage
     {
-        public DrawingStorage(List<Matrix4x4> EdgeTransforms = null, List<Vector4> EdgeColors = null, List<float> EdgeHighlights = null, List<Vector4> NodePositions = null, List<float> NodeHighlights = null)
+        public DrawingStorage(List<Matrix4x4> EdgeTransforms = null, List<Vector4> EdgeColors = null, List<float> EdgeHighlights = null, List<Matrix4x4> NodeTransforms = null, List<float2> NodePositions = null, List<float> NodeHighlights = null)
         {
             this.EdgeTransforms = EdgeTransforms ?? new();
             this.EdgeColors = EdgeColors ?? new();
             this.EdgeHighlights = EdgeHighlights ?? new();
 
+            this.NodeTransforms = NodeTransforms ?? new();
             this.NodePositions = NodePositions ?? new();
             this.NodeHighlights = NodeHighlights ?? new();
         }
@@ -21,7 +22,8 @@ namespace Ramsey.Drawing
         public List<Vector4> EdgeColors { get; private set; }
         public List<float> EdgeHighlights { get; private set; }
 
-        public List<Vector4> NodePositions { get; private set; }
+        public List<Matrix4x4> NodeTransforms { get; private set; }
+        public List<float2> NodePositions { get; private set; }
         public List<float> NodeHighlights { get; private set; }
 
         public bool ShouldUpdateEdgeBuffer { get; set; }
@@ -31,7 +33,7 @@ namespace Ramsey.Drawing
         public int EdgeCount => EdgeTransforms.Count;
         public int NodeCount => NodePositions.Count;
 
-        public DrawState CreateState() => new(new (EdgeTransforms.Copy(), EdgeColors.Copy(), EdgeHighlights.Copy(), NodePositions.Copy(), NodeHighlights.Copy()));
+        public DrawState CreateState() => new(new (EdgeTransforms.Copy(), EdgeColors.Copy(), EdgeHighlights.Copy(), NodeTransforms.Copy(), NodePositions.Copy(), NodeHighlights.Copy()));
 
     }
 

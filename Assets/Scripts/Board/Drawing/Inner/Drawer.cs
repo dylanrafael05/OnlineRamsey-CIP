@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Diagnostics;
 using Ramsey.Utilities;
+using UnityEngine.Rendering;
 
 namespace Ramsey.Drawing
 {
@@ -77,7 +78,6 @@ namespace Ramsey.Drawing
         {
             if(storage.EdgeCount == 0) return;
 
-            edgeProps.SetMatrixArray("_Transforms", storage.EdgeTransforms);
             edgeProps.SetVectorArray("_Colors", storage.EdgeColors);
             edgeProps.SetFloatArray("_IsHighlighted", storage.EdgeHighlights);
         }
@@ -85,7 +85,6 @@ namespace Ramsey.Drawing
         { 
             if(storage.NodeCount == 0) return;
 
-            nodeProps.SetVectorArray("_Positions", storage.NodePositions); 
             nodeProps.SetFloatArray("_IsHighlighted", storage.NodeHighlights);
         }
 
@@ -114,13 +113,29 @@ namespace Ramsey.Drawing
             UnityReferences.NodeMaterial.SetVector("_Mouse", Mouse.xyzw());
 
             foreach(var (count, block) in edgeProps.GetRenderBlocks(currentStorage.EdgeCount)) 
-                Graphics.DrawMeshInstancedProcedural(MeshUtils.QuadMesh, 0, UnityReferences.EdgeMaterial, UnityReferences.Bounds, count, block, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
+                Graphics.DrawMeshInstanced(
+                    MeshUtils.QuadMesh, 0, 
+                    UnityReferences.EdgeMaterial, 
+                    currentStorage.EdgeTransforms.ToArray(), 
+                    count, block, 
+                    ShadowCastingMode.Off, false, 
+                    LayerMask.NameToLayer("Board"), 
+                    camera
+                );
 
             foreach(var (count, block) in nodeProps.GetRenderBlocks(currentStorage.NodeCount)) 
-                Graphics.DrawMeshInstancedProcedural(MeshUtils.QuadMesh, 0, UnityReferences.EdgeMaterial, UnityReferences.Bounds, count, block, UnityEngine.Rendering.ShadowCastingMode.Off, false, LayerMask.NameToLayer("Board"), camera);
+                Graphics.DrawMeshInstanced(
+                    MeshUtils.QuadMesh, 0, 
+                    UnityReferences.NodeMaterial, 
+                    currentStorage.NodeTransforms.ToArray(), 
+                    count, block, 
+                    ShadowCastingMode.Off, false, 
+                    LayerMask.NameToLayer("Board"), 
+                    camera
+                );
 
             for(var i = 0; i < currentStorage.NodePositions.Count; i++) 
-                TextRenderer.Draw(((float4)currentStorage.NodePositions[i]).xy, i.ToString());
+                TextRenderer.Draw(currentStorage.NodePositions[i], i.ToString());
             
             TextRenderer.End();
         }
