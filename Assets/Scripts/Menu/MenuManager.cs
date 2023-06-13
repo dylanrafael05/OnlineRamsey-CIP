@@ -9,7 +9,7 @@ using UnityEngine;
 
 using static Unity.Mathematics.math;
 
-namespace Ramsey.Visualization
+namespace Ramsey.Menu
 {
     public class MenuManager
     {
