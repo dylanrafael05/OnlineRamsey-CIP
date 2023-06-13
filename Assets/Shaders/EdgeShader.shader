@@ -14,6 +14,7 @@ Shader "Unlit/GraphShaders/EdgeShader"
         // [PerRendererData] _Transforms ("Transforms", Matrix) = 0.
         [PerRendererData] _Colors ("Colors", Color) = (1., 1., 1., 1.)
         [PerRendererData] _IsHighlighted ("IsHighlighted", Float) = 0.
+        [PerRendererData] _IsReversed ("IsReversed", Float) = 0.
     }
     SubShader
     {
@@ -35,6 +36,7 @@ Shader "Unlit/GraphShaders/EdgeShader"
             UNITY_INSTANCING_BUFFER_START(EdgeProperties)
                 UNITY_DEFINE_INSTANCED_PROP(float4, _Colors)
                 UNITY_DEFINE_INSTANCED_PROP(float, _IsHighlighted)
+                UNITY_DEFINE_INSTANCED_PROP(float, _IsReversed)
             UNITY_INSTANCING_BUFFER_END(props)
 
             float _Thickness;
@@ -59,6 +61,7 @@ Shader "Unlit/GraphShaders/EdgeShader"
                 float2 uv : TEXCOORD1;
                 float isHighlighted : TEXCOORD2;
                 float length : TEXCOORD3;
+                float reversed : TEXCOORD4;
             };
 
             float3 worldScale(float4x4 m) { return float3(
@@ -78,6 +81,7 @@ Shader "Unlit/GraphShaders/EdgeShader"
                 o.uv = v.uv;
                 o.isHighlighted = UNITY_ACCESS_INSTANCED_PROP(props, _IsHighlighted);
                 o.length = worldScale(UNITY_MATRIX_M);
+                o.reversed = UNITY_ACCESS_INSTANCED_PROP(props, _IsReversed);
 
                 return o;
             }
@@ -89,10 +93,11 @@ Shader "Unlit/GraphShaders/EdgeShader"
 
                 //Highlight
                 float2 p = i.uv; //make sure -1 to 1
+                p.x *= (i.reversed * 2. - 1.);
                 p.y = abs(p.y);
                 p.x = (p.x + 1.0)*i.length+_Time.y*2.;
                 p.y = abs(p.y - _HighlightSize);
-                float highlight = i.isHighlighted * step(p.y, _HighlightThickness) * step(0., fmod(p.x, _HighlightRepLength*2.0)-_HighlightRepLength);
+                float highlight = i.isHighlighted * step(p.y, _HighlightThickness) * step(0., fmod(p.x + 0.5*abs(p.y - _HighlightThickness), _HighlightRepLength*2.0)-_HighlightRepLength);
 
                 return (edgeCol + (_HighlightColor - edgeCol) * highlight);
             }

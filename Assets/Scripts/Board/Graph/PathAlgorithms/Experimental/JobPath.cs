@@ -79,6 +79,8 @@ namespace Ramsey.Graph.Experimental
 
         public IEnumerable<Edge> Edges
             => PathUtils.GetEdgesConnecting(nodes);
+        public IEnumerable<DirectedEdge> DirectedEdges
+            => PathUtils.GetDirectedEdgesConnecting(nodes);
 
         public bool Contains(Node node)
             => (Internal.Mask & (Bit256.One << node.ID)) != 0;

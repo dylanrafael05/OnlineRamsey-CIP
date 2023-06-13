@@ -12,6 +12,7 @@ namespace Ramsey.Graph
         Node End { get; }
 
         IEnumerable<Edge> Edges { get; }
+        IEnumerable<DirectedEdge> DirectedEdges { get; }
 
         bool Contains(Node node);
         bool IsEndpoint(Node node);
