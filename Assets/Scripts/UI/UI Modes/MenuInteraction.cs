@@ -26,5 +26,7 @@ namespace Ramsey.UI
 
         }
 
+        public bool IsGameplayMode => false;
+
     }
 }

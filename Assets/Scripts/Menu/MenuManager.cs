@@ -46,11 +46,11 @@ namespace Ramsey.Visualization
             return (length(mouse - pos) - radius) <= 0f;
         }
 
-        public void Update(float2 mouse, bool isDown
+        /*public void Update(float2 mouse, bool isDown
         {
-            /*hasNode &= mouse.
-            hasNode = hasNode */
-        }
+            *//*hasNode &= mouse.
+            hasNode = hasNode *//*
+        }*/
 
     }
 }
