@@ -1,10 +1,13 @@
-﻿using System;
+﻿using Ramsey.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Unity.Mathematics;
 using UnityEngine;
+
+using static Unity.Mathematics.math;
 
 namespace Ramsey.Visualization
 {
@@ -35,15 +38,18 @@ namespace Ramsey.Visualization
 
         // Current
         int currentTick;
+        bool hasNode;
 
-        bool CollideKnob()
+        bool CollideKnob(float2 mouse)
         {
-            return false;
+            float2 pos = float2(radius, (PI * 2f * ((float)currentTick) / ((float)ticks))).ToCartesian();
+            return (length(mouse - pos) - radius) <= 0f;
         }
 
-        public void Update(float2 mouse)
+        public void Update(float2 mouse, bool isDown
         {
-
+            /*hasNode &= mouse.
+            hasNode = hasNode */
         }
 
     }
