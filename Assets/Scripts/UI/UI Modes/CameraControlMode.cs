@@ -7,13 +7,11 @@ namespace Ramsey.UI
 {
     public class CameraControlMode : IUserMode<BoardManager>
     {
-        public const float TranslationAmount = 0.1f;
+        public const float TranslationAmount = 0.05f;
         public const float BaseSize = 5f;
         public const float ScrollMultiplier = 1.025f;
         public const float MinSize = 0.5f;
         public const float MaxSize = 20f;
-
-        bool IUserMode.AltersBoard => false;
 
         public void Init(BoardManager board) {}
 
