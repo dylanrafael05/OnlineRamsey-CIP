@@ -3,7 +3,8 @@
     "rootNamespace": "Ramsey.Menu",
     "references": [
         "GUID:d8b63aba1907145bea998dd612889d6b",
-        "GUID:6b2779fa5936ef34caa0d3d85618fc03"
+        "GUID:6b2779fa5936ef34caa0d3d85618fc03",
+        "GUID:1b1b2a3702310f34b878a3ff693d89ee"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

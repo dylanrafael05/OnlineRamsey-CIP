@@ -40,7 +40,7 @@ namespace Ramsey.Drawing
 
             OverText.gameObject.SetActive(false);
 
-            EdgeMaterial = new(Shader.Find("Unlit/GraphShaders/EdgeShader")) { enableInstancing = true };
+            EdgeMaterial = new(Shader.Find("Unlit/GraphShaders/EdgeShader"));
             NodeMaterial = new(Shader.Find("Unlit/GraphShaders/NodeShader"));
             RecorderMaterial = new(Shader.Find("Unlit/UIShaders/RecordingShader"));
             LoadingMaterial = new(Shader.Find("Unlit/UIShaders/LoadingCircle"));

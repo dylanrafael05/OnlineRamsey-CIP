@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Unity.Mathematics;
 using UnityEngine;
+using Ramsey.Drawing;
 
 using static Unity.Mathematics.math;
 
@@ -31,8 +32,10 @@ namespace Ramsey.Menu
         // Prefs
         readonly float2 pos;
         readonly float radius;
-        readonly float thickness;
+        readonly float wheelThickness;
         readonly int ticks;
+
+        readonly float tickCollisionSize;
 
         readonly float knobSize;
 
@@ -45,12 +48,32 @@ namespace Ramsey.Menu
             float2 pos = float2(radius, (PI * 2f * ((float)currentTick) / ((float)ticks))).ToCartesian();
             return (length(mouse - pos) - radius) <= 0f;
         }
-
-        /*public void Update(float2 mouse, bool isDown
+        public void Update(float2 mouse, bool isDown)
         {
-            *//*hasNode &= mouse.
-            hasNode = hasNode *//*
-        }*/
+            //
+            hasNode |= CollideKnob(mouse) && hasNode;
+            hasNode |= CollideKnob(mouse) && isDown;
+
+            if (!hasNode) return;
+
+            //
+            float2 polar = mouse.ToPolar();
+            float partitionSize = 2f * PI / ticks;
+            float rtheta = fmod(polar.y, partitionSize)-partitionSize*.5f;
+
+            if (abs(rtheta) > tickCollisionSize * .5f) return;
+
+            //
+            float id = (polar.y - rtheta - partitionSize * .5f) / partitionSize;
+            currentTick = (int) id;
+        }
+
+        public void Draw()
+        {
+
+            Graphics.DrawMesh(Ramsey.Drawing.)
+
+        }
 
     }
 }
