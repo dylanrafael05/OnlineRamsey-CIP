@@ -9,7 +9,6 @@ namespace Ramsey.Drawing
         public const int MAX_PER_BLOCK = 1023;
 
         private readonly List<MaterialPropertyBlock> blocks = new();
-        private readonly HashSet<string> propertiesSeen = new();
 
         public IEnumerable<(int count, MaterialPropertyBlock block)> GetRenderBlocks(int count)
         {
@@ -40,13 +39,9 @@ namespace Ramsey.Drawing
             if(vecs.Length == 0) return;
             EnsureBlocks(vecs.Length);
 
+            blocks[MaxIndex(vecs.Length) - 1].SetVectorArray(name, new Vector4[MAX_PER_BLOCK]);
             for(int i = 0; i < MaxIndex(vecs.Length); i++)
-            {
-                if(!propertiesSeen.Contains(name)) blocks[i].SetVectorArray(name, new Vector4[MAX_PER_BLOCK]);
                 blocks[i].SetVectorArray(name, vecs[(i*MAX_PER_BLOCK)..Mathf.Min(vecs.Length, i*MAX_PER_BLOCK+MAX_PER_BLOCK)]);
-            }
-
-            propertiesSeen.Add(name);
         }
         public void SetVectorArray(string name, List<Vector4> vecs) => SetVectorArray(name, vecs.ToArray());
 
@@ -55,13 +50,9 @@ namespace Ramsey.Drawing
             if(floats.Length == 0) return;
             EnsureBlocks(floats.Length);
 
+            blocks[MaxIndex(floats.Length) - 1].SetFloatArray(name, new float[MAX_PER_BLOCK]);
             for(int i = 0; i < MaxIndex(floats.Length); i++)
-            {
-                if(!propertiesSeen.Contains(name)) blocks[i].SetFloatArray(name, new float[MAX_PER_BLOCK]);
                 blocks[i].SetFloatArray(name, floats[(i*MAX_PER_BLOCK)..Mathf.Min(floats.Length, i*MAX_PER_BLOCK+MAX_PER_BLOCK)]);
-            }
-            
-            propertiesSeen.Add(name);
         }
         public void SetFloatArray(string name, List<float> floats) => SetFloatArray(name, floats.ToArray());
 
@@ -70,13 +61,9 @@ namespace Ramsey.Drawing
             if(mats.Length == 0) return;
             EnsureBlocks(mats.Length);
 
+            blocks[MaxIndex(mats.Length) - 1].SetMatrixArray(name, new Matrix4x4[MAX_PER_BLOCK]);
             for(int i = 0; i < MaxIndex(mats.Length); i++)
-            {
-                if(!propertiesSeen.Contains(name)) blocks[i].SetMatrixArray(name, new Matrix4x4[MAX_PER_BLOCK]);
                 blocks[i].SetMatrixArray(name, mats[(i*MAX_PER_BLOCK)..Mathf.Min(mats.Length, i*MAX_PER_BLOCK+MAX_PER_BLOCK)]);
-            }
-            
-            propertiesSeen.Add(name);
         }
         public void SetMatrixArray(string name, List<Matrix4x4> mats) => SetMatrixArray(name, mats.ToArray());
     }
