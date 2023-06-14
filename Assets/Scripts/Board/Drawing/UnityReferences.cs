@@ -31,8 +31,8 @@ namespace Ramsey.Drawing
             var lgo = GameObject.Find("Loading");
             LoadingTransform = lgo.GetComponent<RectTransform>();
 
-            var wso = GameObject.Find("WheelSelect");
-            WheelSelectTransform = wso.GetComponent<RectTransform>();
+            // var wso = GameObject.Find("WheelSelect");
+            // WheelSelectTransform = wso.GetComponent<RectTransform>();
 
             GoalText = GameObject.Find("Goal Text").GetComponent<Text>();
             TurnText = GameObject.Find("Turn Text").GetComponent<Text>();
