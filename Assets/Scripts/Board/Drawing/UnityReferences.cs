@@ -22,6 +22,9 @@ namespace Ramsey.Drawing
         public static Material LoadingMaterial { get; private set; }
         public static Material ScreenMaterial { get; private set; }
         public static Material BackgroundMaterial { get; private set; }
+        public static Material WheelMaterial { get; private set; }
+
+        public static int BoardLayer { get; private set; }
 
         public static void Initialize()
         {
@@ -31,8 +34,8 @@ namespace Ramsey.Drawing
             var lgo = GameObject.Find("Loading");
             LoadingTransform = lgo.GetComponent<RectTransform>();
 
-            // var wso = GameObject.Find("WheelSelect");
-            // WheelSelectTransform = wso.GetComponent<RectTransform>();
+            var wso = GameObject.Find("Wheel Select");
+            WheelSelectTransform = wso.GetComponent<RectTransform>();
 
             GoalText = GameObject.Find("Goal Text").GetComponent<Text>();
             TurnText = GameObject.Find("Turn Text").GetComponent<Text>();
@@ -46,12 +49,15 @@ namespace Ramsey.Drawing
             LoadingMaterial = new(Shader.Find("Unlit/UIShaders/LoadingCircle"));
             ScreenMaterial = new(Shader.Find("Unlit/Fullscreen/Pulse"));
             BackgroundMaterial = new(Shader.Find("Unlit/Screen/Background"));
+            WheelMaterial = new(Shader.Find("Unlit/UIShaders/WheelSelect"));
 
             EdgeMaterial.enableInstancing = true;
             NodeMaterial.enableInstancing = true;
 
             BackgroundRenderer = GameObject.Find("Background").GetComponent<MeshRenderer>();
             BackgroundRenderer.material = BackgroundMaterial;
+
+            BoardLayer = LayerMask.NameToLayer("Board");
         }
     }
 }

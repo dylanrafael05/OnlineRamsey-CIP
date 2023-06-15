@@ -10,19 +10,30 @@ using Ramsey.Drawing;
 
 using static Unity.Mathematics.math;
 
-namespace Ramsey.Menu
+namespace Ramsey.UI
 {
+
+    /*public interface IStrategyParameter
+    {
+
+    }*/
+
+    public interface IPainterInitializer
+    {
+        int ParameterCount { get; }
+
+        Painter 
+    }
+
     public class MenuManager
     {
 
-        MenuDrawer drawer;
-        public MenuManager(Camera camera)
-            => drawer = new(camera);
-
-        public void UpdateWheel(float2 mouse)
+        
+        public MenuManager(float wheelRadius, float wheelThickness, )
         {
 
         }
+
 
     }
 
@@ -30,22 +41,46 @@ namespace Ramsey.Menu
     {
 
         // Prefs
-        readonly float2 pos;
         readonly float radius;
         readonly float wheelThickness;
-        readonly int ticks;
+        readonly float2 tickDim;
+        readonly int tickCount;
 
         readonly float tickCollisionSize;
 
         readonly float knobSize;
 
         // Current
-        int currentTick;
+        public int CurrentTick { get; private set; }
         bool hasNode;
+
+        //
+        Material material;
+
+        public WheelSelect(float radius, float wheelThickness, float2 tickDim, int tickCount, float tickCollisionSize, float knobSize)
+        {
+            this.radius = radius;
+            this.wheelThickness = wheelThickness;
+            this.tickCount = tickCount;
+            this.tickCollisionSize = tickCollisionSize;
+            this.knobSize = knobSize;
+
+            //
+            material = new(Shader.Find("Unlit/UIShaders/WheelShader"));
+
+            material.SetVector("_Color", Color.white);
+            material.SetFloat("_Radius", radius);
+
+            material.SetInt("_TickCount", tickCount);
+            material.SetVector("_TickDim", tickDim.xyzw());
+
+            material.SetFloat("_NodeRadius", knobSize);
+        }
 
         bool CollideKnob(float2 mouse)
         {
-            float2 pos = float2(radius, (PI * 2f * ((float)currentTick) / ((float)ticks))).ToCartesian();
+            mouse -= UnityReferences.WheelSelectTransform.position.xy();
+            float2 pos = float2(radius, (PI * 2f * CurrentTick / tickCount)).ToCartesian();
             return (length(mouse - pos) - radius) <= 0f;
         }
         public void Update(float2 mouse, bool isDown)
@@ -58,20 +93,21 @@ namespace Ramsey.Menu
 
             //
             float2 polar = mouse.ToPolar();
-            float partitionSize = 2f * PI / ticks;
+            float partitionSize = 2f * PI / tickCount;
             float rtheta = fmod(polar.y, partitionSize)-partitionSize*.5f;
 
             if (abs(rtheta) > tickCollisionSize * .5f) return;
 
             //
             float id = (polar.y - rtheta - partitionSize * .5f) / partitionSize;
-            currentTick = (int) id;
+            CurrentTick = (int) id;
         }
 
         public void Draw()
         {
 
-            Graphics.DrawMesh(Ramsey.Drawing.)
+            material.SetInt("_NodeLocation", CurrentTick);
+            Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.WheelSelectTransform.localToWorldMatrix, UnityReferences.WheelMaterial, UnityReferences.BoardLayer);
 
         }
 

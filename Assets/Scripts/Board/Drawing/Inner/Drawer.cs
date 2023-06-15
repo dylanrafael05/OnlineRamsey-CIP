@@ -99,7 +99,7 @@ namespace Ramsey.Drawing
                     currentStorage.EdgeTransforms.ToArray(), 
                     count, block, 
                     ShadowCastingMode.Off, false, 
-                    LayerMask.NameToLayer("Board"), 
+                    UnityReferences.BoardLayer,
                     camera
                 );
 
@@ -110,7 +110,7 @@ namespace Ramsey.Drawing
                     currentStorage.NodeTransforms.ToArray(), 
                     count, block, 
                     ShadowCastingMode.Off, false, 
-                    LayerMask.NameToLayer("Board"), 
+                    UnityReferences.BoardLayer,
                     camera
                 );
 
@@ -122,11 +122,11 @@ namespace Ramsey.Drawing
 
         public void DrawUI()
         {
-            Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.RecordingTransform.WorldMatrix(), UnityReferences.RecorderMaterial, LayerMask.NameToLayer("Board"), camera);
+            Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.RecordingTransform.WorldMatrix(), UnityReferences.RecorderMaterial, UnityReferences.BoardLayer, camera);
 
             if (presentStorage.IsLoading)
             {
-                Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.LoadingTransform.WorldMatrix(), UnityReferences.LoadingMaterial, LayerMask.NameToLayer("Board"), camera);
+                Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.LoadingTransform.WorldMatrix(), UnityReferences.LoadingMaterial, UnityReferences.BoardLayer, camera);
             }
         }
 

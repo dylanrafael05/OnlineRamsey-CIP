@@ -1,4 +1,4 @@
-Shader "Unlit/UIShaders/WheelShader"
+Shader "Unlit/UIShaders/WheelSelect"
 {
     Properties
     {
@@ -9,7 +9,9 @@ Shader "Unlit/UIShaders/WheelShader"
 
         _TickCount ("Tick Count", Int) = 2
         _TickDim ("Tick Dimensions", Vector) = (0.05, 0.2, 0., 0.)
+
         _NodeLocation ("Node Location", Int) = 0
+        _NodeRadius ("Node Radius", Float) = 0.1
 
     }
     SubShader
@@ -49,6 +51,8 @@ Shader "Unlit/UIShaders/WheelShader"
 
             int _TickCount;
             float2 _TickDim;
+
+            float _NodeRadius;
             int _NodeLocation;
 
             vOut vert (vIn v)
@@ -70,10 +74,23 @@ Shader "Unlit/UIShaders/WheelShader"
                 exists += step(abs(length(i.uv) - _Radius), _WheelThickness * .5);
 
                 // Ticks
-                float partitionSize = 2. * PI / float(_TickCount); //TODO: test without conversion
-                float2 polar = float2(length(i.uv), fmod(atan2(i.uv.y, i.uv.x) + 2. * PI));
+                float partitionSize = 2. * PI / float(_TickCount); //TODO: test without cast
+                float2 polar = float2(length(i.uv), fmod(atan2(i.uv.y, i.uv.x) + 2. * PI, 2.*PI));
 
-                float rtheta = fmod(polar.y, partitionSize) - partitionSize * .5 + PI * .5;
+                float rtheta = fmod(polar.y, partitionSize) - partitionSize * .5 + PI * .5; //About PI*.5
+
+                float2 newSpace = float2(cos(rtheta), sin(rtheta));
+                float2 p = abs(polar.x * newSpace - float2(0., _Radius));
+                exists += step(p.x, _TickDim.x * .5) * step(p.y, _TickDim.y * .5);
+
+                // Node
+                float id = (polar.y - fmod(polar.y, partitionSize)) / partitionSize;
+                float isNode = step(abs(id - float(_NodeLocation)), 0.001);
+                exists += isNode * step(length(polar.x * newSpace - float2(0., _Radius)) - _NodeRadius, 0.);
+
+                // Composite
+                exists = step(0.01, exists);
+                return exists * _Color;
 
             }
             ENDCG

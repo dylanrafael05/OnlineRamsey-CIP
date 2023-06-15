@@ -7,12 +7,16 @@ namespace Ramsey.Utilities
 {
     public static class MathUtils
     {
+        public static readonly float TAU = 6.28318f;
+
         public static float2 ToCartesian(this float2 polar)
             => polar.x * float2(cos(polar.y), sin(polar.y));
         public static float2 ToPolar(this float2 cartesian)
             => new(length(cartesian), fmod(2f*PI + atan2(cartesian.y, cartesian.x), 2f*PI));
 
         public static float2 xy(this float3 v)
+            => float2(v.x, v.y);
+        public static float2 xy(this Vector3 v)
             => float2(v.x, v.y);
         public static ulong bitposmask(int b)
             => 1ul << b;

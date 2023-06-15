@@ -3,7 +3,7 @@
 --- !u!30 &1
 GraphicsSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 13
+  serializedVersion: 14
   m_Deferred:
     m_Mode: 1
     m_Shader: {fileID: 69, guid: 0000000000000000f000000000000000, type: 0}
@@ -28,16 +28,26 @@ GraphicsSettings:
   m_LensFlare:
     m_Mode: 1
     m_Shader: {fileID: 102, guid: 0000000000000000f000000000000000, type: 0}
+  m_VideoShadersIncludeMode: 2
   m_AlwaysIncludedShaders:
   - {fileID: 7, guid: 0000000000000000f000000000000000, type: 0}
   - {fileID: 15104, guid: 0000000000000000f000000000000000, type: 0}
   - {fileID: 15105, guid: 0000000000000000f000000000000000, type: 0}
   - {fileID: 15106, guid: 0000000000000000f000000000000000, type: 0}
   - {fileID: 10753, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 4800000, guid: 67c0f48c1f4ca654dbd62cfc477e462c, type: 3}
+  - {fileID: 4800000, guid: d3508c288b1a6d3449c660c39a43d82c, type: 3}
+  - {fileID: 4800000, guid: f73b6431669e7c846be76f8ed1f85aa5, type: 3}
+  - {fileID: 4800000, guid: 07de43ac791830449bf28f85f5f4f99c, type: 3}
+  - {fileID: 4800000, guid: 95c4a436af0652045b956c7bc9ec3891, type: 3}
+  - {fileID: 4800000, guid: cda42117bc89d1144ada7b567aad24ae, type: 3}
+  - {fileID: 4800000, guid: bf96eb9c5db9b6241b7b1addec59541b, type: 3}
+  - {fileID: 4800000, guid: ed2f2b2320e85ba44907a4549ba3eb4c, type: 3}
+  - {fileID: 4800000, guid: ee048e38d62c9e344a04790a88c36c5f, type: 3}
   - {fileID: 10770, guid: 0000000000000000f000000000000000, type: 0}
   m_PreloadedShaders: []
-  m_SpritesDefaultMaterial: {fileID: 10754, guid: 0000000000000000f000000000000000,
-    type: 0}
+  m_PreloadShadersBatchTimeLimit: -1
+  m_SpritesDefaultMaterial: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_CustomRenderPipeline: {fileID: 0}
   m_TransparencySortMode: 0
   m_TransparencySortAxis: {x: 0, y: 0, z: 1}
@@ -46,7 +56,7 @@ GraphicsSettings:
   m_TierSettings: []
   m_LightmapStripping: 0
   m_FogStripping: 0
-  m_InstancingStripping: 0
+  m_InstancingStripping: 2
   m_LightmapKeepPlain: 1
   m_LightmapKeepDirCombined: 1
   m_LightmapKeepDynamicPlain: 1
@@ -59,5 +69,8 @@ GraphicsSettings:
   m_AlbedoSwatchInfos: []
   m_LightsUseLinearIntensity: 0
   m_LightsUseColorTemperature: 0
+  m_DefaultRenderingLayerMask: 1
   m_LogWhenShaderIsCompiled: 0
-  m_AllowEnlightenSupportForUpgradedProject: 0
+  m_SRPDefaultSettings: {}
+  m_CameraRelativeLightCulling: 0
+  m_CameraRelativeShadowCulling: 0
