@@ -14,6 +14,9 @@ namespace Ramsey.UI
         Visualizer visualizer;
         bool visualizing = false;
 
+        //
+        MenuManager menu;
+
         DropdownWrapper<Painter> painter;
         DropdownWrapper<Builder> builder;
 
@@ -23,6 +26,7 @@ namespace Ramsey.UI
         public MenuBehavior(GraphPreferences graphPreferences)
         {
             visualizer = new(CameraManager.ScreenCamera, graphPreferences);
+            menu = new(new() { }, new() { });
 
             var painterObj = GameObject.Find("Painter Select").GetComponent<Dropdown>();
             var builderObj = GameObject.Find("Builder Select").GetComponent<Dropdown>();
