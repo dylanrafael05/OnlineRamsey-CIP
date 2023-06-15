@@ -49,9 +49,37 @@ namespace Ramsey.UI
             public object Parse(string str)
                 => float.Parse(str);
         }
+
+        public class Integer : IParameterVerifier
+        {
+            public Integer(int? min = null, int? max = null)
+            {
+                Min = min;
+                Max = max;
+            }
+
+            public int? Min { get; }
+            public int? Max { get; }
+
+            public bool IsValid(string str) 
+            {
+                if(!int.TryParse(str, out var val))
+                {
+                    return false;
+                }
+
+                if(Min != null && val < Min) return false;
+                if(Max != null && val > Max) return false;
+
+                return true;
+            }
+
+            public object Parse(string str)
+                => int.Parse(str);
+        }
     }
 
-    public struct StrategyParameter
+    public struct TextParameter
     {
         public string Name;
         public IParameterVerifier Verifier;
@@ -59,7 +87,7 @@ namespace Ramsey.UI
 
     public interface IStrategyInitializer<out T> where T : IPlayer
     {
-        IReadOnlyList<StrategyParameter> Parameters { get; }
+        IReadOnlyList<TextParameter> Parameters { get; }
         IReadOnlyList<TextInput> TextInputs { get; }
 
         void SetupTextInputs(float2 knobPos, float inputDistance);
@@ -70,23 +98,29 @@ namespace Ramsey.UI
 
     public static class StrategyInitializer
     {
-        public static StrategyInitializer<T> Direct<T>() where T : IPlayer, new()
-        {
-            return new DirectInitializer<T>();
-        }
+        public static StrategyInitializer<T> For<T>() where T : IPlayer, new()
+            => new(o => new());
+        
+        public static StrategyInitializer<T> For<T>(Func<T> construct) where T : IPlayer
+            => new(o => construct());
 
-        private class DirectInitializer<T> : StrategyInitializer<T> where T : IPlayer, new()
-        {
-            protected override T Parse(object[] parameters)
-                => new();
+        public static StrategyInitializer<T> For<T>(Func<object[], T> construct, params TextParameter[] parameters) where T : IPlayer
+            => new(construct, parameters);
 
-            public override IReadOnlyList<StrategyParameter> Parameters => Array.Empty<StrategyParameter>();
-        }
     }
 
-    public abstract class StrategyInitializer<T> : IStrategyInitializer<T> where T : IPlayer
+    public sealed class StrategyInitializer<T> : IStrategyInitializer<T> where T : IPlayer
     {
-        public abstract IReadOnlyList<StrategyParameter> Parameters { get; }
+        public StrategyInitializer(Func<object[], T> construct, params TextParameter[] parameters)
+        {
+            Parameters = parameters;
+            Construct = construct;
+
+            Name = string.Join(' ', Regex.Split(typeof(T).Name, @"[A-Z]?[a-z0-9]+"));
+        }
+
+        public IReadOnlyList<TextParameter> Parameters { get; }
+        public Func<object[], T> Construct { get; }
 
         private TextInput[] inputs;
         public IReadOnlyList<TextInput> TextInputs => inputs;
@@ -122,8 +156,6 @@ namespace Ramsey.UI
             }
         }
 
-        protected abstract T Parse(object[] parameters);
-
         public bool InputIsValid()
         {
             for(int i = 0; i < Parameters.Count; i++)
@@ -151,37 +183,10 @@ namespace Ramsey.UI
                 objs[i] = v.Parse(t);
             }
 
-            return Parse(objs);
+            return Construct(objs);
         }
 
-        public virtual string Name => string.Join(' ', Regex.Split(typeof(T).Name, @"[A-Z]?[a-z0-9]+"));
-    }
-
-    public class RandomBuilderIntializer : StrategyInitializer<RandomBuilder>
-    {
-        public override IReadOnlyList<StrategyParameter> Parameters => new StrategyParameter[] 
-        {
-            new() { Name = "Pendant Weight",  Verifier = new IParameterVerifier.Float(0, 1) },
-            new() { Name = "Internal Weight", Verifier = new IParameterVerifier.Float(0, 1) },
-            new() { Name = "Isolated Weight", Verifier = new IParameterVerifier.Float(0, 1) }
-        };
-
-        protected override RandomBuilder Parse(object[] parameters)
-        {
-            return new(
-                (float)parameters[0], 
-                (float)parameters[1], 
-                (float)parameters[2]
-            );
-        }
-    }
-
-    public class CapBuilderInitializer : StrategyInitializer<CapBuilder>
-    {
-        public override IReadOnlyList<StrategyParameter> Parameters => Array.Empty<StrategyParameter>();
-
-        protected override CapBuilder Parse(object[] parameters)
-            => new(Main.Game.State);
+        public string Name { get; set; }
     }
 
     public class MenuManager

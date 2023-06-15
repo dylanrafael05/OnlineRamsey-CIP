@@ -7,7 +7,7 @@ namespace Ramsey.Graph
     /// </summary>
     public class GraphTooComplexException : Exception
     {
-        public GraphTooComplexException(int count) : base($"Graph cannot exceed {count} nodes!")
+        public GraphTooComplexException(int count, string message = null) : base(message ?? $"Graph cannot exceed {count} nodes!")
         {
             Count = count;
         }
