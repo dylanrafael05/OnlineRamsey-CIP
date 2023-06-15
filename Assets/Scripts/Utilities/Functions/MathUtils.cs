@@ -18,6 +18,10 @@ namespace Ramsey.Utilities
             => float2(v.x, v.y);
         public static float2 xy(this Vector3 v)
             => float2(v.x, v.y);
+        public static float2 xy(this float4 v)
+            => float2(v.x, v.y);
+        public static float2 xy(this Vector4 v)
+            => float2(v.x, v.y);
         public static ulong bitposmask(int b)
             => 1ul << b;
         public static bool bit(ulong ul, int b) 
@@ -46,6 +50,10 @@ namespace Ramsey.Utilities
             => float4(v.x, v.y, 0, 0);
         public static float4 xyzw(this float3 v) 
             => float4(v.x, v.y, v.z, 0);
+        public static float4 xyzw(this float2 v, float z, float w)
+            => float4(v.x, v.y, z, w);
+        public static float4 xyzw(this float3 v, float w)
+            => float4(v.x, v.y, v.z, w);
 
         public static float2 perp(this float2 v)
             => cross(v.xyz(), new float3(0f, 0f, -1f)).xy();
