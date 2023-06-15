@@ -244,7 +244,7 @@ namespace Ramsey.UI
             material.SetFloat("_Radius", radius);
 
             material.SetInt("_TickCount", tickCount);
-            if(tickDim != null) material.SetVector("_TickDim", tickDim.xyzw());
+            if(tickDim != null) material.SetVector("_TickDim", ((float2) tickDim).xyzw());
 
             material.SetFloat("_NodeRadius", knobSize);
         }
