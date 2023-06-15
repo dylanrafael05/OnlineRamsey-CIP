@@ -1,13 +1,27 @@
+using System.Collections;
+using Ramsey.Utilities;
+
 namespace Ramsey.UI
 {
     public interface IBehavior 
     {
         public static void SwitchTo(IBehavior behavior)
         {
-            Active?.OnExit();
-            behavior.OnEnter();
+            IEnumerator Coro() 
+            {
+                if(Active != null)
+                {
+                    yield return Transition.HideScreen();
+                    Active.OnExit();
+                }
 
-            Active = behavior;
+                behavior.OnEnter();
+                Active = behavior;
+                
+                yield return Transition.ShowScreen();
+            }
+
+            Coroutines.StartCoroutine(Coro);
         }
 
         public static void Cleanup()
