@@ -73,6 +73,9 @@ namespace Ramsey
         }
 
         void OnDestroy() 
-            => Game.Cleanup();
+        {
+            IBehavior.Cleanup();
+            Game.Cleanup();
+        }
     }
 }

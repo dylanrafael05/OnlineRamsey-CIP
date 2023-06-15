@@ -71,6 +71,7 @@ namespace Ramsey.Graph
             return e;
         }
 
+
         public void PaintEdge(Edge e, int type, bool synchronous = false) //Will start background task
         {   
             graph.PaintEdge(e, type);

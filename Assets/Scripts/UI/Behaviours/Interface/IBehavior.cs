@@ -10,6 +10,11 @@ namespace Ramsey.UI
             Active = behavior;
         }
 
+        public static void Cleanup()
+        {
+            Active?.OnExit();
+        }
+
         static IBehavior Active { get; private set; }
 
         void Loop(InputData input); 
