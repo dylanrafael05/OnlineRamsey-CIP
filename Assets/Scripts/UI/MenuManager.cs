@@ -92,7 +92,15 @@ namespace Ramsey.UI
         {
             if(inputs is null)
             {
-                inputs = Parameters.Select((p, i) => Textboxes.CreateTextbox(knobPos + math.float2(inputDistance, i * 1f * MathUtils.TAU / Parameters.Count).ToCartesian(), math.float2(1f))).ToArray();
+                inputs = Parameters.Select((p, i) => 
+                {
+                    var a = Textboxes.CreateTextbox(knobPos + float2(inputDistance, i * 1f * MathUtils.TAU / Parameters.Count).ToCartesian(), float2(1f));
+                    a.text = p.Name;
+
+                    // TODO: make text red if its invalid
+
+                    return a;
+                }).ToArray();
             }
 
             foreach(var i in inputs)
