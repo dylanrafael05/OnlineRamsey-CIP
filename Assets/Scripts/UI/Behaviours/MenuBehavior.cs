@@ -26,7 +26,21 @@ namespace Ramsey.UI
         public MenuBehavior(GraphPreferences graphPreferences)
         {
             visualizer = new(CameraManager.ScreenCamera, graphPreferences);
-            menu = new(new() { }, new() { });
+            menu = new(
+                new() 
+                { 
+                    StrategyInitializer.Direct<UserBuilder>(),
+                    new RandomBuilderIntializer(),
+                    new CapBuilderInitializer(),
+                }, 
+                new() 
+                { 
+                    StrategyInitializer.Direct<UserPainter>(),
+                    StrategyInitializer.Direct<AlternatingPainter>(),
+                    StrategyInitializer.Direct<RandomPainter>(),
+                    StrategyInitializer.Direct<LengthyPainter>(),
+                }
+            );
 
             var painterObj = GameObject.Find("Painter Select").GetComponent<Dropdown>();
             var builderObj = GameObject.Find("Builder Select").GetComponent<Dropdown>();
@@ -47,14 +61,14 @@ namespace Ramsey.UI
             startRealtimeGameButton.onClick.AddListener(() => 
             {
                 visualizing = false;
-                Main.GameBehaviour.StartGame(10, builder.Selected, painter.Selected);
+                Main.GameBehaviour.StartGame(20, builder.Selected, painter.Selected);
                 IBehavior.SwitchTo(Main.GameBehaviour);
             });
 
             startBulkGameButton.onClick.AddListener(() =>
             {
                 visualizing = true;
-                InitAfterGather(Main.Game.SimulateGames(0, 20, 1, builder.Selected, painter.Selected));
+                InitAfterGather(Main.Game.SimulateGames(1, 30, 1, builder.Selected, painter.Selected));
             });
         }
 
@@ -70,14 +84,15 @@ namespace Ramsey.UI
 
         public void InitAfterGather(MatchupData data)
         {
-
+            visualizer.AddCurve(data, new() { lineThickness = 1f, color = Color.red });
         }
 
         public override void Loop(InputData input)
         {
+            menu.UpdateWheels(input);
+            menu.Draw();
 
             if (visualizing) visualizer.Draw();
-
         }
 
         public override void OnEnter()
@@ -86,6 +101,7 @@ namespace Ramsey.UI
             builder.UI.gameObject.SetActive(true);
 
             startRealtimeGameButton.gameObject.SetActive(true);
+            startBulkGameButton.gameObject.SetActive(true);
         }
 
         public override void OnExit()
@@ -94,6 +110,7 @@ namespace Ramsey.UI
             builder.UI.gameObject.SetActive(false);
 
             startRealtimeGameButton.gameObject.SetActive(false);
+            startBulkGameButton.gameObject.SetActive(false);
         }
     }
 }

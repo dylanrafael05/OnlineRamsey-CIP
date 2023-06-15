@@ -13,6 +13,7 @@ using static Unity.Mathematics.math;
 using UnityEngine.Assertions;
 
 using TextInput = TMPro.TMP_InputField;
+using System.Text.RegularExpressions;
 
 namespace Ramsey.UI
 {
@@ -63,6 +64,8 @@ namespace Ramsey.UI
 
         void SetupTextInputs(float2 knobPos, float inputDistance);
         T Initialize();
+
+        string Name { get; }
     }
 
     public static class StrategyInitializer
@@ -150,9 +153,11 @@ namespace Ramsey.UI
 
             return Parse(objs);
         }
+
+        public virtual string Name => string.Join(' ', Regex.Split(typeof(T).Name, @"[A-Z]?[a-z0-9]+"));
     }
 
-    public class RandomPainterIntializer : StrategyInitializer<RandomBuilder>
+    public class RandomBuilderIntializer : StrategyInitializer<RandomBuilder>
     {
         public override IReadOnlyList<StrategyParameter> Parameters => new StrategyParameter[] 
         {
@@ -190,7 +195,7 @@ namespace Ramsey.UI
 
         float inputDistance;
         
-        public MenuManager(List<IStrategyInitializer<Builder>> builderInitializers, List<IStrategyInitializer<Painter>> painterInitializers, float2? tickDim = null, float drawSize = 1f, float inputDistance = .2f, float wheelRadiusBuilder = 1f, float wheelRadiusPainter = 0.7f, float wheelThickness = .2f, float knobRadius = .1f)
+        public MenuManager(List<IStrategyInitializer<Builder>> builderInitializers, List<IStrategyInitializer<Painter>> painterInitializers, float2? tickDim = null, float drawSize = 1f, float inputDistance = .2f, float wheelRadiusBuilder = 0.5f, float wheelRadiusPainter = 0.2f, float wheelThickness = .2f, float knobRadius = .05f)
         {
             this.builderInitializers = builderInitializers;
             this.painterInitializers = painterInitializers;
@@ -224,6 +229,14 @@ namespace Ramsey.UI
         }
 
 
+        public void Draw()
+        {
+            builderSelect.Draw();
+            painterSelect.Draw();
+
+            TextRenderer.Draw(builderSelect.KnobPos + float2(5, +2), $"Painter = {painterInitializers[painterSelect.CurrentTick].Name}");
+            TextRenderer.Draw(builderSelect.KnobPos + float2(5, -2), $"Builder = {builderInitializers[builderSelect.CurrentTick].Name}");
+        }
     }
 
     internal class WheelSelect
@@ -256,7 +269,7 @@ namespace Ramsey.UI
             this.knobSize = knobSize;
 
             //
-            material = new(Shader.Find("Unlit/UIShaders/WheelShader"));
+            material = new(Shader.Find("Unlit/UIShaders/WheelSelect"));
 
             material.SetVector("_Color", Color.white);
             material.SetFloat("_Radius", radius);
@@ -299,6 +312,7 @@ namespace Ramsey.UI
         {
 
             material.SetInt("_NodeLocation", CurrentTick);
+
             Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.WheelSelectTransform.localToWorldMatrix, UnityReferences.WheelMaterial, UnityReferences.BoardLayer);
 
         }

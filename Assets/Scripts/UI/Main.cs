@@ -55,7 +55,7 @@ namespace Ramsey
 
             Game = new GameManager(Board)
             {
-                Delay = 0.2f
+                Delay = 0.0f
             };
             
             CameraManager.Create(screenCamera, boardCamera);
@@ -68,8 +68,12 @@ namespace Ramsey
 
         void Update()
         {
+            TextRenderer.Begin();
+
             var input = InputManager.Update();
             IBehavior.Active.Loop(input);
+            
+            TextRenderer.End();
         }
 
         void OnDestroy() 
