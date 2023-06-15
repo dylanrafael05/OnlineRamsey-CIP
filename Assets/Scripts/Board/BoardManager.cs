@@ -122,11 +122,16 @@ namespace Ramsey.Board
             gameState.GraphTooComplex = true;
         }
 
-        public void Render()
+        public void RenderBoard()
+        {
+            renderManager.ActionInterface.RenderBoard();
+        }
+        public void RenderUI()
         {
             RenderIO.SetLoading(graphManager.IsAwaitingPathTask);
-            renderManager.ActionInterface.Update();
+            renderManager.ActionInterface.RenderUI();
         }
+
         public void Cleanup()
         {
             renderManager.ActionInterface.Cleanup();
@@ -136,6 +141,11 @@ namespace Ramsey.Board
         {
             graphManager.Clear();
             renderManager.IOInterface.Clear();
+        }
+
+        public void ClearScreen()
+        {
+            renderManager.IOInterface.ClearScreen();
         }
 
         public void IterateThroughNodes(Action<Node> action)
@@ -163,7 +173,7 @@ namespace Ramsey.Board
 
         public void StartGame(int pathLength)
         {
-            graphManager.Clear();
+            Clear();
 
             gameState.GraphTooComplex = false;
             gameState.MaxPaths = new List<IPath>();

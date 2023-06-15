@@ -67,5 +67,11 @@ namespace Ramsey.Drawing
                 texts[i].gameObject.SetActive(false);
             }
         }
+
+        public static void ClearAll()
+        {
+            Begin();
+            End();
+        }
     }
 }

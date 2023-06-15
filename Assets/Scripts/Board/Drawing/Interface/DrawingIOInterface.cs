@@ -139,6 +139,11 @@ namespace Ramsey.Drawing
             data.NodeHighlights.Clear();
         }
 
+        public void ClearScreen()
+        {
+            TextRenderer.ClearAll();
+        }
+
         public DrawState CreateDrawState()
             => data.CreateState();
     }

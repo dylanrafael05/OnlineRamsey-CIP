@@ -47,9 +47,9 @@ namespace Ramsey.Graph.Experimental
 
             public bool Move(out byte value)
             {
-                index++;
                 var v = nl.innerArray[index];
                 value = (byte)v;
+                index++;
                 return v >= 0;
             }
         }

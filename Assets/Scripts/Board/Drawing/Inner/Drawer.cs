@@ -42,9 +42,6 @@ namespace Ramsey.Drawing
             UpdateEdgeBuffer();
             UpdateNodeBuffer();
 
-            // Setup canvas rendering
-            Canvas.preWillRenderCanvases += DrawUI;
-
         }
 
         public void UpdateAll(DrawingStorage storage)
@@ -141,8 +138,6 @@ namespace Ramsey.Drawing
 
             // nodePositionBuffer.Dispose();
             // nodeHighlightBuffer.Dispose();
-
-            Canvas.preWillRenderCanvases -= DrawUI;
         }
 
     }

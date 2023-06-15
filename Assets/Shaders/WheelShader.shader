@@ -92,6 +92,8 @@ Shader "Unlit/UIShaders/WheelSelect"
                 exists = step(0.01, exists);
                 return exists * _Color;
 
+                return float4(0., 0., 0., 0.);
+
             }
             ENDCG
         }

@@ -16,14 +16,8 @@ namespace Ramsey.Screen
         public static float2 BoardSize => insBoardCamera.pixelRect.size;
         public static float2 ScreenSize => insScreenCamera.pixelRect.size;
 
-        Camera screenCamera;
-        Camera boardCamera;
-
-        public CameraManager(Camera screenCamera, Camera boardCamera)
+        public static void Create(Camera screenCamera, Camera boardCamera)
         {
-            this.screenCamera = screenCamera;
-            this.boardCamera = boardCamera;
-
             //
             insBoardCamera ??= boardCamera;
             insScreenCamera ??= screenCamera;

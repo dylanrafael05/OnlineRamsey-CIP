@@ -6,6 +6,7 @@ using Ramsey.Board;
 using Ramsey.Gameplayer;
 using Ramsey.Graph;
 using Ramsey.Utilities;
+using Ramsey.Visualization;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -50,6 +51,19 @@ namespace Ramsey.UI
             StartGame(target, builder, painter);
             RunUntilDone();
             return GetMatchupData();
+        }
+        
+        public MatchupData SimulateGames(int startTarget, int endTarget, int step, Builder builder, Painter painter)
+        {
+            MatchupData matchupData = new() { data = new() };
+
+            for(int t = startTarget; t <= endTarget; t += step)
+            {
+                var s = SimulateGame(t, builder, painter);
+                if(s is int2 i) matchupData.data.Add(i);
+            }
+
+            return matchupData;
         }
 
         public GameManager(BoardManager board)
@@ -139,9 +153,14 @@ namespace Ramsey.UI
             }
         }
 
-        public void Render() 
+        public void RenderBoard() 
         {
-            board.Render();
+            board.RenderBoard();
+        }
+        
+        public void RenderUI() 
+        {
+            board.RenderBoard();
         }
 
         public int2? GetMatchupData()
