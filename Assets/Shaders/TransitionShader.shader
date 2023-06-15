@@ -39,7 +39,7 @@ Shader "Unlit/Screen/Transition"
 
             float _Progress;
 
-            #define SCL 0.005f
+            #define SCL 0.003f
             #define PI 3.1415926535f
             #define TAU (PI * 2)
 
@@ -63,14 +63,10 @@ Shader "Unlit/Screen/Transition"
 
             fixed4 frag (vOut i) : SV_Target
             {
-                float f = pow(_Progress, 1.);
+                float2 uvs = abs(fmod(i.uv, SCL) / SCL * 2. - 1.);
+                float f = pow(_Progress, 2.);
 
-                float2 uv = abs(fmod(i.uv, SCL) / SCL * 2. - 1.);
-                float2 uvs = rotate(uv, f * TAU);
-
-                // return float4(0.,0.,0.,0.);
-
-                return float4(0.,0.,0.,1.) * step(max(uvs.x, uvs.y), f);
+                return float4(0.,0.,0.,1.) * step(length(uvs), f * sqrt(2.) * 1.1);
             }
 
             ENDCG
