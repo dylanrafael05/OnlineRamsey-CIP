@@ -71,9 +71,11 @@ Shader "Unlit/UIShaders/WheelShader"
 
                 // Ticks
                 float partitionSize = 2. * PI / float(_TickCount); //TODO: test without conversion
-                float2 polar = float2(length(i.uv), fmod(atan2(i.uv.y, i.uv.x) + 2. * PI));
+                float2 polar = float2(length(i.uv), fmod(atan2(i.uv.y, i.uv.x) + 2. * PI, 2. * PI));
 
                 float rtheta = fmod(polar.y, partitionSize) - partitionSize * .5 + PI * .5;
+
+                return float4(0., 0., 0., 0.);
 
             }
             ENDCG

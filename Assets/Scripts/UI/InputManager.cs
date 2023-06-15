@@ -61,6 +61,8 @@ namespace Ramsey.UI
             data.lkd = Input.GetKeyDown(KeyCode.LeftArrow);
             data.rkd = Input.GetKeyDown(KeyCode.RightArrow);
 
+            data.escape = Input.GetKeyDown(KeyCode.Escape);
+
             data.recorderToggled = Input.GetKeyDown(KeyCode.R);
 
             if (board is null) return data;
@@ -87,6 +89,8 @@ namespace Ramsey.UI
         public bool alt; public bool shift;
 
         public bool lkd; public bool rkd; //[Left, Right] Key Down
+
+        public bool escape;
 
         public bool recorderToggled;
 

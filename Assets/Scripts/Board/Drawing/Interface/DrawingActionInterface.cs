@@ -15,8 +15,10 @@ namespace Ramsey.Drawing
         { this.drawer = drawer; this.data = data; }
 
         //
-        public void Update()
+        public void RenderBoard()
             => drawer.DrawBoard();
+        public void RenderUI()
+            => drawer.DrawUI();
 
         public void Cleanup()
             => drawer.Cleanup();

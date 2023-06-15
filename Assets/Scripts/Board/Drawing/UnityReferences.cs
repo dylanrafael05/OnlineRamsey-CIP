@@ -14,6 +14,7 @@ namespace Ramsey.Drawing
         public static Text GoalText { get; private set; }
         public static Text TurnText { get; private set; }
         public static Text OverText { get; private set; }
+        public static Text ConfirmMenuText { get; private set; }
         public static MeshRenderer BackgroundRenderer { get; private set; }
 
         public static Material EdgeMaterial { get; private set; }
@@ -37,8 +38,12 @@ namespace Ramsey.Drawing
             GoalText = GameObject.Find("Goal Text").GetComponent<Text>();
             TurnText = GameObject.Find("Turn Text").GetComponent<Text>();
             OverText = GameObject.Find("Over Text").GetComponent<Text>();
+            ConfirmMenuText = GameObject.Find("Confirm Leave").GetComponent<Text>();
 
+            GoalText.gameObject.SetActive(false);
+            TurnText.gameObject.SetActive(false);
             OverText.gameObject.SetActive(false);
+            ConfirmMenuText.gameObject.SetActive(false);
 
             EdgeMaterial = new(Shader.Find("Unlit/GraphShaders/EdgeShader"));
             NodeMaterial = new(Shader.Find("Unlit/GraphShaders/NodeShader"));

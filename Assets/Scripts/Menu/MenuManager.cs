@@ -71,7 +71,7 @@ namespace Ramsey.Menu
         public void Draw()
         {
 
-            Graphics.DrawMesh(Ramsey.Drawing.)
+            // Graphics.DrawMesh(Ramsey.Drawing.)
 
         }
 
