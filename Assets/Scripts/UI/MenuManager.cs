@@ -93,6 +93,8 @@ namespace Ramsey.UI
         void SetupTextInputs(float2 knobPos, float inputDistance);
         T Initialize();
 
+        bool InputIsValid();
+
         string Name { get; }
     }
 
@@ -191,7 +193,6 @@ namespace Ramsey.UI
 
     public class MenuManager
     {
-
         IReadOnlyList<IStrategyInitializer<Builder>> builderInitializers;
         IReadOnlyList<IStrategyInitializer<Painter>> painterInitializers;
 
@@ -233,6 +234,13 @@ namespace Ramsey.UI
             }
         }
 
+        public IStrategyInitializer<Builder> BuilderInit => builderInitializers[builderSelect.CurrentTick];
+        public IStrategyInitializer<Painter> PainterInit => painterInitializers[painterSelect.CurrentTick];
+
+        public bool ValidParameters => BuilderInit.InputIsValid() && PainterInit.InputIsValid();
+
+        public Builder Builder => BuilderInit.Initialize();
+        public Painter Painter => PainterInit.Initialize();
 
         public void Draw()
         {
