@@ -61,7 +61,7 @@ namespace Ramsey
             CameraManager.Create(screenCamera, boardCamera);
 
             GameBehaviour = new();
-            MenuBehavior = new(new GraphPreferences {});
+            MenuBehavior = new(new GraphPreferences(new(5), new(1), new(), new(10), Color.black, .1f) {});
 
             IBehavior.SwitchTo(MenuBehavior);
         }

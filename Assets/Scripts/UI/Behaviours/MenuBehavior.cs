@@ -12,15 +12,17 @@ namespace Ramsey.UI
     {
         //
         Visualizer visualizer;
+        bool visualizing = false;
 
         DropdownWrapper<Painter> painter;
         DropdownWrapper<Builder> builder;
 
         Button startRealtimeGameButton;
+        Button startBulkGameButton;
 
         public MenuBehavior(GraphPreferences graphPreferences)
         {
-            visualizer = new(CameraManager.BoardCamera, graphPreferences);
+            visualizer = new(CameraManager.ScreenCamera, graphPreferences);
 
             var painterObj = GameObject.Find("Painter Select").GetComponent<Dropdown>();
             var builderObj = GameObject.Find("Builder Select").GetComponent<Dropdown>();
@@ -35,12 +37,20 @@ namespace Ramsey.UI
                 ("Random", () => new RandomBuilder(0.5f, 0.4f, 0.1f))
             );
 
-            startRealtimeGameButton = GameObject.Find("Enter Game").GetComponent<Button>();
+            startRealtimeGameButton = GameObject.Find("Enter Realtime Game").GetComponent<Button>();
+            startBulkGameButton = GameObject.Find("Enter Bulk Game").GetComponent<Button>();
 
             startRealtimeGameButton.onClick.AddListener(() => 
             {
+                visualizing = false;
                 Main.GameBehaviour.StartGame(10, builder.Selected, painter.Selected);
                 IBehavior.SwitchTo(Main.GameBehaviour);
+            });
+
+            startBulkGameButton.onClick.AddListener(() =>
+            {
+                visualizing = true;
+                InitAfterGather(Main.Game.SimulateGames(0, 20, 1, builder.Selected, painter.Selected));
             });
         }
 
@@ -51,7 +61,7 @@ namespace Ramsey.UI
 
         public void InitAfterRealtime(int2 gameData)
         {
-
+            
         }
 
         public void InitAfterGather(MatchupData data)
@@ -61,6 +71,9 @@ namespace Ramsey.UI
 
         public override void Loop(InputData input)
         {
+
+            if (visualizing) visualizer.Draw();
+
         }
 
         public override void OnEnter()

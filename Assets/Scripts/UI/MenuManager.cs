@@ -164,7 +164,6 @@ namespace Ramsey.UI
     public class MenuManager
     {
 
-
         IReadOnlyList<IStrategyInitializer<Builder>> builderInitializers;
         IReadOnlyList<IStrategyInitializer<Painter>> painterInitializers;
 

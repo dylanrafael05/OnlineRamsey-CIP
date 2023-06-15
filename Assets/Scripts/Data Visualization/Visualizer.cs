@@ -38,11 +38,14 @@ namespace Ramsey.Visualization
         
         public float drawSize;
 
-        public Matrix4x4 GetCurveMatrix()
+        /*public Matrix4x4 GetCurveMatrix()
             => Matrix4x4.TRS((position+.5f*thickness).xyz(Visualizer.Depth), Quaternion.identity, Vector3.one);
 
         public Matrix4x4 GetGraphMatrix()
-            => Matrix4x4.TRS((position).xyz(Visualizer.Depth), Quaternion.identity, drawSize * Vector3.one);
+            => Matrix4x4.TRS((position).xyz(Visualizer.Depth), Quaternion.identity, drawSize * Vector3.one);*/
+
+        public Matrix4x4 GetCurveOffsetMatrix()
+            => Matrix4x4.Translate(new float3(.5f * thickness));
 
         public float2 PartitionSize
             => 2f * (axisScale) / (float2) tickCount;
@@ -125,7 +128,7 @@ namespace Ramsey.Visualization
         { this.graphPrefs = graphPrefs; Utils.ForLength(curves.Count, (i) => curves[i] = (curves[i].Item1, GetCurveMaterial(curves[i].Item2, graphPrefs))); }
 
         float zoom = 8f;
-        public void UpdateInput(float dt, float change, float2 mouse) //need to organize and stuff
+        public void UpdateInput(float dt, float change, float2 mouse) //TODO: use the new matrix system, inverse mat with z = same plane or smth
         {
             zoom += math.step(math.abs(mouse - (graphPrefs.position + graphPrefs.drawSize * .5f)), graphPrefs.drawSize*.5f).mul() != 0 ? change * dt : 0f;
             graphPrefs.tickCount = (int)zoom;
@@ -135,10 +138,10 @@ namespace Ramsey.Visualization
         public void Draw()
         {
 
-            Matrix4x4 curveMatrix = graphPrefs.GetCurveMatrix();
+            Matrix4x4 curveMatrix = UnityReferences.VisualizerGraphTransform.localToWorldMatrix * graphPrefs.GetCurveOffsetMatrix();
 
             //Draw Graph
-            Graphics.DrawMesh(MeshUtils.QuadMesh, graphPrefs.GetGraphMatrix(), graphPrefs.GetMaterial(), layer); 
+            Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.VisualizerGraphTransform.localToWorldMatrix, graphPrefs.GetMaterial(), layer); 
 
             //Draw Curves
             curves.ForEach(tup =>
