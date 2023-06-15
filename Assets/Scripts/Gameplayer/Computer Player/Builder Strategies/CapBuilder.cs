@@ -12,7 +12,6 @@ using static Ramsey.Gameplayer.BuilderUtils;
 
 public class CapBuilder : Builder
 {
-
     public CapBuilder(GameState state)
         => sequenceNavigator = new(new List<IEnumerable<BuilderMove>>() { InitialTree(state), LoopTree(state) });
 
