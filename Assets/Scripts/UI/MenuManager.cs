@@ -40,7 +40,7 @@ namespace Ramsey.UI
 
         float inputDistance;
         
-        public MenuManager(List<IStrategyInitializer<Builder>> builderInitializers, List<IStrategyInitializer<Painter>> painterInitializers, float2 tickDim, float drawSize = 1f, float inputDistance = .2f, float wheelRadiusBuilder = 1f, float wheelRadiusPainter = 0.7f, float wheelThickness = .2f, float knobRadius = .1f)
+        public MenuManager(List<IStrategyInitializer<Builder>> builderInitializers, List<IStrategyInitializer<Painter>> painterInitializers, float2? tickDim = null, float drawSize = 1f, float inputDistance = .2f, float wheelRadiusBuilder = 1f, float wheelRadiusPainter = 0.7f, float wheelThickness = .2f, float knobRadius = .1f)
         {
             this.builderInitializers = builderInitializers;
             this.painterInitializers = painterInitializers;
@@ -100,7 +100,7 @@ namespace Ramsey.UI
         //
         Material material;
 
-        public WheelSelect(float radius, float wheelThickness, float2 tickDim, int tickCount, float knobSize, float tickCollisionSize = 0.1f)
+        public WheelSelect(float radius, float wheelThickness, float2? tickDim, int tickCount, float knobSize, float tickCollisionSize = 0.1f)
         {
             this.radius = radius;
             this.wheelThickness = wheelThickness;
@@ -115,7 +115,7 @@ namespace Ramsey.UI
             material.SetFloat("_Radius", radius);
 
             material.SetInt("_TickCount", tickCount);
-            material.SetVector("_TickDim", tickDim.xyzw());
+            if(tickDim != null) material.SetVector("_TickDim", tickDim.xyzw());
 
             material.SetFloat("_NodeRadius", knobSize);
         }
