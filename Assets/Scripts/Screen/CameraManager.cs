@@ -10,6 +10,7 @@ namespace Ramsey.Screen
     public class CameraManager
     {
         public static Camera BoardCamera => insBoardCamera;
+        public static Camera ScreenCamera => insScreenCamera;
         static Camera insBoardCamera;
         static Camera insScreenCamera;
 

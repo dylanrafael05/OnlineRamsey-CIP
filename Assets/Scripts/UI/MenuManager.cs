@@ -25,13 +25,12 @@ namespace Ramsey.UI
     public interface IStrategyInitializer<T> where T : IPlayer
     {
         StrategyParameter[] Params { get; set; }
-        T Initialize(StrategyParameter[] filledParams);
+        T Initialize();
         static void Fail(string message) => Debug.Log("Strategy Failed to Initialize - Message: " + message);
     }
 
     public class MenuManager
     {
-
 
         IReadOnlyList<IStrategyInitializer<Builder>> builderInitializers;
         IReadOnlyList<IStrategyInitializer<Painter>> painterInitializers;
