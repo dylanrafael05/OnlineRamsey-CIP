@@ -16,12 +16,14 @@ namespace Ramsey.Drawing
         public static Text OverText { get; private set; }
         public static Text ConfirmMenuText { get; private set; }
         public static MeshRenderer BackgroundRenderer { get; private set; }
+        public static MeshRenderer TransitionRenderer { get; private set; }
 
         public static Material EdgeMaterial { get; private set; }
         public static Material NodeMaterial { get; private set; }
         public static Material RecorderMaterial { get; private set; }
         public static Material LoadingMaterial { get; private set; }
         public static Material ScreenMaterial { get; private set; }
+        public static Material TransitionMaterial { get; private set; }
         public static Material BackgroundMaterial { get; private set; }
         public static Material WheelMaterial { get; private set; }
 
@@ -54,7 +56,9 @@ namespace Ramsey.Drawing
             LoadingMaterial = new(Shader.Find("Unlit/UIShaders/LoadingCircle"));
             ScreenMaterial = new(Shader.Find("Unlit/Fullscreen/Pulse"));
             BackgroundMaterial = new(Shader.Find("Unlit/Screen/Background"));
+
             WheelMaterial = new(Shader.Find("Unlit/UIShaders/WheelSelect"));
+            TransitionMaterial = new(Shader.Find("Unlit/Screen/Transition"));
 
             EdgeMaterial.enableInstancing = true;
             NodeMaterial.enableInstancing = true;
@@ -63,6 +67,9 @@ namespace Ramsey.Drawing
             BackgroundRenderer.material = BackgroundMaterial;
 
             BoardLayer = LayerMask.NameToLayer("Board");
+
+            TransitionRenderer = GameObject.Find("Transition").GetComponent<MeshRenderer>();
+            TransitionRenderer.material = TransitionMaterial;
         }
     }
 }
