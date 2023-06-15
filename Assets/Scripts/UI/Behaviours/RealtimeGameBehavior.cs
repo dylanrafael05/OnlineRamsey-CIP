@@ -82,5 +82,10 @@ namespace Ramsey.UI
             
             Canvas.willRenderCanvases -= Main.Game.RenderUI;
         }
+
+        public override void OnCleanup()
+        {
+            Canvas.willRenderCanvases -= Main.Game.RenderUI;
+        }
     }
 }

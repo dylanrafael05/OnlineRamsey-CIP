@@ -12,7 +12,7 @@ namespace Ramsey.UI
 
         public static void Cleanup()
         {
-            Active?.OnExit();
+            Active?.OnCleanup();
         }
 
         static IBehavior Active { get; private set; }
@@ -21,5 +21,6 @@ namespace Ramsey.UI
 
         void OnEnter();
         void OnExit();
+        void OnCleanup();
     }
 }
