@@ -16,7 +16,7 @@ namespace Ramsey.UI
         DropdownWrapper<Painter> painter;
         DropdownWrapper<Builder> builder;
 
-        Button game;
+        Button startRealtimeGameButton;
 
         public MenuBehavior(GraphPreferences graphPreferences)
         {
@@ -35,9 +35,9 @@ namespace Ramsey.UI
                 ("Random", () => new RandomBuilder(0.5f, 0.4f, 0.1f))
             );
 
-            game = GameObject.Find("Enter Game").GetComponent<Button>();
+            startRealtimeGameButton = GameObject.Find("Enter Game").GetComponent<Button>();
 
-            game.onClick.AddListener(() => 
+            startRealtimeGameButton.onClick.AddListener(() => 
             {
                 Main.GameBehaviour.StartGame(10, builder.Selected, painter.Selected);
                 IBehavior.SwitchTo(Main.GameBehaviour);
@@ -68,7 +68,7 @@ namespace Ramsey.UI
             painter.UI.gameObject.SetActive(true);
             builder.UI.gameObject.SetActive(true);
 
-            game.gameObject.SetActive(true);
+            startRealtimeGameButton.gameObject.SetActive(true);
         }
 
         public override void OnExit()
@@ -76,7 +76,7 @@ namespace Ramsey.UI
             painter.UI.gameObject.SetActive(false);
             builder.UI.gameObject.SetActive(false);
 
-            game.gameObject.SetActive(false);
+            startRealtimeGameButton.gameObject.SetActive(false);
         }
     }
 }
