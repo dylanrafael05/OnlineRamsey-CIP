@@ -34,7 +34,7 @@ namespace Ramsey.UI
                     StrategyInitializer.For<RandomBuilder>(o => new((float)o[0], (float)o[1], (float)o[2]), 
                         new TextParameter { Name = "Pendant Weight",  Verifier = new IParameterVerifier.Float(0, 1) },
                         new TextParameter { Name = "Internal Weight", Verifier = new IParameterVerifier.Float(0, 1) },
-                        new TextParameter { Name = "Isoalted Weight", Verifier = new IParameterVerifier.Float(0, 1) }
+                        new TextParameter { Name = "Isolated Weight", Verifier = new IParameterVerifier.Float(0, 1) }
                     ),
                     StrategyInitializer.For<ConstrainedRandomBuilder>(o => new((int)o[0]), 
                         new TextParameter { Name = "Node Count", Verifier = new IParameterVerifier.Integer(0) }
