@@ -1,6 +1,6 @@
 // Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
-Shader "Unlit/Screen/Background"
+Shader "Unlit/Screen/MenuBackground"
 {
     Properties
     {
@@ -23,7 +23,6 @@ Shader "Unlit/Screen/Background"
             #pragma fragment frag
 
             #include "UnityCG.cginc"
-            #include "Common.hlsl"
 
             struct vIn
             {
@@ -85,9 +84,7 @@ Shader "Unlit/Screen/Background"
                 float2 uv = (fmod(i.uv + SCL * SCROLL * dir, SCL) / SCL) * 2.f - 1.f;
                 uv = rotate(uv, _Time.x);
 
-                float2 id = i.uv - SCL*(uv*.5+.5);
-                float wave = sin(_Time.y*2.+dot(50.*float2(1.,1.), id))*.5+.5;
-                float r = 1.f - (_SinTime.y*_SinTime.y) * 0.2f*0. - .3* wave;
+                float r = 1.f - (_SinTime.y*_SinTime.y) * 0.2f;
 
                 float s = mixsdf(
                     circle(uv, r),
