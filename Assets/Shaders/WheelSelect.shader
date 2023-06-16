@@ -2,7 +2,8 @@ Shader "Unlit/UIShaders/WheelSelect"
 {
     Properties
     {
-        _Color ("Color", Color) = (1., 1., 1., 1.)
+        _BaseColor ("Base Color", Color) = (1., 1., 0.6, 1.)
+        _NodeColor ("Node Color", Color) = (1., 1., 1., 1.)
 
         _WheelRadius ("Radius", Float) = 1.
         _WheelThickness ("Wheel Thickness", Float) = 0.3
@@ -44,7 +45,8 @@ Shader "Unlit/UIShaders/WheelSelect"
 
             #define PI 3.1415926
 
-            float4 _Color;
+            float4 _BaseColor;
+            float4 _NodeColor;
 
             float _WheelRadius;
             float _WheelThickness;
@@ -90,9 +92,7 @@ Shader "Unlit/UIShaders/WheelSelect"
 
                 // Composite
                 exists = step(0.01, exists);
-                return exists * _Color;
-
-                return float4(0., 0., 0., 0.);
+                return exists * (isNode * _NodeColor + (1 - isNode) * _BaseColor);
 
             }
             ENDCG

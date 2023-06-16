@@ -34,7 +34,7 @@ namespace Ramsey.UI
                         new TextParameter { Name = "Isolated Weight", Verifier = new IParameterVerifier.Float(0, 1) }
                     ),
                     StrategyInitializer.For<ConstrainedRandomBuilder>(o => new((int)o[0]), 
-                        new TextParameter { Name = "Node Count", Verifier = new IParameterVerifier.Integer(0) }
+                        new TextParameter { Name = "Node Count", Verifier = new IParameterVerifier.Integer(0, 40) }
                     )
                 }, 
                 new() 
@@ -77,7 +77,7 @@ namespace Ramsey.UI
                 if(!menu.ValidParameters) return;
 
                 visualizing = true;
-                InitAfterGather(Main.Game.SimulateMany(1, 30, 1, menu.Builder, menu.Painter));
+                InitAfterGather(Main.Game.SimulateMany(1, 10, 1, menu.Builder, menu.Painter, 30));
             });
         }
 
@@ -93,7 +93,8 @@ namespace Ramsey.UI
 
         public void InitAfterGather(MatchupData data)
         {
-            visualizer.AddCurve(data, new() { lineThickness = 1f, color = Color.red });
+            Debug.Log(data.Count);
+            visualizer.AddCurve(data, new() { lineThickness = 0.5f, color = Color.red }, 1);
         }
 
         public override void Loop(InputData input)
@@ -106,20 +107,18 @@ namespace Ramsey.UI
 
         public override void OnEnter()
         {
-            // painter.UI.gameObject.SetActive(true);
-            // builder.UI.gameObject.SetActive(true);
-
             startRealtimeGameButton.gameObject.SetActive(true);
             startBulkGameButton.gameObject.SetActive(true);
+
+            menu.ShowActiveTextInputs();
         }
 
         public override void OnExit()
         {
-            // painter.UI.gameObject.SetActive(false);
-            // builder.UI.gameObject.SetActive(false);
-
             startRealtimeGameButton.gameObject.SetActive(false);
             startBulkGameButton.gameObject.SetActive(false);
+
+            menu.HideAllTextInputs();
         }
     }
 }

@@ -1,6 +1,7 @@
 using Ramsey.Graph;
 using Ramsey.Board;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Ramsey.Gameplayer
 {
@@ -12,6 +13,8 @@ namespace Ramsey.Gameplayer
                 new(gameState.NewestEdge, gameState.TurnNum % 2) 
             );
         }
+
+        public override void Reset() {}
     }
 
     public class LengthyPainter : Painter
@@ -19,8 +22,10 @@ namespace Ramsey.Gameplayer
         public override Task<PainterMove> GetMove(GameState gameState)
         {
             return Task.FromResult<PainterMove>(
-                new(gameState.NewestEdge, (gameState.TurnNum / (gameState.TargetPathLength - 1)) % 2) 
+                new(gameState.NewestEdge, gameState.TurnNum / Mathf.Max(gameState.TargetPathLength - 1, 1) % 2) 
             );
         }
+        
+        public override void Reset() {}
     }
 }

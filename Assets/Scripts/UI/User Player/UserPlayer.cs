@@ -22,6 +22,8 @@ namespace Ramsey.Gameplayer
             return new BuilderMove(currNode, prevNode);
         }
 
+        public override void Reset() {}
+
         //
         Node prevNode;
         Node currNode;
@@ -68,6 +70,8 @@ namespace Ramsey.Gameplayer
 
             return new PainterMove(currEdge, currEdgeType);
         }
+
+        public override void Reset() {}
 
         //
         Edge currEdge;

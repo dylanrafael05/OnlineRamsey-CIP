@@ -16,5 +16,7 @@ namespace Ramsey.Gameplayer
                 new(gameState.NewestEdge, Random.Range(0, 2))
             );
         }
+        
+        public override void Reset() {}
     }
 }

@@ -16,6 +16,8 @@ namespace Ramsey.Gameplayer
         bool IsAutomated { get; }
 
         Task<IMove> GetMove(GameState gameState);
+
+        void Reset();
     }
 
     public abstract class Builder : IPlayer
@@ -31,6 +33,7 @@ namespace Ramsey.Gameplayer
         }
 
         public abstract Task<BuilderMove> GetMove(GameState gameState);
+        public abstract void Reset();
     }
 
     public abstract class Painter : IPlayer
@@ -46,5 +49,6 @@ namespace Ramsey.Gameplayer
         }
 
         public abstract Task<PainterMove> GetMove(GameState gameState);
+        public abstract void Reset();
     }
 }

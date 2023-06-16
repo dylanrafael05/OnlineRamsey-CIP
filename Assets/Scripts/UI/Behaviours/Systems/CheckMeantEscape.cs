@@ -39,7 +39,7 @@ namespace Ramsey.UI
                 coro = null;
             }
 
-            if(coro is null) coro = Coroutines.StartCoroutine(CheckMeantEscape);
+            if(coro is null) coro = Coroutines.Start(CheckMeantEscape);
         }
     }
 }

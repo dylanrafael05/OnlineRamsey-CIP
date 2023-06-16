@@ -19,7 +19,7 @@ namespace Ramsey.UI
 {
     public interface IParameterVerifier
     {
-        bool IsValid(string str);
+        bool IsValid(string str, out string reason);
         object Parse(string str);
 
         public class Float : IParameterVerifier
@@ -33,15 +33,26 @@ namespace Ramsey.UI
             public float? Min { get; }
             public float? Max { get; }
 
-            public bool IsValid(string str) 
+            public bool IsValid(string str, out string reason) 
             {
+                reason = null;
+
                 if(!float.TryParse(str, out var val))
                 {
+                    reason = "Invalid number";
                     return false;
                 }
 
-                if(Min != null && val < Min) return false;
-                if(Max != null && val > Max) return false;
+                if(Min != null && val < Min) 
+                {
+                    reason = "Must be greater than " + Min;
+                    return false;
+                }
+                if(Max != null && val > Max) 
+                {
+                    reason = "Must be less than " + Max;
+                    return false;
+                }
 
                 return true;
             }
@@ -61,15 +72,26 @@ namespace Ramsey.UI
             public int? Min { get; }
             public int? Max { get; }
 
-            public bool IsValid(string str) 
+            public bool IsValid(string str, out string reason) 
             {
+                reason = null;
+
                 if(!int.TryParse(str, out var val))
                 {
+                    reason = "Invalid number";
                     return false;
                 }
 
-                if(Min != null && val < Min) return false;
-                if(Max != null && val > Max) return false;
+                if(Min != null && val < Min) 
+                {
+                    reason = "Must be greater than " + Min;
+                    return false;
+                }
+                if(Max != null && val > Max) 
+                {
+                    reason = "Must be less than " + Max;
+                    return false;
+                }
 
                 return true;
             }
@@ -81,8 +103,8 @@ namespace Ramsey.UI
 
     public struct TextParameter
     {
-        public string Name;
-        public IParameterVerifier Verifier;
+        public string Name { get; set; }
+        public IParameterVerifier Verifier { get; set; }
     }
 
     public interface IStrategyInitializer<out T> where T : IPlayer
@@ -90,7 +112,9 @@ namespace Ramsey.UI
         IReadOnlyList<TextParameter> Parameters { get; }
         IReadOnlyList<TextInput> TextInputs { get; }
 
-        void SetupTextInputs(float2 knobPos, float inputDistance);
+        void ShowTextInputs(float2 knobPos, float inputDistance);
+        void HideTextInputs();
+
         T Initialize();
 
         bool InputIsValid();
@@ -118,7 +142,13 @@ namespace Ramsey.UI
             Parameters = parameters;
             Construct = construct;
 
-            Name = string.Join(' ', Regex.Split(typeof(T).Name, @"[A-Z]?[a-z0-9]+"));
+            Name = string.Join(
+                ' ', 
+                Regex.Replace(typeof(T).Name, @"[A-Z][a-z0-9]+", m => m.Value + " ")
+                    .TrimEnd()
+                    .Split(' ')
+                    .SkipLast(1)
+            );
         }
 
         public IReadOnlyList<TextParameter> Parameters { get; }
@@ -127,20 +157,21 @@ namespace Ramsey.UI
         private TextInput[] inputs;
         public IReadOnlyList<TextInput> TextInputs => inputs;
 
-        public void SetupTextInputs(float2 knobPos, float inputDistance)
+        public void ShowTextInputs(float2 knobPos, float inputDistance)
         {
             if(inputs is null)
             {
                 inputs = Parameters.Select((param, i) => 
                 {
                     var textbox = Textboxes.CreateTextbox(knobPos + float2(inputDistance, i * 1f * MathUtils.TAU / Parameters.Count).ToCartesian(), float2(1f));
-                    textbox.text = param.Name;
+                    textbox.SetPlaceholder(param.Name);
 
                     textbox.onEndEdit.AddListener(str => 
                     {
-                        if(!param.Verifier.IsValid(str)) 
+                        if(!param.Verifier.IsValid(str, out var reason)) 
                         {
                             textbox.textComponent.color = Color.red;
+                            textbox.text = reason;
                         }
                         else 
                         {
@@ -156,11 +187,18 @@ namespace Ramsey.UI
                 i.gameObject.SetActive(true);
         }
 
+        public void HideTextInputs()
+        {
+            if(inputs != null)
+                foreach(var i in inputs)
+                    i.gameObject.SetActive(false);
+        }
+
         public bool InputIsValid()
         {
             for(int i = 0; i < Parameters.Count; i++)
             {
-                if(!Parameters[i].Verifier.IsValid(TextInputs[i].text))
+                if(!Parameters[i].Verifier.IsValid(TextInputs[i].text, out _))
                 {
                     return false;
                 }
@@ -178,7 +216,7 @@ namespace Ramsey.UI
                 var v = Parameters[i].Verifier;
                 var t = TextInputs[i].text;
 
-                Assert.IsTrue(v.IsValid(t));
+                Assert.IsTrue(v.IsValid(t, out _));
                 
                 objs[i] = v.Parse(t);
             }
@@ -199,7 +237,7 @@ namespace Ramsey.UI
 
         float inputDistance;
         
-        public MenuManager(List<IStrategyInitializer<Builder>> builderInitializers, List<IStrategyInitializer<Painter>> painterInitializers, float2? tickDim = null, float drawSize = 1f, float inputDistance = .2f, float wheelRadiusBuilder = 0.5f, float wheelRadiusPainter = 0.2f, float wheelThickness = .05f, float knobRadius = .05f)
+        public MenuManager(List<IStrategyInitializer<Builder>> builderInitializers, List<IStrategyInitializer<Painter>> painterInitializers, float2? tickDim = null, float drawSize = 1f, float inputDistance = 1f, float wheelRadiusBuilder = 0.5f, float wheelRadiusPainter = 0.2f, float wheelThickness = .05f, float knobRadius = .05f)
         {
             this.builderInitializers = builderInitializers;
             this.painterInitializers = painterInitializers;
@@ -212,23 +250,21 @@ namespace Ramsey.UI
 
         public void UpdateWheels(InputData input)
         {
-            
             UpdateWheel(input, builderSelect, builderInitializers);
             UpdateWheel(input, painterSelect, painterInitializers);
-
         }
 
-        void UpdateWheel<T>(InputData input, WheelSelect wheel, IReadOnlyList<IStrategyInitializer<T>> initializers) where T : IPlayer
+        void UpdateWheel(InputData input, WheelSelect wheel, IReadOnlyList<IStrategyInitializer<IPlayer>> initializers)
         {
             int prev = wheel.CurrentTick;
             int curr = wheel.Update(input.mouse, input.lmb, input.lmbp);
 
             if(prev != curr)
             {
-                initializers[prev].TextInputs?.Foreach(sp => sp.gameObject.SetActive(false));
+                initializers[prev].HideTextInputs();
 
                 var knobPos = wheel.KnobPos;
-                initializers[curr].SetupTextInputs(knobPos, inputDistance);
+                initializers[curr].ShowTextInputs(knobPos, inputDistance);
             }
         }
 
@@ -248,6 +284,18 @@ namespace Ramsey.UI
             TextRenderer.Draw(builderSelect.KnobPos + float2(5, +2), $"Painter = {painterInitializers[painterSelect.CurrentTick].Name}");
             TextRenderer.Draw(builderSelect.KnobPos + float2(5, -2), $"Builder = {builderInitializers[builderSelect.CurrentTick].Name}");
         }
+
+        public void ShowActiveTextInputs()
+        {
+            BuilderInit.ShowTextInputs(builderSelect.KnobPos, inputDistance);
+            PainterInit.ShowTextInputs(painterSelect.KnobPos, inputDistance);
+        }
+
+        public void HideAllTextInputs()
+        {
+            foreach(var i in builderInitializers) i.HideTextInputs();
+            foreach(var i in painterInitializers) i.HideTextInputs();
+        }
     }
 
     internal class WheelSelect
@@ -265,7 +313,9 @@ namespace Ramsey.UI
 
         // Current
         public int CurrentTick { get; private set; }
-        public float2 KnobPos => float2(radius, CurrentTick * MathUtils.TAU / tickCount).ToCartesian();
+        public float2 KnobPos 
+            => UnityReferences.WheelSelectTransform.position.xy() 
+                + UnityReferences.WheelSelectTransform.lossyScale.xy() * float2(radius, (CurrentTick + .5f) * MathUtils.TAU / tickCount).ToCartesian();
         bool hasNode;
 
         //
@@ -303,8 +353,8 @@ namespace Ramsey.UI
         public int Update(float2 mouse, bool isDown, bool isPress)
         {
             //
-            hasNode |= hasNode && isDown;
             hasNode |= CollideKnob(mouse) && isPress;
+            hasNode &= isDown;
 
             if (!hasNode) return CurrentTick;
 

@@ -93,7 +93,10 @@ namespace Ramsey.Visualization
         public static float Depth = 1f;
 
         public Visualizer(Camera camera, GraphPreferences prefs)
-        { this.camera = camera; this.graphPrefs = prefs; }
+        { 
+            this.camera = camera; 
+            this.graphPrefs = prefs; 
+        }
 
         Camera camera;
 
@@ -125,9 +128,15 @@ namespace Ramsey.Visualization
             => curves[i] = (curves[i].Item1, GetCurveMaterial(curves[i].Item2, curvePrefs));
 
         void SetPreferences(GraphPreferences graphPrefs)
-        { this.graphPrefs = graphPrefs; Utils.ForLength(curves.Count, (i) => curves[i] = (curves[i].Item1, GetCurveMaterial(curves[i].Item2, graphPrefs))); }
+        { 
+            this.graphPrefs = graphPrefs; 
+            Utils.ForLength(curves.Count, i => 
+            {
+                curves[i] = (curves[i].Item1, GetCurveMaterial(curves[i].Item2, graphPrefs));
+            }); 
+        }
 
-        float zoom = 8f;
+        float zoom = 40f;
         public void UpdateInput(float dt, float change, float2 mouse) //TODO: use the new matrix system, inverse mat with z = same plane or smth
         {
             zoom += math.step(math.abs(mouse - (graphPrefs.position + graphPrefs.drawSize * .5f)), graphPrefs.drawSize*.5f).mul() != 0 ? change * dt : 0f;
@@ -138,16 +147,17 @@ namespace Ramsey.Visualization
         public void Draw()
         {
 
-            Matrix4x4 curveMatrix = UnityReferences.VisualizerGraphTransform.localToWorldMatrix * graphPrefs.GetCurveOffsetMatrix();
+            Matrix4x4 curveMatrix = graphPrefs.GetCurveOffsetMatrix() * UnityReferences.VisualizerGraphTransform.WorldMatrix();
 
             //Draw Graph
-            Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.VisualizerGraphTransform.localToWorldMatrix, graphPrefs.GetMaterial(), layer); 
+            Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.VisualizerGraphTransform.WorldMatrix(), graphPrefs.GetMaterial(), layer); 
 
             //Draw Curves
-            curves.ForEach(tup =>
+            foreach(var (mesh, mat) in curves)
             {
-                Graphics.DrawMesh(tup.Item1, curveMatrix, tup.Item2, layer, camera);
-            });
+                // Debug.Log("Pornography");
+                Graphics.DrawMesh(mesh, curveMatrix, mat, LayerMask.NameToLayer("Board"));
+            }
         }
 
     }

@@ -41,6 +41,9 @@ namespace Ramsey.UI
             InGame = true;
 
             currentTask = null;
+
+            builder.Reset();
+            painter.Reset();
         }
 
         public MatchupResult? SimulateGameOnce(int target, Builder builder, Painter painter) 
@@ -114,9 +117,7 @@ namespace Ramsey.UI
             {
                 if(player.IsAutomated && !synchronous) await Task.Delay((int)(Delay * 1000));
 
-                // TODO: how to handle these awaits while running syncronously?
-                // TODO: can we assume that these will always instant-return?
-                return await player.GetMove(board.GameState);
+                return await player.GetMove(board.GameState).AssertSync(synchronous);
             }
             
             // Repeat until move is valid
@@ -128,11 +129,11 @@ namespace Ramsey.UI
                 {
                     if(isBuilderTurn)
                     {
-                        move = await GetMove(builder);
+                        move = await GetMove(builder).AssertSync(synchronous);
                     }
                     else 
                     {
-                        move = await GetMove(painter);
+                        move = await GetMove(painter).AssertSync(synchronous);
                     }
                 }
                 catch(GraphTooComplexException) 
@@ -154,7 +155,7 @@ namespace Ramsey.UI
             }
 
             // Wait for path task to complete
-            if(!synchronous) await board.AwaitPathTask();
+            await board.AwaitPathTask().AssertSync(synchronous);
         }
 
         public void UpdateGameplay() 
@@ -175,13 +176,13 @@ namespace Ramsey.UI
         
         public void RenderUI() 
         {
-            board.RenderBoard();
+            board.RenderUI();
         }
 
         public MatchupResult? GetMatchupData()
         {
-            if(State.GraphTooComplex || InGame) return null;
-            return new(State.TurnNum, State.TargetPathLength);
+            if(State.GraphTooComplex) return null;
+            return new(State.TargetPathLength, State.TurnNum);
         }
 
         public void Cleanup()

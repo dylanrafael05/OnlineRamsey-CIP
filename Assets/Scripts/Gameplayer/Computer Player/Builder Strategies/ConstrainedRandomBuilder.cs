@@ -10,12 +10,10 @@ public class ConstrainedRandomBuilder : Builder
     private readonly Dictionary<int, Node> nodes;
     private readonly List<(int, int)> availablePairs;
 
-    public ConstrainedRandomBuilder(int target)
+    public override void Reset()
     {
-        this.target = target;
-
-        availablePairs = new();
-        nodes = new();
+        nodes.Clear();
+        availablePairs.Clear();
 
         for(int i = 0; i < target; i++)
         {
@@ -24,6 +22,16 @@ public class ConstrainedRandomBuilder : Builder
                 availablePairs.Add((i, j));
             }
         }
+    }
+
+    public ConstrainedRandomBuilder(int target)
+    {
+        this.target = target;
+
+        availablePairs = new();
+        nodes = new();
+
+        Reset();
     }
 
     public override bool IsAutomated => true;

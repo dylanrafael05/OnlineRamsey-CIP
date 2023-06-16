@@ -51,5 +51,5 @@ public class RandomBuilder : Builder
         return Task.FromResult(RandomIsolated(state));
     }
 
-
+    public override void Reset() {}
 }

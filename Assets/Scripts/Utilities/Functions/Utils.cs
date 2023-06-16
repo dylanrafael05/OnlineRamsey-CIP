@@ -92,6 +92,22 @@ namespace Ramsey.Utilities
             }
         }
 
+        public static async Task Run(bool synchronous, Action action)
+        {
+            if(synchronous) action();
+            else await Task.Run(action).UnityReport();
+        }
+
+        public static TaskT AssertSync<TaskT>(this TaskT t, bool synchronous) where TaskT : Task
+        {
+            if(synchronous && !t.IsCompleted)
+            {
+                Debug.LogError("Task asserted to be synchronous was not!");
+            }
+
+            return t;
+        }
+
         public static int ToInt(this bool b)
             => b ? 1 : 0;
 

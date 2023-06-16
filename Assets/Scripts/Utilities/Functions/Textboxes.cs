@@ -2,6 +2,7 @@ using Unity.Mathematics;
 using UnityEngine;
 
 using TextInput = TMPro.TMP_InputField;
+using Text = TMPro.TMP_Text;
 
 namespace Ramsey.Utilities
 {
@@ -38,6 +39,11 @@ namespace Ramsey.Utilities
             //trans.SetPositionAndRotation(trans.position, Quaternion.identity);
 
             return go.GetComponent<TextInput>();
+        }
+
+        public static void SetPlaceholder(this TextInput ti, string value)
+        {
+            ti.transform.GetComponentInChildren<Text>().text = value;
         }
     }
 }

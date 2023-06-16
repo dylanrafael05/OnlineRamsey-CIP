@@ -183,15 +183,19 @@ namespace Ramsey.Visualization
                 triangles.Add(i);
                 triangles.Add(i + 1);
                 triangles.Add(i + 2);
-                triangles.Add(i + 3);
-                triangles.Add(i + 1);
+
                 triangles.Add(i + 2);
+                triangles.Add(i + 1);
+                triangles.Add(i + 3);
             }
 
             var mesh = new Mesh();
             mesh.SetVertices(vertices);
             mesh.SetUVs(0, uvs);
             mesh.SetTriangles(triangles, 0);
+
+            Debug.Log("The vertices: ");
+            vertices.Print();
 
             return mesh;
 

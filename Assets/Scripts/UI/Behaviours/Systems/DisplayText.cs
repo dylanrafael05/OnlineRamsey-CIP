@@ -11,10 +11,14 @@ namespace Ramsey.UI
     public static class DisplayText
     {
         private static Text TurnNumber => UnityReferences.TurnText;
+        private static Text GoalText => UnityReferences.GoalText;
 
         public static void Update(GameState state)
         {
+            GoalText.richText = true;
+
             TurnNumber.text = "" + state.TurnNum;
+            GoalText.text = $"<color=#D0D0D0><size=70%>{state.MaxPath?.Length ?? 0}/</size></color>{state.TargetPathLength}";
         }
     }
 }

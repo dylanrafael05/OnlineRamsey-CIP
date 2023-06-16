@@ -12,6 +12,8 @@ namespace Ramsey.UI
     {
         private static Text GameObject => UnityReferences.OverText;
 
+        private static Coroutine coro;
+
         public static IEnumerator ShowRoutine() 
         {
             const float Len = 3.7f;
@@ -43,9 +45,17 @@ namespace Ramsey.UI
             GameObject.text = state.IsGameWon ? "Game Over" : "Graph too Large";
             GameObject.gameObject.SetActive(true);
 
-            Coroutines.StartCoroutine(ShowRoutine);
+            coro = Coroutines.Start(ShowRoutine);
             
             UnityReferences.ScreenMaterial.SetFloat("_TimeStart", Time.timeSinceLevelLoad);
+        }
+
+        public static void ForceStop()
+        {
+            Coroutines.Kill(coro);
+
+            UnityReferences.OverText.gameObject.SetActive(false);
+            UnityReferences.ScreenMaterial.SetFloat("_TimeStart", -10000);
         }
     }
 }

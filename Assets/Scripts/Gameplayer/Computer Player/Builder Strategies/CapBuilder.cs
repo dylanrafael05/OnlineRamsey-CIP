@@ -13,16 +13,32 @@ using static Ramsey.Gameplayer.BuilderUtils;
 public class CapBuilder : Builder
 {
     public CapBuilder(GameState state)
-        => sequenceNavigator = new(new List<IEnumerable<BuilderMove>>() { InitialTree(state), LoopTree(state) });
+        => seq = new(InitialTree(state), LoopTree(state));
 
-    SequenceNavigator<BuilderMove> sequenceNavigator;
+    SequenceNavigator<BuilderMove> seq;
 
     public override Task<BuilderMove> GetMove(GameState state)
-       => Task.FromResult(sequenceNavigator.Loop());
+       => Task.FromResult(seq.Loop());
+
+    public override void Reset()
+    {
+        t1 = 0;
+
+        n1 = null;
+        n2 = null;
+
+        longBase = 0;
+        longOther = 0;
+
+        seq.Reset();
+    }
 
     int t1;
     Node n1 = null;
     Node n2 = null;
+    
+    int longBase;
+    int longOther;
 
     IEnumerable<BuilderMove> InitialTree(GameState state)
     {
@@ -41,9 +57,6 @@ public class CapBuilder : Builder
         if (t1 == b) { n2 = n; longBase++; longOther = 1; }
         else { n2 = initial; longOther = longBase; longBase = 2; }
     }
-
-    int longBase;
-    int longOther;
 
     IEnumerable<BuilderMove> LoopTree(GameState state) // 5/14 strategy needs an init to make a longer path
     {
