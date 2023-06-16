@@ -7,12 +7,64 @@ using Ramsey.Drawing;
 
 namespace Ramsey.Visualization
 {
-    public static class ColorGenerator
+    public class ColorGenerator
     {
-        private static readonly Color[] BaseColors = 
+        private int stage = 0;
+        private int index = 0;
+
+        public static int Delinearize(int x, int n)
         {
-            ColorUtility.
-        };
+            if(x % 2 == 0) return x;
+            else return n - x + n % 2;
+        }
+
+        public Color Next()
+        {
+            if(stage == 0)
+            {
+                if(index >= Colors.Rainbow.Length)
+                {
+                    stage++;
+                    index = 0;
+
+                    return Next();
+                }
+
+                Debug.Log(Delinearize(index, Colors.Rainbow.Length - 1));
+
+                return Colors.Rainbow[Delinearize(index++, Colors.Rainbow.Length - 1)];
+            }
+
+            var divisor = Mathf.Pow(2, stage);
+            var countPer = stage;
+
+            var subindexpredl = index / countPer;
+            var numerator = 2f * (index % countPer) + 1f;
+            
+            if(subindexpredl >= Colors.Rainbow.Length - 1)
+            {
+                stage++;
+                index = 0;
+
+                return Next();
+            }
+
+            var subindex = Delinearize(subindexpredl, Colors.Rainbow.Length - 2);
+
+            index++;
+
+            return Color.Lerp(Colors.Rainbow[subindex], Colors.Rainbow[subindex + 1], numerator / divisor);
+        }
+
+        public Color[] NextN(int n) 
+        {
+            var ret = new Color[n];
+
+            for(int i = 0; i < n; i++) 
+                ret[i] = Next();
+
+            return ret;
+        }
     }
 
     public struct GraphPreferences
@@ -110,6 +162,7 @@ namespace Ramsey.Visualization
 
         GraphPreferences graphPrefs;
         List<(Mesh, Material)> curves = new();
+        ColorGenerator colors = new();
 
         static readonly int layer = LayerMask.NameToLayer("Visualization");
 
@@ -129,8 +182,16 @@ namespace Ramsey.Visualization
             => curvePrefs.GetMaterial(m);
 
         //
-        public void AddCurve(MatchupData data, CurvePreferences curvePrefs, float k = 0f)
-            => curves.Add((MeshGenerator.GenerateCurveMesh(data, k), GetCurveMaterial(graphPrefs, curvePrefs)));
+        public void AddCurve(MatchupData data, float k = 0f)
+        {
+            var curvePrefs = new CurvePreferences 
+            {
+                lineThickness = 0.5f,
+                color = colors.Next()
+            };
+
+            curves.Add((MeshGenerator.GenerateCurveMesh(data, k), GetCurveMaterial(graphPrefs, curvePrefs)));
+        }
 
         void SetPreferences(int i, CurvePreferences curvePrefs)
             => curves[i] = (curves[i].Item1, GetCurveMaterial(curves[i].Item2, curvePrefs));

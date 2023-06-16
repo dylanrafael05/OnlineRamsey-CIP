@@ -1,5 +1,6 @@
 using Ramsey.Gameplayer;
 using Ramsey.Screen;
+using Ramsey.Utilities.UI;
 using Ramsey.Visualization;
 using Unity.Mathematics;
 using UnityEngine;
@@ -29,13 +30,16 @@ namespace Ramsey.UI
                     StrategyInitializer.For<UserBuilder>(),
                     StrategyInitializer.For<CapBuilder>(() => new(Main.Game.State)),
                     StrategyInitializer.For<RandomBuilder>(o => new((float)o[0], (float)o[1], (float)o[2]), 
-                        new TextParameter { Name = "Pendant Weight",  Verifier = new IParameterVerifier.Float(0, 1) },
-                        new TextParameter { Name = "Internal Weight", Verifier = new IParameterVerifier.Float(0, 1) },
-                        new TextParameter { Name = "Isolated Weight", Verifier = new IParameterVerifier.Float(0, 1) }
+                        new TextParameter { Name = "Pendant Weight",  Verifier = new IInputVerifier.Float(0, 1) },
+                        new TextParameter { Name = "Internal Weight", Verifier = new IInputVerifier.Float(0, 1) },
+                        new TextParameter { Name = "Isolated Weight", Verifier = new IInputVerifier.Float(0, 1) }
                     ),
                     StrategyInitializer.For<ConstrainedRandomBuilder>(o => new((int)o[0]), 
-                        new TextParameter { Name = "Node Count", Verifier = new IParameterVerifier.Integer(0, 40) }
-                    )
+                        new TextParameter { Name = "Node Count", Verifier = new IInputVerifier.Integer(2, 40) }
+                    ),
+                    StrategyInitializer.For<PolygonBuilder>(o => new((int)o[0], Main.Game.State),
+                        new TextParameter { Name = "Side Count", Verifier = new IInputVerifier.Integer(min: 3) }
+                    ),
                 }, 
                 new() 
                 { 
@@ -94,7 +98,7 @@ namespace Ramsey.UI
         public void InitAfterGather(MatchupData data)
         {
             Debug.Log(data.Count);
-            visualizer.AddCurve(data, new() { lineThickness = 0.5f, color = Color.red }, 1);
+            visualizer.AddCurve(data, 1);
         }
 
         public override void Loop(InputData input)
