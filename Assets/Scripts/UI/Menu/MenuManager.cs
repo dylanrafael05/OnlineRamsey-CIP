@@ -359,10 +359,9 @@ namespace Ramsey.UI
             if (!hasNode) return CurrentTick;
 
             //
-            float2 polar = mouse.ToPolar();
-            float partitionSize = 2f * PI / tickCount;
+            float2 polar = UnityReferences.WheelSelectTransform.InverseTransformPoint(mouse.xyz()).xy().ToPolar();
+            float partitionSize = MathUtils.TAU / tickCount;
             float rtheta = fmod(polar.y, partitionSize)-partitionSize*.5f;
-
             if (abs(rtheta) > tickCollisionSize * .5f) return CurrentTick;
 
             //

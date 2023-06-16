@@ -23,7 +23,6 @@ Shader "Unlit/Screen/Background"
             #pragma fragment frag
 
             #include "UnityCG.cginc"
-            #include "Common.hlsl"
 
             struct vIn
             {
