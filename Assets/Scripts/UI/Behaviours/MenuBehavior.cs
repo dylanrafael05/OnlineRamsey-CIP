@@ -17,9 +17,6 @@ namespace Ramsey.UI
         //
         MenuManager menu;
 
-        DropdownWrapper<Painter> painter;
-        DropdownWrapper<Builder> builder;
-
         Button startRealtimeGameButton;
         Button startBulkGameButton;
 
@@ -49,33 +46,38 @@ namespace Ramsey.UI
                 }
             );
 
-            var painterObj = GameObject.Find("Painter Select").GetComponent<Dropdown>();
-            var builderObj = GameObject.Find("Builder Select").GetComponent<Dropdown>();
+            // var painterObj = GameObject.Find("Painter Select").GetComponent<Dropdown>();
+            // var builderObj = GameObject.Find("Builder Select").GetComponent<Dropdown>();
 
-            painter = new(painterObj,
-                ("User", () => new UserPainter()),
-                ("Random", () => new RandomPainter()),
-                ("Alternating", () => new AlternatingPainter())
-            );
-            builder = new(builderObj,
-                ("User", () => new UserBuilder()),
-                ("Random", () => new RandomBuilder(0.5f, 0.4f, 0.1f))
-            );
+            // painter = new(painterObj,
+            //     ("User", () => new UserPainter()),
+            //     ("Random", () => new RandomPainter()),
+            //     ("Alternating", () => new AlternatingPainter())
+            // );
+            // builder = new(builderObj,
+            //     ("User", () => new UserBuilder()),
+            //     ("Random", () => new RandomBuilder(0.5f, 0.4f, 0.1f)),
+            //     ("Constrained", () => new ConstrainedRandomBuilder(15))
+            // );
 
             startRealtimeGameButton = GameObject.Find("Enter Realtime Game").GetComponent<Button>();
             startBulkGameButton = GameObject.Find("Enter Bulk Game").GetComponent<Button>();
 
             startRealtimeGameButton.onClick.AddListener(() => 
             {
+                if(!menu.ValidParameters) return;
+
                 visualizing = false;
-                Main.GameBehaviour.StartGame(20, builder.Selected, painter.Selected);
+                Main.GameBehaviour.StartGame(20, menu.Builder, menu.Painter);
                 IBehavior.SwitchTo(Main.GameBehaviour);
             });
 
             startBulkGameButton.onClick.AddListener(() =>
             {
+                if(!menu.ValidParameters) return;
+
                 visualizing = true;
-                InitAfterGather(Main.Game.SimulateMany(1, 30, 1, builder.Selected, painter.Selected));
+                InitAfterGather(Main.Game.SimulateMany(1, 30, 1, menu.Builder, menu.Painter));
             });
         }
 
@@ -104,8 +106,8 @@ namespace Ramsey.UI
 
         public override void OnEnter()
         {
-            painter.UI.gameObject.SetActive(true);
-            builder.UI.gameObject.SetActive(true);
+            // painter.UI.gameObject.SetActive(true);
+            // builder.UI.gameObject.SetActive(true);
 
             startRealtimeGameButton.gameObject.SetActive(true);
             startBulkGameButton.gameObject.SetActive(true);
@@ -113,8 +115,8 @@ namespace Ramsey.UI
 
         public override void OnExit()
         {
-            painter.UI.gameObject.SetActive(false);
-            builder.UI.gameObject.SetActive(false);
+            // painter.UI.gameObject.SetActive(false);
+            // builder.UI.gameObject.SetActive(false);
 
             startRealtimeGameButton.gameObject.SetActive(false);
             startBulkGameButton.gameObject.SetActive(false);

@@ -19,7 +19,7 @@ public class ConstrainedRandomBuilder : Builder
 
         for(int i = 0; i < target; i++)
         {
-            for(int j = i; i < target; j++)
+            for(int j = i; j < target; j++)
             {
                 availablePairs.Add((i, j));
             }
