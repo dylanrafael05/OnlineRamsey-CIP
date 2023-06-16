@@ -7,6 +7,14 @@ using Ramsey.Drawing;
 
 namespace Ramsey.Visualization
 {
+    public static class ColorGenerator
+    {
+        private static readonly Color[] BaseColors = 
+        {
+            ColorUtility.
+        };
+    }
+
     public struct GraphPreferences
     {
 
