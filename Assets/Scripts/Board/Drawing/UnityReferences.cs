@@ -64,6 +64,8 @@ namespace Ramsey.Drawing
             EdgeMaterial.enableInstancing = true;
             NodeMaterial.enableInstancing = true;
 
+            GameObject.Find("Menu Background").GetComponent<MeshRenderer>().material = BackgroundMenuMaterial;
+
             BackgroundRenderer = GameObject.Find("Background").GetComponent<MeshRenderer>();
             BackgroundRenderer.material = BackgroundMaterial;
 

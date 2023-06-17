@@ -25,7 +25,7 @@ namespace Ramsey.UI
 
         public event Action<IStrategyInitializer<Builder>, IStrategyInitializer<Painter>> OnStrategyChanged;
         
-        public MenuManager(List<IStrategyInitializer<Builder>> builderInitializers, List<IStrategyInitializer<Painter>> painterInitializers, float2? tickDim = null, float drawSize = 1f, float inputDistance = 1f, float wheelRadiusBuilder = 0.5f, float wheelRadiusPainter = 0.2f, float wheelThickness = .03f, float knobRadius = .06f)
+        public MenuManager(List<IStrategyInitializer<Builder>> builderInitializers, List<IStrategyInitializer<Painter>> painterInitializers, float2? tickDim = null, float drawSize = 1f, float inputDistance = 1f, float wheelRadiusBuilder = 0.35f, float wheelRadiusPainter = 0.2f, float wheelThickness = .03f, float knobRadius = .06f)
         {
             this.builderInitializers = builderInitializers;
             this.painterInitializers = painterInitializers;
