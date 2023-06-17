@@ -6,6 +6,7 @@ using Ramsey.Drawing;
 using Ramsey.Gameplayer;
 
 using static Unity.Mathematics.math;
+
 using UnityEngine;
 using Ramsey.Utilities;
 using System;
@@ -172,7 +173,7 @@ namespace Ramsey.UI
 
             material.SetInteger("_NodeLocation", CurrentTick);
 
-            Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.WheelSelectTransform.localToWorldMatrix, material, UnityReferences.BoardLayer);
+            Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.WheelSelectTransform.localToWorldMatrix, material, UnityReferences.ScreenLayer);
 
         }
 

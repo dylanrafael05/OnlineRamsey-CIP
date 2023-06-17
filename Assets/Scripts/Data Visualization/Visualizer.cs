@@ -105,7 +105,7 @@ namespace Ramsey.Visualization
             => Matrix4x4.TRS((position).xyz(Visualizer.Depth), Quaternion.identity, drawSize * Vector3.one);*/
 
         public Matrix4x4 GetCurveOffsetMatrix()
-            => Matrix4x4.Translate(new float3(2f*.5f * thickness - .5f/drawSize));
+            => Matrix4x4.Translate(new float2(.5f * thickness).xyz(0.2f));
 
         public float2 PartitionSize
             => 2f * (axisScale) / (float2) tickCount;
@@ -124,7 +124,8 @@ namespace Ramsey.Visualization
 
         public void FillCurveMaterial(Material m)
         {
-            m.SetVector("_Scale", PartitionSize.xyzw());
+            Debug.Log(PartitionSize);
+            m.SetVector("_Scale", 10f*PartitionSize.xyzw());
             m.SetVector("_SizeBounds", sizeBounds.xyzw());
         }
 
@@ -186,7 +187,7 @@ namespace Ramsey.Visualization
         {
             var curvePrefs = new CurvePreferences 
             {
-                lineThickness = 0.5f,
+                lineThickness = 0.2f,
                 color = colors.Next()
             };
 
@@ -210,7 +211,7 @@ namespace Ramsey.Visualization
         {
             //bool hover = math.step(math.abs(mouse - (graphPrefs.position + graphPrefs.drawSize * .5f)), graphPrefs.drawSize * .5f).mul() != 0;
             mouse = (UnityReferences.VisualizerGraphTransform.WorldMatrix().Inverse() * mouse.xyzw(1f, 1f)).xy();
-            bool hover = math.step(mouse - 1f, 0f).mul() * math.step(0f, mouse).mul() == 1;
+            bool hover = math.step(mouse - 2f*graphPrefs.axisScale/graphPrefs.drawSize, 0f).mul() * math.step(0f, mouse).mul() == 1;
             zoom += hover ? change : 0f;
             graphPrefs.tickCount = (int)zoom;
             SetPreferences(graphPrefs);

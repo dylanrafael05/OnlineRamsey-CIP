@@ -106,17 +106,17 @@ MonoBehaviour:
     overrideState: 1
     value: 1
   RuntimeTransition:
-    overrideState: 0
+    overrideState: 1
     value: 1
   Interpolation:
-    overrideState: 0
-    value: 0
+    overrideState: 1
+    value: 1
   BaseColor:
     overrideState: 0
     value: {r: 1, g: 1, b: 1, a: 1}
   StripeColor:
-    overrideState: 0
-    value: {r: 0, g: 1, b: 1, a: 1}
+    overrideState: 1
+    value: {r: 0.75849056, g: 1, b: 1, a: 1}
   RadialOffset:
     overrideState: 0
     value: 0

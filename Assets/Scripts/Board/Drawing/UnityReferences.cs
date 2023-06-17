@@ -25,10 +25,12 @@ namespace Ramsey.Drawing
         public static Material LoadingMaterial { get; private set; }
         public static Material ScreenMaterial { get; private set; }
         public static Material TransitionMaterial { get; private set; }
+        public static Material BackgroundMenuMaterial { get; private set; }
         public static Material BackgroundMaterial { get; private set; }
         public static Material WheelMaterial { get; private set; }
 
         public static int BoardLayer { get; private set; }
+        public static int ScreenLayer { get; private set; }
 
         public static void Initialize()
         {
@@ -54,6 +56,7 @@ namespace Ramsey.Drawing
             LoadingMaterial = new(Shader.Find("Unlit/UIShaders/LoadingCircle"));
             ScreenMaterial = new(Shader.Find("Unlit/Fullscreen/Pulse"));
             BackgroundMaterial = new(Shader.Find("Unlit/Screen/Background"));
+            BackgroundMenuMaterial = new(Shader.Find("Unlit/Screen/MenuBackground"));
 
             WheelMaterial = new(Shader.Find("Unlit/UIShaders/WheelSelect"));
             TransitionMaterial = new(Shader.Find("Unlit/Screen/Transition"));
@@ -65,9 +68,10 @@ namespace Ramsey.Drawing
             BackgroundRenderer.material = BackgroundMaterial;
 
             BoardLayer = LayerMask.NameToLayer("Board");
+            ScreenLayer = LayerMask.NameToLayer("Screen");
 
-            TransitionRenderer = GameObject.Find("Transition").GetComponent<MeshRenderer>();
-            TransitionRenderer.material = TransitionMaterial;
+            //TransitionRenderer = GameObject.Find("Transition").GetComponent<MeshRenderer>();
+            //TransitionRenderer.material = TransitionMaterial;
         }
     }
 }

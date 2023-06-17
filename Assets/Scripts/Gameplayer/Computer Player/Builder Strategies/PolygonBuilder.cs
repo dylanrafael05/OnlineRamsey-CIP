@@ -13,6 +13,7 @@ namespace Ramsey.Gameplayer
     [NonDeterministicStrategy]
     public class PolygonBuilder : Builder
     {
+
         public PolygonBuilder(int sideCount, GameState state)
         {
             this.sideCount = sideCount;
