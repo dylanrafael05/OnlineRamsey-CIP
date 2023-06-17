@@ -1,5 +1,6 @@
 using Ramsey.Gameplayer;
 using Ramsey.Screen;
+using Ramsey.Utilities;
 using Ramsey.Utilities.UI;
 using Ramsey.Visualization;
 using Unity.Mathematics;
@@ -12,14 +13,23 @@ namespace Ramsey.UI
     public class MenuBehavior : Behavior
     {
         //
-        Visualizer visualizer;
+        readonly Visualizer visualizer;
         bool visualizing = false;
+        bool prevCouldSetDelay = false;
 
         //
-        MenuManager menu;
+        readonly MenuManager menu;
+        readonly GameObject menuObj;
 
-        Button startRealtimeGameButton;
-        Button startBulkGameButton;
+        readonly Button goAhead;
+
+        readonly Toggle runBulk;
+
+        readonly GameObject standardMenu;
+        readonly InputBox standardCount, standardDelay;
+        
+        readonly GameObject bulkMenu;
+        readonly InputBox bulkStart, bulkEnd, bulkStep, bulkAtt;
 
         public MenuBehavior(GraphPreferences graphPreferences)
         {
@@ -38,7 +48,7 @@ namespace Ramsey.UI
                         new TextParameter { Name = "Node Count", Verifier = new IInputVerifier.Integer(2, 40) }
                     ),
                     StrategyInitializer.For<PolygonBuilder>(o => new((int)o[0], Main.Game.State),
-                        new TextParameter { Name = "Side Count", Verifier = new IInputVerifier.Integer(min: 3) }
+                        new TextParameter { Name = "Side Count", Verifier = new IInputVerifier.Integer(3) }
                     ),
                 }, 
                 new() 
@@ -50,39 +60,89 @@ namespace Ramsey.UI
                 }
             );
 
-            // var painterObj = GameObject.Find("Painter Select").GetComponent<Dropdown>();
-            // var builderObj = GameObject.Find("Builder Select").GetComponent<Dropdown>();
+            menuObj = GameObject.Find("Menu");
 
-            // painter = new(painterObj,
-            //     ("User", () => new UserPainter()),
-            //     ("Random", () => new RandomPainter()),
-            //     ("Alternating", () => new AlternatingPainter())
-            // );
-            // builder = new(builderObj,
-            //     ("User", () => new UserBuilder()),
-            //     ("Random", () => new RandomBuilder(0.5f, 0.4f, 0.1f)),
-            //     ("Constrained", () => new ConstrainedRandomBuilder(15))
-            // );
+            runBulk = GameObject.Find("Run in Bulk").GetComponent<Toggle>();
 
-            startRealtimeGameButton = GameObject.Find("Enter Realtime Game").GetComponent<Button>();
-            startBulkGameButton = GameObject.Find("Enter Bulk Game").GetComponent<Button>();
+            standardMenu = GameObject.Find("Standard Options");
+            standardCount = InputBox.Find("Game Length", new IInputVerifier.Integer(min: 1, max: 255), "10");
+            standardDelay = InputBox.Find("Delay Between Turns", new IInputVerifier.Float(min: 0, max: 5), "0.2");
 
-            startRealtimeGameButton.onClick.AddListener(() => 
+            bulkMenu = GameObject.Find("Bulk Options");
+            bulkStart = InputBox.Find("Start", new IInputVerifier.Integer(min: 1, max: 255), "1");
+            bulkEnd = InputBox.Find("End", new IInputVerifier.Integer(min: 1, max: 255), "10");
+            bulkStep = InputBox.Find("Step", new IInputVerifier.Integer(min: 1, max: 255), "1");
+            bulkAtt = InputBox.Find("Attempts Per", new IInputVerifier.Integer(min: 1), "20");
+
+            goAhead = GameObject.Find("Menu Go").GetComponent<Button>();
+
+            goAhead.onClick.AddListener(() => 
             {
                 if(!menu.ValidParameters) return;
 
-                visualizing = false;
-                Main.GameBehaviour.StartGame(20, menu.Builder, menu.Painter);
-                IBehavior.SwitchTo(Main.GameBehaviour);
+                if(runBulk.isOn)
+                {
+                    if(!InputBox.AllValid(bulkStart, bulkEnd, bulkStep, bulkAtt))
+                        return;
+
+                    visualizing = true;
+                    InitAfterGather(Main.Game.SimulateMany(
+                        (int)bulkStart.Input,
+                        (int)bulkEnd.Input,
+                        (int)bulkStep.Input,
+                        menu.ConstructBuilder(),
+                        menu.ConstructPainter(),
+                        (int)bulkAtt.Input
+                    ));
+                }
+                else 
+                {
+                    if(!InputBox.AllValid(standardCount))
+                        return;
+                    
+                    visualizing = false;
+                    Main.Game.Delay = (float)standardDelay.Input;
+                    Main.GameBehaviour.StartGame(
+                        (int)standardCount.Input, 
+                        menu.ConstructBuilder(), 
+                        menu.ConstructPainter()
+                    );
+                    IBehavior.SwitchTo(Main.GameBehaviour);
+                }
             });
 
-            startBulkGameButton.onClick.AddListener(() =>
+            runBulk.isOn = false;
+            bulkMenu.SetActive(false);
+
+            runBulk.onValueChanged.AddListener(bulk => 
             {
-                if(!menu.ValidParameters) return;
-
-                visualizing = true;
-                InitAfterGather(Main.Game.SimulateMany(1, 10, 1, menu.Builder, menu.Painter, 30));
+                if(bulk)
+                {
+                    bulkMenu.SetActive(true);
+                    standardMenu.SetActive(false);
+                }
+                else 
+                {
+                    bulkMenu.SetActive(false);
+                    standardMenu.SetActive(true);
+                }
             });
+
+            menu.OnStrategyChanged += (painter, builder) => 
+            {
+                var canSetDelay = !painter.IsAutomated || !builder.IsAutomated;
+
+                if(prevCouldSetDelay && !canSetDelay)
+                {
+                    standardDelay.Textbox.DeactivateInputField(true);
+                }
+                else if(!prevCouldSetDelay && canSetDelay)
+                {
+                    standardDelay.Textbox.ActivateInputField();
+                }
+
+                prevCouldSetDelay = canSetDelay;
+            };
         }
 
         public void Init()
@@ -107,22 +167,22 @@ namespace Ramsey.UI
             menu.UpdateWheels(input);
             menu.Draw();
 
-            if (visualizing) { visualizer.UpdateInput(input.scr, input.mouse); visualizer.Draw(); }
+            if (visualizing) 
+            { 
+                visualizer.UpdateInput(input.scr, input.mouse); 
+                visualizer.Draw(); 
+            }
         }
 
         public override void OnEnter()
         {
-            startRealtimeGameButton.gameObject.SetActive(true);
-            startBulkGameButton.gameObject.SetActive(true);
-
+            menuObj.SetActive(true);
             menu.ShowActiveTextInputs();
         }
 
         public override void OnExit()
         {
-            startRealtimeGameButton.gameObject.SetActive(false);
-            startBulkGameButton.gameObject.SetActive(false);
-
+            menuObj.SetActive(false);
             menu.HideAllTextInputs();
         }
     }

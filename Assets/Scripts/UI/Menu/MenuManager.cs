@@ -6,6 +6,9 @@ using Ramsey.Drawing;
 using Ramsey.Gameplayer;
 
 using static Unity.Mathematics.math;
+using UnityEngine;
+using Ramsey.Utilities;
+using System;
 
 namespace Ramsey.UI
 {
@@ -18,25 +21,32 @@ namespace Ramsey.UI
         WheelSelect painterSelect;
 
         float inputDistance;
+
+        public event Action<IStrategyInitializer<Builder>, IStrategyInitializer<Painter>> OnStrategyChanged;
         
-        public MenuManager(List<IStrategyInitializer<Builder>> builderInitializers, List<IStrategyInitializer<Painter>> painterInitializers, float2? tickDim = null, float drawSize = 1f, float inputDistance = 1f, float wheelRadiusBuilder = 0.5f, float wheelRadiusPainter = 0.2f, float wheelThickness = .05f, float knobRadius = .05f)
+        public MenuManager(List<IStrategyInitializer<Builder>> builderInitializers, List<IStrategyInitializer<Painter>> painterInitializers, float2? tickDim = null, float drawSize = 1f, float inputDistance = 1f, float wheelRadiusBuilder = 0.5f, float wheelRadiusPainter = 0.2f, float wheelThickness = .03f, float knobRadius = .06f)
         {
             this.builderInitializers = builderInitializers;
             this.painterInitializers = painterInitializers;
 
-            builderSelect = new(wheelRadiusBuilder, wheelThickness, tickDim, builderInitializers.Count, knobRadius);
-            painterSelect = new(wheelRadiusPainter, wheelThickness, tickDim, painterInitializers.Count, knobRadius);
+            builderSelect = new(wheelRadiusBuilder, wheelThickness, tickDim ?? new(0.02f, 0.1f), builderInitializers.Count, knobRadius);
+            painterSelect = new(wheelRadiusPainter, wheelThickness, tickDim ?? new(0.02f, 0.1f), painterInitializers.Count, knobRadius);
 
             this.inputDistance = inputDistance;
         }
 
         public void UpdateWheels(InputData input)
         {
-            UpdateWheel(input, builderSelect, builderInitializers);
-            UpdateWheel(input, painterSelect, painterInitializers);
+            bool strategyChanged = false;
+
+            strategyChanged |= UpdateWheel(input, builderSelect, builderInitializers);
+            strategyChanged |= UpdateWheel(input, painterSelect, painterInitializers);
+
+            if(strategyChanged)
+                OnStrategyChanged?.Invoke(BuilderInit, PainterInit);
         }
 
-        void UpdateWheel(InputData input, WheelSelect wheel, IReadOnlyList<IStrategyInitializer<IPlayer>> initializers)
+        bool UpdateWheel(InputData input, WheelSelect wheel, IReadOnlyList<IStrategyInitializer<IPlayer>> initializers)
         {
             int prev = wheel.CurrentTick;
             int curr = wheel.Update(input.mouse, input.lmb, input.lmbp);
@@ -47,7 +57,11 @@ namespace Ramsey.UI
 
                 var knobPos = wheel.KnobPos;
                 initializers[curr].ShowTextInputs(knobPos, inputDistance);
+
+                return true;
             }
+
+            return false;
         }
 
         public IStrategyInitializer<Builder> BuilderInit => builderInitializers[builderSelect.CurrentTick];
@@ -55,16 +69,16 @@ namespace Ramsey.UI
 
         public bool ValidParameters => BuilderInit.InputIsValid() && PainterInit.InputIsValid();
 
-        public Builder Builder => BuilderInit.Initialize();
-        public Painter Painter => PainterInit.Initialize();
+        public Builder ConstructBuilder() => BuilderInit.Initialize();
+        public Painter ConstructPainter() => PainterInit.Initialize();
 
         public void Draw()
         {
             builderSelect.Draw();
             painterSelect.Draw();
 
-            TextRenderer.Draw(builderSelect.KnobPos + float2(5, +2), $"Painter = {painterInitializers[painterSelect.CurrentTick].Name}");
-            TextRenderer.Draw(builderSelect.KnobPos + float2(5, -2), $"Builder = {builderInitializers[builderSelect.CurrentTick].Name}");
+            TextRenderer.Draw(builderSelect.KnobPos, BuilderInit.Name, Color.black, screen: true);
+            TextRenderer.Draw(painterSelect.KnobPos, PainterInit.Name, Color.black, screen: true);
         }
 
         public void ShowActiveTextInputs()

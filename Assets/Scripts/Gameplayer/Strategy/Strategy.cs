@@ -10,6 +10,14 @@ using UnityEngine.Assertions;
 
 namespace Ramsey.Gameplayer
 {
+    [AttributeUsage(AttributeTargets.Class)]
+    public sealed class NonDeterministicStrategyAttribute : Attribute
+    {}
+
+    [AttributeUsage(AttributeTargets.Class)]
+    public sealed class NonAutomatedStrategyAttribute : Attribute
+    {}
+
     public interface IPlayer
     {
         bool IsDeterministic { get; }
@@ -20,12 +28,29 @@ namespace Ramsey.Gameplayer
         void Reset();
     }
 
+    public static class Player 
+    {
+        public static bool IsDeterminstic(Type type)
+            => !Attribute.IsDefined(type, typeof(NonDeterministicStrategyAttribute)) || IsAutomated(type);
+        public static bool IsDeterminstic<T>() where T : IPlayer
+            => IsDeterminstic(typeof(T));
+        
+        public static bool IsAutomated(Type type)
+            => !Attribute.IsDefined(type, typeof(NonAutomatedStrategyAttribute));
+        public static bool IsAutomated<T>() where T : IPlayer
+            => IsAutomated(typeof(T));
+    }
+
     public abstract class Builder : IPlayer
     {
-        public virtual bool IsDeterministic => true;
-        public virtual bool IsAutomated => true;
+        public bool IsDeterministic { get; }
+        public bool IsAutomated { get; }
 
-        public Builder() { }
+        public Builder() 
+        {
+            IsDeterministic = Player.IsDeterminstic(GetType());
+            IsAutomated = Player.IsAutomated(GetType());
+        }
 
         async Task<IMove> IPlayer.GetMove(GameState gameState)
         {
@@ -38,10 +63,14 @@ namespace Ramsey.Gameplayer
 
     public abstract class Painter : IPlayer
     {
-        public virtual bool IsDeterministic => true;
-        public virtual bool IsAutomated => true;
+        public bool IsDeterministic { get; }
+        public bool IsAutomated { get; }
 
-        public Painter() { }
+        public Painter() 
+        {
+            IsDeterministic = Player.IsDeterminstic(GetType());
+            IsAutomated = Player.IsAutomated(GetType());
+        }
 
         async Task<IMove> IPlayer.GetMove(GameState gameState)
         {

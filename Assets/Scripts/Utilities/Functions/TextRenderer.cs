@@ -14,37 +14,46 @@ namespace Ramsey.Drawing
         private static int count;
         private static bool isSetup;
 
-        private static Canvas canvas;
+        private static Canvas boardCanvas;
+        private static Canvas screenCanvas;
+
         private static GameObject textPrefab;
         private static List<Text> texts = new();
 
         private static void Create()
         {
-            canvas = GameObject.Find("Board Canvas").GetComponent<Canvas>();
+            boardCanvas = GameObject.Find("Board Canvas").GetComponent<Canvas>();
+            screenCanvas = GameObject.Find("Screen Canvas").GetComponent<Canvas>();
+
             textPrefab = Resources.Load<GameObject>("Prefabs/TextPrefab");
         }
 
         private static Text CreateText()
         {
-
             var newgo = GameObject.Instantiate(textPrefab, Vector3.zero, Quaternion.identity);
-            newgo.transform.SetParent(canvas.transform);
+            newgo.transform.SetParent(boardCanvas.transform);
 
             return newgo.GetComponent<Text>();
         }
 
-        public static void Draw(float2 position, string content) 
+        public static void Draw(float2 position, string content, Color? col = null, bool screen = false) 
         {
             if(count >= texts.Count)
             {
                 texts.Add(CreateText());
             }
+            
+            var color = col ?? Color.black;
 
-            texts[count].transform.position = new float3(position, -3f);
-            texts[count].transform.localScale = new(1, 1, 1);
-            texts[count].color = Color.black;
-            texts[count].text = content;
-            texts[count].gameObject.SetActive(true);
+            texts[count].transform.SetParent(boardCanvas.transform);
+
+                texts[count].transform.position = new float3(position, -3f);
+                texts[count].transform.localScale = new(1, 1, 1);
+                texts[count].color = color;
+                texts[count].text = content;
+                texts[count].gameObject.SetActive(true);
+
+            texts[count].transform.SetParent((screen ? screenCanvas : boardCanvas).transform, true);
 
             count++;
         }

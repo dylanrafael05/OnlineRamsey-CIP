@@ -84,6 +84,9 @@ namespace Ramsey.UI
         }
 
         public string Name { get; set; }
+
+        public bool IsDeterministic => Player.IsDeterminstic(typeof(T));
+        public bool IsAutomated => Player.IsAutomated(typeof(T));
     }
     
     public static class StrategyInitializer

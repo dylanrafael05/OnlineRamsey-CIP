@@ -8,10 +8,9 @@ using Rand = UnityEngine.Random;
 using System.Collections.Generic;
 using System.Linq;
 
+[NonDeterministicStrategy]
 public class RandomBuilder : Builder
 {
-    public override bool IsDeterministic => false;
-
     float pendantProb;
     float internalProb;
     float isolatedProb;
