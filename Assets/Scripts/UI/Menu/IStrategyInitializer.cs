@@ -10,7 +10,7 @@ namespace Ramsey.UI
         IReadOnlyList<TextParameter> Parameters { get; }
         IReadOnlyList<InputBox> Inputs { get; }
 
-        void ShowTextInputs(float2 knobPos, float inputDistance);
+        void ShowTextInputs();
         void HideTextInputs();
 
         T Initialize();

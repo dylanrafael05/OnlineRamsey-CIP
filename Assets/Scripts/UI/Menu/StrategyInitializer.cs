@@ -8,6 +8,8 @@ using Ramsey.Gameplayer;
 using static Unity.Mathematics.math;
 using System.Text.RegularExpressions;
 using Ramsey.Utilities.UI;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Ramsey.UI
 {
@@ -30,32 +32,43 @@ namespace Ramsey.UI
         public IReadOnlyList<TextParameter> Parameters { get; }
         public Func<object[], T> Construct { get; }
 
+        private GameObject container;
         private InputBox[] inputs;
         public IReadOnlyList<InputBox> Inputs => inputs;
 
-        public void ShowTextInputs(float2 knobPos, float inputDistance)
+        public void ShowTextInputs()
         {
             if(inputs is null)
             {
-                inputs = Parameters.Select((param, i) => 
-                    Textboxes.CreateTextbox(
-                        knobPos + float2(inputDistance, i * 1f * MathUtils.TAU / Parameters.Count).ToCartesian(), 
-                        float2(1f),
+                inputs = new InputBox[Parameters.Count];
+
+                container = new GameObject(Name + " Input Container");
+                container.AddComponent<RectTransform>();
+                container.AddComponent<VerticalLayoutGroup>();
+                container.transform.SetParent(GameObject.Find("Leftside Menu Content").transform);
+
+                foreach(var (param, i) in Parameters.Indexed())
+                {
+                    var box = Textboxes.CreateTextbox(
+                        float2(0), 
+                        float2(1),
                         param.Name,
                         param.Verifier
-                    )
-                ).ToArray();
+                    );
+
+                    box.MainTransform.SetParent(container.transform);
+
+                    inputs[i] = box;
+                }
             }
 
-            foreach(var i in inputs)
-                i.GameObject.SetActive(true);
+            container.gameObject.SetActive(true);
         }
 
         public void HideTextInputs()
         {
             if(inputs != null)
-                foreach(var i in inputs)
-                    i.GameObject.SetActive(false);
+                container.gameObject.SetActive(false);
         }
 
         public bool InputIsValid()
