@@ -9,6 +9,9 @@ namespace Ramsey.Utilities
     {
         public static readonly float TAU = 6.28318f;
 
+        public static Matrix4x4 Inverse(this Matrix4x4 m)
+            => Matrix4x4.Inverse(m);
+
         public static float2 ToCartesian(this float2 polar)
             => polar.x * float2(cos(polar.y), sin(polar.y));
         public static float2 ToPolar(this float2 cartesian)

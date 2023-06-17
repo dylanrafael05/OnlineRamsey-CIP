@@ -45,7 +45,7 @@ namespace Ramsey.Visualization
             => Matrix4x4.TRS((position).xyz(Visualizer.Depth), Quaternion.identity, drawSize * Vector3.one);*/
 
         public Matrix4x4 GetCurveOffsetMatrix()
-            => Matrix4x4.Translate(new float3(.5f * thickness));
+            => Matrix4x4.Translate(new float3(2f*.5f * thickness - .5f/drawSize));
 
         public float2 PartitionSize
             => 2f * (axisScale) / (float2) tickCount;
@@ -137,9 +137,12 @@ namespace Ramsey.Visualization
         }
 
         float zoom = 40f;
-        public void UpdateInput(float dt, float change, float2 mouse) //TODO: use the new matrix system, inverse mat with z = same plane or smth
+        public void UpdateInput(float change, float2 mouse)
         {
-            zoom += math.step(math.abs(mouse - (graphPrefs.position + graphPrefs.drawSize * .5f)), graphPrefs.drawSize*.5f).mul() != 0 ? change * dt : 0f;
+            //bool hover = math.step(math.abs(mouse - (graphPrefs.position + graphPrefs.drawSize * .5f)), graphPrefs.drawSize * .5f).mul() != 0;
+            mouse = (UnityReferences.VisualizerGraphTransform.WorldMatrix().Inverse() * mouse.xyzw(1f, 1f)).xy();
+            bool hover = math.step(mouse - 1f, 0f).mul() * math.step(0f, mouse).mul() == 1;
+            zoom += hover ? change : 0f;
             graphPrefs.tickCount = (int)zoom;
             SetPreferences(graphPrefs);
         }
@@ -147,7 +150,7 @@ namespace Ramsey.Visualization
         public void Draw()
         {
 
-            Matrix4x4 curveMatrix = graphPrefs.GetCurveOffsetMatrix() * UnityReferences.VisualizerGraphTransform.WorldMatrix();
+            Matrix4x4 curveMatrix = UnityReferences.VisualizerGraphTransform.WorldMatrix() * graphPrefs.GetCurveOffsetMatrix();
 
             //Draw Graph
             Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.VisualizerGraphTransform.WorldMatrix(), graphPrefs.GetMaterial(), layer); 
@@ -155,8 +158,7 @@ namespace Ramsey.Visualization
             //Draw Curves
             foreach(var (mesh, mat) in curves)
             {
-                // Debug.Log("Pornography");
-                Graphics.DrawMesh(mesh, curveMatrix, mat, LayerMask.NameToLayer("Board"));
+                Graphics.DrawMesh(mesh, curveMatrix, mat, layer);
             }
         }
 

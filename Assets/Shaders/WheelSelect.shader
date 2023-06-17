@@ -30,6 +30,7 @@ Shader "Unlit/UIShaders/WheelSelect"
             #pragma fragment frag
 
             #include "UnityCG.cginc"
+            #include "Common.hlsl"
 
             struct vIn
             {
@@ -87,12 +88,16 @@ Shader "Unlit/UIShaders/WheelSelect"
 
                 // Node
                 float id = (polar.y - fmod(polar.y, partitionSize)) / partitionSize;
-                float isNode = step(abs(id - float(_NodeLocation)), 0.001);
-                exists += isNode * step(length(polar.x * newSpace - float2(0., _WheelRadius)) - _NodeRadius, 0.);
+                float canNode = step(abs(id - float(_NodeLocation)), 0.001);
+                float isNode = canNode * step(length(polar.x * newSpace - float2(0., _WheelRadius)) - _NodeRadius, 0.);
+                exists += isNode;
+
+                //
+                float2 nodeCol = float3(1.,0.,0.);//normalize(cartesian(float2(1., TAU * float(_NodeLocation) / float(_TickCount))))*.5+.5;
 
                 // Composite
                 exists = step(0.01, exists);
-                return exists * (isNode * _NodeColor + (1 - isNode) * _BaseColor);
+                return exists * (_BaseColor + (float4(nodeCol.xyx, 1.) - _BaseColor) * isNode);
 
             }
             ENDCG

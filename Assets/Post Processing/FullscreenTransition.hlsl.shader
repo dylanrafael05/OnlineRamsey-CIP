@@ -19,14 +19,15 @@ Shader "Hidden/Custom/FullscreenTransition"
        
         float4 Frag(VaryingsDefault i) : SV_Target
         {
-            
+
             //
             float3 sampleCol = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.texcoord).rgb;
 
             //
-            float repLen = .2+_Interpolation*.2;
+            float repLen = .3+_Interpolation*.2;
             float startSize = -.2;
             float randMag = .1;
+            float outlineSize = .015;
 
             //
             float2 p = (i.texcoord*2.-1.)*float2(16./9.,1.);
@@ -41,27 +42,37 @@ Shader "Hidden/Custom/FullscreenTransition"
             float2 id = p-lp;
 
             //
-            float size = startSize + (eps.x + repLen - startSize + randMag) * _Interpolation;
+            float size = startSize + (outlineSize*2 + .005 + repLen - startSize + randMag) * _Interpolation;
             size += randMag*(hash21(id/repLen+eps.xx)*2.-1.);// size += 10.;
-            //TODO: make individual squares rotate into place as per a hash which determines the start rot since that'll also depetermint the speed'
+
             //
+            float startTheta = 5.*(hash21(2.+id/repLen+eps.xx)*2.-1.);
+            float localO = startTheta + (0. - startTheta) * smoothstep(.0, .69, _Interpolation);
+            float2 lFo = float2(cos(localO), sin(localO));
+            float2 lUp = float2(cos(localO+PI*.5), sin(localO+PI*.5));
+
+            //
+            lp = float2(dot(lFo, lp), dot(lUp, lp));
             lp = abs(lp);
             float sd = sqrt(pow(max(0., lp.x - size*.5), 2.0) + pow(max(0., lp.y - size*.5), 2.0));
-            sd += step(sd, 0.) * max(lp - size);
+            sd += step(sd, 0.) * max(lp - size*.5);
+
+            //
+            float outline = .9*step(sd, -outlineSize)+.1;
 
             //
             float repLenRadial = .5*5.*1.5;
             float stripeSize = .25*5.*1.5;
             float smoothThickness = .25*5.*1.5;
             
-            float r = 3.*_Interpolation + _RadialOffset + _Time.y + length(float2(16./9., 1.)) - length(id);
+            float r = 3.*_Interpolation + _RadialOffset + _Time.y + length(float2(16./9., 1.)) - lerp(length(id), length(p), .7);
             float lr = abs(fmod(r, repLenRadial)-repLenRadial*.5);
             float stripe = smoothstep((stripeSize+smoothThickness)*.5, (stripeSize-smoothThickness)*.5, lr);
             float3 hitCol = lerp(_BaseColor, _StripeColor, stripe).rgb;
 
             //
             float hit = step(sd, 0.);
-            return float4(lerp(sampleCol, hitCol, hit), 1.0);
+            return float4(lerp(sampleCol, outline*hitCol-sd*.7, hit), 1.0);
 
         }
 

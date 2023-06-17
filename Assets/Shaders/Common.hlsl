@@ -31,6 +31,7 @@ float hash21(float2 p)
 
 //MATH
 #define PI 3.14159265
+#define TAU 6.283185
 #define IPI .3183099
 #define eps float2(0.00001, 0.)
 #define e 2.718282
@@ -109,6 +110,16 @@ float max(float2 v)
 float atanP(float2 v) //atanPositive -> [0, 2PI)
 {
 	return fmod(atan2(v.y, v.x) + PI * 2., PI * 2.);
+}
+
+float2 cartesian(float2 polar)
+{
+	return polar.x * float2(cos(polar.y), sin(polar.y));
+}
+
+float2 polar(float2 cartesian)
+{
+	return float2(length(cartesian), atanP(cartesian));
 }
 
 //Intersections

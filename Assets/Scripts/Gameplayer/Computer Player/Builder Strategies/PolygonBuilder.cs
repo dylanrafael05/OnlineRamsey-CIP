@@ -3,6 +3,7 @@ using Ramsey.Graph;
 using Ramsey.Utilities;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using static Ramsey.Gameplayer.BuilderUtils;
@@ -15,7 +16,7 @@ namespace Ramsey.Gameplayer
         public PolygonBuilder(int sideCount, GameState state)
         {
             this.sideCount = sideCount;
-            sequenceNavigator = new(new List<IEnumerable<BuilderMove>>() { LoopTree(state) });
+            sequenceNavigator = new(LoopTree(state));
         }
 
         SequenceNavigator<BuilderMove> sequenceNavigator;
@@ -43,6 +44,12 @@ namespace Ramsey.Gameplayer
             if (nextStartNode == sideCount - 1) startNode = currentNode;
             yield return new(currentNode, returnNode);
 
+        }
+
+        public override void Reset()
+        {
+            startNode = null;
+            sequenceNavigator.Reset();
         }
 
     }

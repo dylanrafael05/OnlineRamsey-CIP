@@ -94,7 +94,7 @@ namespace Ramsey.UI
         public void InitAfterGather(MatchupData data)
         {
             Debug.Log(data.Count);
-            visualizer.AddCurve(data, new() { lineThickness = 0.5f, color = Color.red }, 1);
+            visualizer.AddCurve(data, new() { lineThickness = 0.9f, color = Color.red }, 1);
         }
 
         public override void Loop(InputData input)
@@ -102,7 +102,7 @@ namespace Ramsey.UI
             menu.UpdateWheels(input);
             menu.Draw();
 
-            if (visualizing) visualizer.Draw();
+            if (visualizing) { visualizer.UpdateInput(input.scr, input.mouse); visualizer.Draw(); }
         }
 
         public override void OnEnter()

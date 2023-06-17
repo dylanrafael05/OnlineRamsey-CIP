@@ -57,8 +57,8 @@ MonoBehaviour:
   m_Name: Post Processing Profile
   m_EditorClassIdentifier: 
   settings:
-  - {fileID: 1688950608446015877}
   - {fileID: -2354437524046221212}
+  - {fileID: 5204811311770236599}
 --- !u!114 &1688950608446015877
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -89,4 +89,35 @@ MonoBehaviour:
     value: {r: 0.63584906, g: 1, b: 1, a: 1}
   RadialOffset:
     overrideState: 1
+    value: 0
+--- !u!114 &5204811311770236599
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecb6e9865f5584a49a7c1281287f5098, type: 3}
+  m_Name: FullscreenTransitionSettings
+  m_EditorClassIdentifier: 
+  active: 1
+  enabled:
+    overrideState: 1
+    value: 1
+  RuntimeTransition:
+    overrideState: 0
+    value: 1
+  Interpolation:
+    overrideState: 0
+    value: 0
+  BaseColor:
+    overrideState: 0
+    value: {r: 1, g: 1, b: 1, a: 1}
+  StripeColor:
+    overrideState: 0
+    value: {r: 0, g: 1, b: 1, a: 1}
+  RadialOffset:
+    overrideState: 0
     value: 0

@@ -332,7 +332,7 @@ namespace Ramsey.UI
             //
             material = new(Shader.Find("Unlit/UIShaders/WheelSelect"));
 
-            material.SetColor("_Color", Color.white);
+            material.SetColor("_BaseColor", Color.white);
             material.SetFloat("_WheelRadius", radius);
             material.SetFloat("_WheelThickness", wheelThickness);
 
