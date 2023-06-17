@@ -99,7 +99,7 @@ namespace Ramsey.UI
         {
             Debug.Log(data.Count);
 
-            visualizer.AddCurve(data, 1f);
+            visualizer.AddCurve(data, 0f);
         }
 
         public override void Loop(InputData input)

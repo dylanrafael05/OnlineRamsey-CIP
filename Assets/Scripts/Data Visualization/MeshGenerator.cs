@@ -103,6 +103,7 @@ namespace Ramsey.Visualization
         static List<float2> GetPoints(MatchupData matchupData, float2 scale)
         {
             List<float2> points = new();
+            points.Add(float2(0f));
             foreach (var p in matchupData)
                 points.Add(p.Datapoint * scale);
             return points;
@@ -172,8 +173,8 @@ namespace Ramsey.Visualization
 
                 normal = normalize(normal1 + normal2);
 
-                vertices.Add((point - normal*.1f).xyzV()); uvs.Add(new(0f, -1));
-                vertices.Add((point + normal*.1f).xyzV()); uvs.Add(new(0f,  1));
+                vertices.Add(.1f*(point - normal*1f).xyzV()); uvs.Add(new(0f, -1));
+                vertices.Add(.1f*(point + normal*1f).xyzV()); uvs.Add(new(0f,  1));
             });
 
             List<int> triangles = new();

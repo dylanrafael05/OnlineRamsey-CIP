@@ -12,11 +12,6 @@ namespace Ramsey.Gameplayer
 {
     public class PolygonBuilder : Builder
     {
-        public override void Reset()
-        {
-            sequenceNavigator.Reset();
-            startNode = null;
-        }
 
         public PolygonBuilder(int sideCount, GameState state)
         {

@@ -24,7 +24,7 @@ Shader "Hidden/Custom/FullscreenTransition"
             float3 sampleCol = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.texcoord).rgb;
 
             //
-            float repLen = .3+_Interpolation*.2;
+            float repLen = .3+_Interpolation*.2; //.2+..
             float startSize = -.2;
             float randMag = .1;
             float outlineSize = .015;
@@ -33,7 +33,7 @@ Shader "Hidden/Custom/FullscreenTransition"
             float2 p = (i.texcoord*2.-1.)*float2(16./9.,1.);
 
             //
-            float o = _Time.y;
+            float o = _Time.y; //_Interpolation*1.25;
             float2 fo = float2(cos(o), sin(o));
             float2 up = float2(cos(o+PI*.5), sin(o+PI*.5));
             p = float2(dot(p, fo), dot(p, up));

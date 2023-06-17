@@ -5,8 +5,8 @@ Shader "Unlit/Screen/MenuBackground"
     Properties
     {
 
-        _BaseColor ("Base Color", Color) = (1, 1, 1, 1)
-        _HighlightColor ("Highlight Color", Color) = (1, 1, 1, 1)
+        _BaseColor ("Base Color", Color) = (1.,1.,1.,1.)
+        _HighlightColor ("Highlight Color", Color) = (0.,0.,0.,1.)
 
     }
     SubShader
@@ -23,6 +23,7 @@ Shader "Unlit/Screen/MenuBackground"
             #pragma fragment frag
 
             #include "UnityCG.cginc"
+            #include "Common.hlsl"
 
             struct vIn
             {
@@ -36,63 +37,51 @@ Shader "Unlit/Screen/MenuBackground"
                 float2 uv : TEXCOORD0;
             };
 
-            #define SCL 0.01f
-            #define SCROLL 0.7f
+            float4 _BaseColor;
+            float4 _HighlightColor;
 
             vOut vert (vIn v)
             {
                 vOut o;
 
-                o.vertex = UnityObjectToClipPos(v.vertex);
+                o.vertex = mul(UNITY_MATRIX_VP, mul(UNITY_MATRIX_M, v.vertex));// + float4(_WorldSpaceCameraPos.xy, 0., 0.));
                 o.uv = v.uv;
 
                 return o;
             }
 
-            float4 _BaseColor;
-            float4 _HighlightColor;
-
-            float mixsdf(float r1, float r2, float t) 
-            {
-                return step(lerp(r1, r2, t), 0);
-            }
-
-            float circle(float2 uv, float r)
-            {
-                return length(uv) - r;
-            }
-
-            float square(float2 uv, float r)
-            {
-                return abs(uv.x) + abs(uv.y) - r;
-            }
-
-            float2 rotate(float2 uv, float t)
-            {
-                float s = sin(t);
-                float c = cos(t);
-
-                float2x2 m = float2x2(c, s, -s, c);
-
-                return mul(m, uv);
-            }
-
             fixed4 frag (vOut i) : SV_Target
             {
-                float2 dir = float2(sin(_Time.x * 3.f), cos(_Time.x * 3.3f));
 
-                float2 uv = (fmod(i.uv + SCL * SCROLL * dir, SCL) / SCL) * 2.f - 1.f;
-                uv = rotate(uv, _Time.x);
+                float2 p = (i.uv*2.-1.)*float2(16./9., 1.);
+                float exists = 0.;
 
-                float r = 1.f - (_SinTime.y*_SinTime.y) * 0.2f;
+                // Polar circle
 
-                float s = mixsdf(
-                    circle(uv, r),
-                    square(uv, r),
-                    _SinTime.x * _SinTime.x
-                );
+                float radius = 0.8;
+                float3 trigParams = float3(10., .2, 2.);
+                float thickness = .05;
 
-                return _BaseColor * (1 - s) + _HighlightColor * s;
+                float r = radius + trigParams.y * sin(trigParams.x * atanP(p) + _Time.y * trigParams.z);
+                float R = length(p);
+
+                float withinCircle = step(R - r, thickness*.5);
+                exists += step(abs(R - r), thickness*.5);
+
+                // Highlights coming out
+                float legCount = 8.;
+                float highlightSeparation = float2(.05, .08);
+                float2 highlightDim = float2(.1, .05);
+
+                float partitionSize = TAU / legCount;
+
+                float2 polar = toPolar(p);
+                float rtheta = abs(fmod(polar.y, partitionSize) - partitionSize*.5);
+
+                float2 lp = toCartesian(float2(polar.x, rtheta));
+                lp = fmod(lp.x, highlightDim.x + highlightSeparation.x);
+
+                return float4(1.,1.,1.,1.);
             }
 
             ENDCG

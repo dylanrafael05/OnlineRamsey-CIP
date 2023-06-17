@@ -112,12 +112,12 @@ float atanP(float2 v) //atanPositive -> [0, 2PI)
 	return fmod(atan2(v.y, v.x) + PI * 2., PI * 2.);
 }
 
-float2 cartesian(float2 polar)
+float2 toCartesian(float2 polar)
 {
 	return polar.x * float2(cos(polar.y), sin(polar.y));
 }
 
-float2 polar(float2 cartesian)
+float2 toPolar(float2 cartesian)
 {
 	return float2(length(cartesian), atanP(cartesian));
 }
