@@ -15,6 +15,12 @@ namespace Ramsey.UI
 
         public void Init(BoardManager board) {}
 
+        public static void ReturnToStart()
+        {
+            CameraManager.BoardCamera.orthographicSize = BaseSize;
+            CameraManager.BoardCamera.transform.position = new Vector3(0, 1, CameraManager.BoardCamera.transform.position.z);
+        }
+
         public void Update(InputData input, BoardManager board)
         {
             var scl = Input.GetKey(KeyCode.LeftShift).ToInt();

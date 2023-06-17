@@ -76,16 +76,13 @@ namespace Ramsey.Graph
         {   
             graph.PaintEdge(e, type);
 
-            void PathFind()
+            currentPathTask = Utils.Run(synchronous, delegate
             {
                 pathFinder.HandlePaintedEdge(e, graph); 
                 currentPathTask = null; 
 
                 OnFinishPathCalculation?.Invoke();
-            }
-
-            if(synchronous) PathFind();
-            else currentPathTask = Task.Run(PathFind).UnityReport();
+            });
         }
 
         public void MoveNode(Node n, float2 position)

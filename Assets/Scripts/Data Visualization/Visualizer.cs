@@ -7,6 +7,66 @@ using Ramsey.Drawing;
 
 namespace Ramsey.Visualization
 {
+    public class ColorGenerator
+    {
+        private int stage = 0;
+        private int index = 0;
+
+        public static int Delinearize(int x, int n)
+        {
+            if(x % 2 == 0) return x;
+            else return n - x + n % 2;
+        }
+
+        public Color Next()
+        {
+            if(stage == 0)
+            {
+                if(index >= Colors.Rainbow.Length)
+                {
+                    stage++;
+                    index = 0;
+
+                    return Next();
+                }
+
+                Debug.Log(Delinearize(index, Colors.Rainbow.Length - 1));
+
+                return Colors.Rainbow[Delinearize(index++, Colors.Rainbow.Length - 1)];
+            }
+
+            var divisor = Mathf.Pow(2, stage);
+            var countPer = stage;
+
+            var subindexpredl = index / countPer;
+            var numerator = 2f * (index % countPer) + 1f;
+            
+            if(subindexpredl >= Colors.Rainbow.Length - 1)
+            {
+                stage++;
+                index = 0;
+
+                return Next();
+            }
+
+            var subindex = Delinearize(subindexpredl, Colors.Rainbow.Length - 2);
+
+            index++;
+
+            return Color.Lerp(Colors.Rainbow[subindex], Colors.Rainbow[subindex + 1], numerator / divisor);
+        }
+
+        public Color[] NextN(int n) 
+        {
+            var ret = new Color[n];
+
+            for(int i = 0; i < n; i++) 
+                ret[i] = Next();
+
+            return ret;
+        }
+    }
+
     public struct GraphPreferences
     {
 
@@ -45,7 +105,7 @@ namespace Ramsey.Visualization
             => Matrix4x4.TRS((position).xyz(Visualizer.Depth), Quaternion.identity, drawSize * Vector3.one);*/
 
         public Matrix4x4 GetCurveOffsetMatrix()
-            => Matrix4x4.Translate(new float3(.5f * thickness));
+            => Matrix4x4.Translate(new float2(.5f * thickness).xyz(0.2f));
 
         public float2 PartitionSize
             => 2f * (axisScale) / (float2) tickCount;
@@ -64,7 +124,8 @@ namespace Ramsey.Visualization
 
         public void FillCurveMaterial(Material m)
         {
-            m.SetVector("_Scale", PartitionSize.xyzw());
+            Debug.Log(PartitionSize);
+            m.SetVector("_Scale", 10f*PartitionSize.xyzw());
             m.SetVector("_SizeBounds", sizeBounds.xyzw());
         }
 
@@ -93,12 +154,16 @@ namespace Ramsey.Visualization
         public static float Depth = 1f;
 
         public Visualizer(Camera camera, GraphPreferences prefs)
-        { this.camera = camera; this.graphPrefs = prefs; }
+        { 
+            this.camera = camera; 
+            this.graphPrefs = prefs; 
+        }
 
         Camera camera;
 
         GraphPreferences graphPrefs;
         List<(Mesh, Material)> curves = new();
+        ColorGenerator colors = new();
 
         static readonly int layer = LayerMask.NameToLayer("Visualization");
 
@@ -118,19 +183,36 @@ namespace Ramsey.Visualization
             => curvePrefs.GetMaterial(m);
 
         //
-        public void AddCurve(MatchupData data, CurvePreferences curvePrefs, float k = 0f)
-            => curves.Add((MeshGenerator.GenerateCurveMesh(data, k), GetCurveMaterial(graphPrefs, curvePrefs)));
+        public void AddCurve(MatchupData data, float k = 0f)
+        {
+            var curvePrefs = new CurvePreferences 
+            {
+                lineThickness = 0.2f,
+                color = colors.Next()
+            };
+
+            curves.Add((MeshGenerator.GenerateCurveMesh(data, k), GetCurveMaterial(graphPrefs, curvePrefs)));
+        }
 
         void SetPreferences(int i, CurvePreferences curvePrefs)
             => curves[i] = (curves[i].Item1, GetCurveMaterial(curves[i].Item2, curvePrefs));
 
         void SetPreferences(GraphPreferences graphPrefs)
-        { this.graphPrefs = graphPrefs; Utils.ForLength(curves.Count, (i) => curves[i] = (curves[i].Item1, GetCurveMaterial(curves[i].Item2, graphPrefs))); }
+        { 
+            this.graphPrefs = graphPrefs; 
+            Utils.ForLength(curves.Count, i => 
+            {
+                curves[i] = (curves[i].Item1, GetCurveMaterial(curves[i].Item2, graphPrefs));
+            }); 
+        }
 
-        float zoom = 8f;
-        public void UpdateInput(float dt, float change, float2 mouse) //TODO: use the new matrix system, inverse mat with z = same plane or smth
+        float zoom = 40f;
+        public void UpdateInput(float change, float2 mouse)
         {
-            zoom += math.step(math.abs(mouse - (graphPrefs.position + graphPrefs.drawSize * .5f)), graphPrefs.drawSize*.5f).mul() != 0 ? change * dt : 0f;
+            //bool hover = math.step(math.abs(mouse - (graphPrefs.position + graphPrefs.drawSize * .5f)), graphPrefs.drawSize * .5f).mul() != 0;
+            mouse = (UnityReferences.VisualizerGraphTransform.WorldMatrix().Inverse() * mouse.xyzw(1f, 1f)).xy();
+            bool hover = math.step(mouse - 2f*graphPrefs.axisScale/graphPrefs.drawSize, 0f).mul() * math.step(0f, mouse).mul() == 1;
+            zoom += hover ? change : 0f;
             graphPrefs.tickCount = (int)zoom;
             SetPreferences(graphPrefs);
         }
@@ -138,16 +220,16 @@ namespace Ramsey.Visualization
         public void Draw()
         {
 
-            Matrix4x4 curveMatrix = UnityReferences.VisualizerGraphTransform.localToWorldMatrix * graphPrefs.GetCurveOffsetMatrix();
+            Matrix4x4 curveMatrix = UnityReferences.VisualizerGraphTransform.WorldMatrix() * graphPrefs.GetCurveOffsetMatrix();
 
             //Draw Graph
-            Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.VisualizerGraphTransform.localToWorldMatrix, graphPrefs.GetMaterial(), layer); 
+            Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.VisualizerGraphTransform.WorldMatrix(), graphPrefs.GetMaterial(), layer); 
 
             //Draw Curves
-            curves.ForEach(tup =>
+            foreach(var (mesh, mat) in curves)
             {
-                Graphics.DrawMesh(tup.Item1, curveMatrix, tup.Item2, layer, camera);
-            });
+                Graphics.DrawMesh(mesh, curveMatrix, mat, layer);
+            }
         }
 
     }

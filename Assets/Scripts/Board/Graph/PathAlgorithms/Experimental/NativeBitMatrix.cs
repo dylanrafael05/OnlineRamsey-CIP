@@ -11,7 +11,7 @@ namespace Ramsey.Graph.Experimental
             var nodes = g.Nodes.Select(n => n.ID).ToList();
             var mlen = g.Nodes.Max(n => n.NeighborCount);
 
-            var list = new NativeAdjacencyList(nodes.Count, mlen, alloc);
+            var list = new NativeAdjacencyList(g.Nodes.Count, mlen, alloc);
 
             for(int i = 0; i < nodes.Count; i++)
             {

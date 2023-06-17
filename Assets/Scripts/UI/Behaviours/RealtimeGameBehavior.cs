@@ -78,6 +78,9 @@ namespace Ramsey.UI
             UnityReferences.GoalText.gameObject.SetActive(false);
             UnityReferences.TurnText.gameObject.SetActive(false);
 
+            CameraControlMode.ReturnToStart();
+            GameOverHandler.ForceStop();
+
             Main.Board.ClearScreen();
             
             Canvas.willRenderCanvases -= Main.Game.RenderUI;

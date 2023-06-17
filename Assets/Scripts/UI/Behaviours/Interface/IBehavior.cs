@@ -20,8 +20,8 @@ namespace Ramsey.UI
                 
                 yield return Transition.ShowScreen();
             }
-
-            Coroutines.StartCoroutine(Coro);
+            
+            Coroutines.Start(Coro);
         }
 
         public static void Cleanup()

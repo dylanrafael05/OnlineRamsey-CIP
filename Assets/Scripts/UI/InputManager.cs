@@ -65,6 +65,8 @@ namespace Ramsey.UI
 
             data.recorderToggled = Input.GetKeyDown(KeyCode.R);
 
+            data.scr = Input.mouseScrollDelta.y;
+
             if (board is null) return data;
 
             data.collidingNodes = board.Nodes.Where(n => CollideNode(data.mouse, n)).ToHashSet();
@@ -89,6 +91,8 @@ namespace Ramsey.UI
         public bool alt; public bool shift;
 
         public bool lkd; public bool rkd; //[Left, Right] Key Down
+
+        public float scr;
 
         public bool escape;
 

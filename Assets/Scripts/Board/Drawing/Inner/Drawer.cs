@@ -79,8 +79,6 @@ namespace Ramsey.Drawing
 
         public void DrawBoard()
         {
-            TextRenderer.Begin();
-
             if(presentStorage.ShouldUpdateEdgeBuffer)
             {
                 UpdateEdgeBuffer();
@@ -113,8 +111,6 @@ namespace Ramsey.Drawing
 
             for(var i = 0; i < currentStorage.NodePositions.Count; i++) 
                 TextRenderer.Draw(currentStorage.NodePositions[i], i.ToString());
-            
-            TextRenderer.End();
         }
 
         public void DrawUI()

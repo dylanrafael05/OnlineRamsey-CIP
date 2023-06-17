@@ -49,6 +49,9 @@ namespace Ramsey.Drawing
 
             UnityReferences.BackgroundMaterial.SetColor("_BaseColor", backgroundColor);
             UnityReferences.BackgroundMaterial.SetColor("_HighlightColor", backgroundHighlightColor);
+
+            UnityReferences.BackgroundMenuMaterial.SetColor("_BaseColor", backgroundColor);
+            UnityReferences.BackgroundMenuMaterial.SetColor("_HighlightColor", backgroundHighlightColor);
         }
     }
 }

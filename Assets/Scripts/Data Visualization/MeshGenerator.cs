@@ -5,14 +5,96 @@ using UnityEngine;
 using Ramsey.Utilities;
 
 using static Unity.Mathematics.math;
+using System.Linq;
+using System.Collections;
 
 namespace Ramsey.Visualization
 {
-    public struct MatchupData
+    public class MatchupData : IList<MatchupResult>
     {
+        public MatchupData(string label = null)
+        {
+            Label = label;
+        }
 
-        public List<int2> data; // <Turns to Win, Game Length> - <i, data[i]>
+        public string Label { get; }
 
+        private readonly List<MatchupResult> results = new();
+
+        public MatchupResult this[int index] { get => ((IList<MatchupResult>)results)[index]; set => ((IList<MatchupResult>)results)[index] = value; }
+
+        public int Count => ((ICollection<MatchupResult>)results).Count;
+
+        public bool IsReadOnly => ((ICollection<MatchupResult>)results).IsReadOnly;
+
+        public void Add(MatchupResult item)
+        {
+            ((ICollection<MatchupResult>)results).Add(item);
+        }
+
+        public void Clear()
+        {
+            ((ICollection<MatchupResult>)results).Clear();
+        }
+
+        public bool Contains(MatchupResult item)
+        {
+            return ((ICollection<MatchupResult>)results).Contains(item);
+        }
+
+        public void CopyTo(MatchupResult[] array, int arrayIndex)
+        {
+            ((ICollection<MatchupResult>)results).CopyTo(array, arrayIndex);
+        }
+
+        public IEnumerator<MatchupResult> GetEnumerator()
+        {
+            return ((IEnumerable<MatchupResult>)results).GetEnumerator();
+        }
+
+        public int IndexOf(MatchupResult item)
+        {
+            return ((IList<MatchupResult>)results).IndexOf(item);
+        }
+
+        public void Insert(int index, MatchupResult item)
+        {
+            ((IList<MatchupResult>)results).Insert(index, item);
+        }
+
+        public bool Remove(MatchupResult item)
+        {
+            return ((ICollection<MatchupResult>)results).Remove(item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            ((IList<MatchupResult>)results).RemoveAt(index);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable)results).GetEnumerator();
+        }
+    }
+
+    public readonly struct MatchupResult
+    {
+        public int PathSize { get; }
+        public float AverageGameLength { get; }
+        public int SampleSize { get; }
+
+        public MatchupResult(int pathsize, float gamelen, int samplesize = 1)
+        {
+            PathSize = pathsize;
+            AverageGameLength = gamelen;
+            SampleSize = samplesize;
+        }
+
+        public static MatchupResult Average(int pathsize, params float[] games)
+            => new(pathsize, (float)games.Average(), games.Length);
+
+        public float2 Datapoint => float2(PathSize, AverageGameLength);
     }
 
     public static class MeshGenerator
@@ -21,8 +103,9 @@ namespace Ramsey.Visualization
         static List<float2> GetPoints(MatchupData matchupData, float2 scale)
         {
             List<float2> points = new();
-            foreach (var p in matchupData.data)
-                points.Add(p * scale);
+            points.Add(float2(0f));
+            foreach (var p in matchupData)
+                points.Add(p.Datapoint * scale);
             return points;
         }
 
@@ -90,8 +173,8 @@ namespace Ramsey.Visualization
 
                 normal = normalize(normal1 + normal2);
 
-                vertices.Add((point - normal*.1f).xyzV()); uvs.Add(new(0f, -1));
-                vertices.Add((point + normal*.1f).xyzV()); uvs.Add(new(0f,  1));
+                vertices.Add(.1f*(point - normal*1f).xyzV()); uvs.Add(new(0f, -1));
+                vertices.Add(.1f*(point + normal*1f).xyzV()); uvs.Add(new(0f,  1));
             });
 
             List<int> triangles = new();
@@ -101,15 +184,19 @@ namespace Ramsey.Visualization
                 triangles.Add(i);
                 triangles.Add(i + 1);
                 triangles.Add(i + 2);
-                triangles.Add(i + 3);
-                triangles.Add(i + 1);
+
                 triangles.Add(i + 2);
+                triangles.Add(i + 1);
+                triangles.Add(i + 3);
             }
 
             var mesh = new Mesh();
             mesh.SetVertices(vertices);
             mesh.SetUVs(0, uvs);
             mesh.SetTriangles(triangles, 0);
+
+            Debug.Log("The vertices: ");
+            vertices.Print();
 
             return mesh;
 

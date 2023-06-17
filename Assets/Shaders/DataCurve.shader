@@ -1,4 +1,4 @@
-Shader "Unlit/DataCurve"
+Shader "Unlit/DataCurve" // Sorry for janky code
 {
     Properties
     {
@@ -72,7 +72,7 @@ Shader "Unlit/DataCurve"
                 float size = .04;
                 float ditherStart = 0.4;
 
-                float2 p = i.graphSpacePos;
+                float2 p = i.graphSpacePos*2.5;
                 p = amod(p+size*.5 + .3*float2(_Time.y*0.07, _Time.y*.13), size)-size*.5;
                 float sdBound = min(_SizeBounds - i.graphSpacePos);
                 float r = smoothstep(ditherStart, 0., sdBound)* size * .9;

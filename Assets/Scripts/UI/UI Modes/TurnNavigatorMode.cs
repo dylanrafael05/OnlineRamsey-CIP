@@ -12,8 +12,8 @@ namespace Ramsey.UI
     {
 
         public const float RecorderOffset = 3f;
-        public const float RecorderForce = 1f;
-        public const float RecorderTolerance = 0.05f;
+        public const float RecorderForce = 0.2f;
+        public const float RecorderTolerance = 0.02f;
 
         private static float RecorderY
         {
@@ -24,10 +24,9 @@ namespace Ramsey.UI
         
         private IEnumerator Slide(float target) 
         {
-            sliding = true;
             var dir = Mathf.Sign(target - RecorderY);
             
-            while(Mathf.Abs(RecorderY - target) > RecorderTolerance)
+            while(Mathf.Abs(RecorderY - target) > RecorderTolerance && dir == Mathf.Sign(target - RecorderY))
             {
                 RecorderY += dir * RecorderForce * Time.deltaTime;
                 RecorderY = Mathf.LerpUnclamped(RecorderY, (RecorderY * 39 + target) / 40, Time.deltaTime * 60f);
@@ -35,12 +34,11 @@ namespace Ramsey.UI
             }
             
             RecorderY = target;
-            sliding = false;
         }
 
         private float upperpos;
         private float lowerpos;
-        private bool sliding;
+        private Coroutine sliding;
         
         private bool recorderOffScreen = true;
 
@@ -54,9 +52,10 @@ namespace Ramsey.UI
 
         public void Update(InputData input, BoardManager board)
         {
-            if(!sliding && input.recorderToggled)
+            if(input.recorderToggled)
             {
-                Coroutines.StartCoroutine(Slide(recorderOffScreen ? lowerpos : upperpos));
+                Coroutines.Kill(sliding);
+                sliding = Coroutines.Start(Slide(recorderOffScreen ? lowerpos : upperpos));
                 recorderOffScreen = !recorderOffScreen;
             }
 

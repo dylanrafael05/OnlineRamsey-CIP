@@ -55,21 +55,25 @@ namespace Ramsey
 
             Game = new GameManager(Board)
             {
-                Delay = 0.2f
+                Delay = 0.0f
             };
             
             CameraManager.Create(screenCamera, boardCamera);
 
             GameBehaviour = new();
-            MenuBehavior = new(new GraphPreferences(new(5), new(1), new(), new(10), Color.black, .1f) {});
+            MenuBehavior = new(new GraphPreferences(new(1), new(1), new(), new(10), Color.black, .1f) {});
 
             IBehavior.SwitchTo(MenuBehavior);
         }
 
         void Update()
         {
+            TextRenderer.Begin();
+
             var input = InputManager.Update();
             IBehavior.Active.Loop(input);
+            
+            TextRenderer.End();
         }
 
         void OnDestroy() 

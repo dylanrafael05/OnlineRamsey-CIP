@@ -1,5 +1,7 @@
 using Ramsey.Gameplayer;
 using Ramsey.Screen;
+using Ramsey.Utilities;
+using Ramsey.Utilities.UI;
 using Ramsey.Visualization;
 using Unity.Mathematics;
 using UnityEngine;
@@ -11,51 +13,136 @@ namespace Ramsey.UI
     public class MenuBehavior : Behavior
     {
         //
-        Visualizer visualizer;
+        readonly Visualizer visualizer;
         bool visualizing = false;
+        bool prevCouldSetDelay = false;
 
         //
-        MenuManager menu;
+        readonly MenuManager menu;
+        readonly GameObject menuObj;
 
-        DropdownWrapper<Painter> painter;
-        DropdownWrapper<Builder> builder;
+        readonly Button goAhead;
 
-        Button startRealtimeGameButton;
-        Button startBulkGameButton;
+        readonly Toggle runBulk;
+
+        readonly GameObject standardMenu;
+        readonly InputBox standardCount, standardDelay;
+        
+        readonly GameObject bulkMenu;
+        readonly InputBox bulkStart, bulkEnd, bulkStep, bulkAtt;
 
         public MenuBehavior(GraphPreferences graphPreferences)
         {
             visualizer = new(CameraManager.ScreenCamera, graphPreferences);
-            menu = new(new() { }, new() { });
-
-            var painterObj = GameObject.Find("Painter Select").GetComponent<Dropdown>();
-            var builderObj = GameObject.Find("Builder Select").GetComponent<Dropdown>();
-
-            painter = new(painterObj,
-                ("User", () => new UserPainter()),
-                ("Random", () => new RandomPainter()),
-                ("Alternating", () => new AlternatingPainter())
+            menu = new(
+                new() 
+                { 
+                    StrategyInitializer.For<UserBuilder>(),
+                    StrategyInitializer.For<CapBuilder>(() => new(Main.Game.State)),
+                    StrategyInitializer.For<RandomBuilder>(o => new((float)o[0], (float)o[1], (float)o[2]), 
+                        new TextParameter { Name = "Pendant Weight",  Verifier = new IInputVerifier.Float(0, 1) },
+                        new TextParameter { Name = "Internal Weight", Verifier = new IInputVerifier.Float(0, 1) },
+                        new TextParameter { Name = "Isolated Weight", Verifier = new IInputVerifier.Float(0, 1) }
+                    ),
+                    StrategyInitializer.For<ConstrainedRandomBuilder>(o => new((int)o[0]), 
+                        new TextParameter { Name = "Node Count", Verifier = new IInputVerifier.Integer(2, 40) }
+                    ),
+                    StrategyInitializer.For<PolygonBuilder>(o => new((int)o[0], Main.Game.State),
+                        new TextParameter { Name = "Side Count", Verifier = new IInputVerifier.Integer(3) }
+                    ),
+                }, 
+                new() 
+                { 
+                    StrategyInitializer.For<UserPainter>(),
+                    StrategyInitializer.For<RandomPainter>(),
+                    StrategyInitializer.For<AlternatingPainter>(),
+                    StrategyInitializer.For<LengthyPainter>()
+                }
             );
-            builder = new(builderObj,
-                ("User", () => new UserBuilder()),
-                ("Random", () => new RandomBuilder(0.5f, 0.4f, 0.1f))
-            );
 
-            startRealtimeGameButton = GameObject.Find("Enter Realtime Game").GetComponent<Button>();
-            startBulkGameButton = GameObject.Find("Enter Bulk Game").GetComponent<Button>();
+            menuObj = GameObject.Find("Menu");
 
-            startRealtimeGameButton.onClick.AddListener(() => 
+            runBulk = GameObject.Find("Run in Bulk").GetComponent<Toggle>();
+
+            standardMenu = GameObject.Find("Standard Options");
+            standardCount = InputBox.Find("Game Length", new IInputVerifier.Integer(min: 1, max: 255), "10");
+            standardDelay = InputBox.Find("Delay Between Turns", new IInputVerifier.Float(min: 0, max: 5), "0.2");
+
+            bulkMenu = GameObject.Find("Bulk Options");
+            bulkStart = InputBox.Find("Start", new IInputVerifier.Integer(min: 1, max: 255), "1");
+            bulkEnd = InputBox.Find("End", new IInputVerifier.Integer(min: 1, max: 255), "10");
+            bulkStep = InputBox.Find("Step", new IInputVerifier.Integer(min: 1, max: 255), "1");
+            bulkAtt = InputBox.Find("Attempts Per", new IInputVerifier.Integer(min: 1), "20");
+
+            goAhead = GameObject.Find("Menu Go").GetComponent<Button>();
+
+            goAhead.onClick.AddListener(() => 
             {
-                visualizing = false;
-                Main.GameBehaviour.StartGame(10, builder.Selected, painter.Selected);
-                IBehavior.SwitchTo(Main.GameBehaviour);
+                if(!menu.ValidParameters) return;
+
+                if(runBulk.isOn)
+                {
+                    if(!InputBox.AllValid(bulkStart, bulkEnd, bulkStep, bulkAtt))
+                        return;
+
+                    visualizing = true;
+                    InitAfterGather(Main.Game.SimulateMany(
+                        (int)bulkStart.Input,
+                        (int)bulkEnd.Input,
+                        (int)bulkStep.Input,
+                        menu.ConstructBuilder(),
+                        menu.ConstructPainter(),
+                        (int)bulkAtt.Input
+                    ));
+                }
+                else 
+                {
+                    if(!InputBox.AllValid(standardCount))
+                        return;
+                    
+                    visualizing = false;
+                    Main.Game.Delay = (float)standardDelay.Input;
+                    Main.GameBehaviour.StartGame(
+                        (int)standardCount.Input, 
+                        menu.ConstructBuilder(), 
+                        menu.ConstructPainter()
+                    );
+                    IBehavior.SwitchTo(Main.GameBehaviour);
+                }
             });
 
-            startBulkGameButton.onClick.AddListener(() =>
+            runBulk.isOn = false;
+            bulkMenu.SetActive(false);
+
+            runBulk.onValueChanged.AddListener(bulk => 
             {
-                visualizing = true;
-                InitAfterGather(Main.Game.SimulateGames(0, 20, 1, builder.Selected, painter.Selected));
+                if(bulk)
+                {
+                    bulkMenu.SetActive(true);
+                    standardMenu.SetActive(false);
+                }
+                else 
+                {
+                    bulkMenu.SetActive(false);
+                    standardMenu.SetActive(true);
+                }
             });
+
+            menu.OnStrategyChanged += (painter, builder) => 
+            {
+                var canSetDelay = !painter.IsAutomated || !builder.IsAutomated;
+
+                if(prevCouldSetDelay && !canSetDelay)
+                {
+                    standardDelay.Textbox.DeactivateInputField(true);
+                }
+                else if(!prevCouldSetDelay && canSetDelay)
+                {
+                    standardDelay.Textbox.ActivateInputField();
+                }
+
+                prevCouldSetDelay = canSetDelay;
+            };
         }
 
         public void Init()
@@ -70,30 +157,33 @@ namespace Ramsey.UI
 
         public void InitAfterGather(MatchupData data)
         {
+            Debug.Log(data.Count);
 
+            visualizer.AddCurve(data, 0f);
         }
 
         public override void Loop(InputData input)
         {
+            menu.UpdateWheels(input);
+            menu.Draw();
 
-            if (visualizing) visualizer.Draw();
-
+            if (visualizing) 
+            { 
+                visualizer.UpdateInput(input.scr, input.mouse); 
+                visualizer.Draw(); 
+            }
         }
 
         public override void OnEnter()
         {
-            painter.UI.gameObject.SetActive(true);
-            builder.UI.gameObject.SetActive(true);
-
-            startRealtimeGameButton.gameObject.SetActive(true);
+            menuObj.SetActive(true);
+            menu.ShowActiveTextInputs();
         }
 
         public override void OnExit()
         {
-            painter.UI.gameObject.SetActive(false);
-            builder.UI.gameObject.SetActive(false);
-
-            startRealtimeGameButton.gameObject.SetActive(false);
+            menuObj.SetActive(false);
+            menu.HideAllTextInputs();
         }
     }
 }

@@ -41,9 +41,12 @@ namespace Ramsey.UI
             InGame = true;
 
             currentTask = null;
+
+            builder.Reset();
+            painter.Reset();
         }
 
-        public int2? SimulateGame(int target, Builder builder, Painter painter) 
+        public MatchupResult? SimulateGameOnce(int target, Builder builder, Painter painter) 
         {
             Assert.IsTrue(builder.IsAutomated, "Cannot simulate a game to its end with non-automated platers!");
             Assert.IsTrue(painter.IsAutomated, "Cannot simulate a game to its end with non-automated platers!");
@@ -52,15 +55,30 @@ namespace Ramsey.UI
             RunUntilDone();
             return GetMatchupData();
         }
-        
-        public MatchupData SimulateGames(int startTarget, int endTarget, int step, Builder builder, Painter painter)
+
+        public MatchupResult? SimulateGame(int target, Builder builder, Painter painter, int attempts = 1) 
         {
-            MatchupData matchupData = new() { data = new() };
+            var matchups = new List<MatchupResult>(attempts);
+
+            for(int i = 0; i < attempts; i++)
+            {
+                if(SimulateGameOnce(target, builder, painter) is MatchupResult result)
+                    matchups.Add(result);
+            }
+
+            if(matchups.Count == 0) return null;
+
+            return MatchupResult.Average(target, matchups.Select(t => t.AverageGameLength).ToArray());
+        }
+        
+        public MatchupData SimulateMany(int startTarget, int endTarget, int step, Builder builder, Painter painter, int attempts = 1)
+        {
+            MatchupData matchupData = new();
 
             for(int t = startTarget; t <= endTarget; t += step)
             {
-                var s = SimulateGame(t, builder, painter);
-                if(s is int2 i) matchupData.data.Add(i);
+                var s = SimulateGame(t, builder, painter, attempts);
+                if(s is MatchupResult i) matchupData.Add(i);
             }
 
             return matchupData;
@@ -99,9 +117,7 @@ namespace Ramsey.UI
             {
                 if(player.IsAutomated && !synchronous) await Task.Delay((int)(Delay * 1000));
 
-                // TODO: how to handle these awaits while running syncronously?
-                // TODO: can we assume that these will always instant-return?
-                return await player.GetMove(board.GameState);
+                return await player.GetMove(board.GameState).AssertSync(synchronous);
             }
             
             // Repeat until move is valid
@@ -113,11 +129,11 @@ namespace Ramsey.UI
                 {
                     if(isBuilderTurn)
                     {
-                        move = await GetMove(builder);
+                        move = await GetMove(builder).AssertSync(synchronous);
                     }
                     else 
                     {
-                        move = await GetMove(painter);
+                        move = await GetMove(painter).AssertSync(synchronous);
                     }
                 }
                 catch(GraphTooComplexException) 
@@ -139,7 +155,7 @@ namespace Ramsey.UI
             }
 
             // Wait for path task to complete
-            if(!synchronous) await board.AwaitPathTask();
+            await board.AwaitPathTask().AssertSync(synchronous);
         }
 
         public void UpdateGameplay() 
@@ -160,13 +176,13 @@ namespace Ramsey.UI
         
         public void RenderUI() 
         {
-            board.RenderBoard();
+            board.RenderUI();
         }
 
-        public int2? GetMatchupData()
+        public MatchupResult? GetMatchupData()
         {
-            if(State.GraphTooComplex || InGame) return null;
-            return new(State.TurnNum, State.TargetPathLength);
+            if(State.GraphTooComplex) return null;
+            return new(State.TargetPathLength, State.TurnNum);
         }
 
         public void Cleanup()
