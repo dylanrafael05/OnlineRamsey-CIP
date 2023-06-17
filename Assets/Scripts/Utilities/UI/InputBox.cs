@@ -1,6 +1,7 @@
 using TextInput = TMPro.TMP_InputField;
 using Text = TMPro.TMP_Text;
 using UnityEngine;
+using System.Linq;
 
 namespace Ramsey.Utilities.UI 
 {
@@ -15,7 +16,11 @@ namespace Ramsey.Utilities.UI
         public Text Title { get; }
         public Text Error { get; }
 
-        public string InputRaw => Textbox.text;
+        public string InputRaw 
+        {
+            get => Textbox.text;
+            set => Textbox.text = value;
+        }
         public bool InputValid => Verifier.IsValid(InputRaw, out _);
         public string InputInvalidReason 
         {
@@ -31,9 +36,11 @@ namespace Ramsey.Utilities.UI
 
         public object Input => Verifier.Parse(InputRaw);
 
-        public InputBox(GameObject head, string name, IInputVerifier verifier) 
+        public InputBox(GameObject head, string name, IInputVerifier verifier, string defaultValue = "") 
         {
             Textbox = head.GetComponent<TextInput>();
+            Textbox.text = defaultValue;
+
             Verifier = verifier;
 
             Title = MainTransform.GetChild(1).GetComponent<Text>();
@@ -55,6 +62,15 @@ namespace Ramsey.Utilities.UI
             {
                 Error.text = "";
             });
+        }
+        
+        public static InputBox Find(string name, IInputVerifier verifier, string defaultValue = "")
+        {
+            return new(GameObject.Find(name), name, verifier, defaultValue);
+        }
+        public static bool AllValid(params InputBox[] boxes)
+        {
+            return boxes.All(b => b.InputValid);
         }
     }
 }

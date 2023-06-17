@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Ramsey.Graph;
 using System.Threading.Tasks;
 
+[NonDeterministicStrategy]
 public class ConstrainedRandomBuilder : Builder 
 {
     private readonly int target;
@@ -33,9 +34,6 @@ public class ConstrainedRandomBuilder : Builder
 
         Reset();
     }
-
-    public override bool IsAutomated => true;
-    public override bool IsDeterministic => false;
 
     private Node GetNode(GameState state, int x) 
     {

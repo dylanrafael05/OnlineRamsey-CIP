@@ -10,6 +10,7 @@ using static Ramsey.Gameplayer.BuilderUtils;
 
 namespace Ramsey.Gameplayer
 {
+    [NonDeterministicStrategy]
     public class PolygonBuilder : Builder
     {
 

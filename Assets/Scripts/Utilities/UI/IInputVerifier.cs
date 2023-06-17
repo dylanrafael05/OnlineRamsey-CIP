@@ -1,3 +1,7 @@
+using System.Globalization;
+using System.Text.RegularExpressions;
+using UnityEngine;
+
 namespace Ramsey.Utilities.UI
 {
     public interface IInputVerifier
@@ -20,7 +24,7 @@ namespace Ramsey.Utilities.UI
             {
                 reason = null;
 
-                if(!float.TryParse(str, out var val))
+                if(!float.TryParse(str, NumberStyles.Float, CultureInfo.InvariantCulture, out var val))
                 {
                     reason = "Invalid number";
                     return false;
@@ -41,7 +45,7 @@ namespace Ramsey.Utilities.UI
             }
 
             public object Parse(string str)
-                => float.Parse(str);
+                => float.Parse(str, NumberStyles.Float, CultureInfo.InvariantCulture);
         }
 
         public class Integer : IInputVerifier
@@ -59,9 +63,9 @@ namespace Ramsey.Utilities.UI
             {
                 reason = null;
 
-                if(!int.TryParse(str, out var val))
+                if(!int.TryParse(str, NumberStyles.Integer, CultureInfo.InvariantCulture, out var val))
                 {
-                    reason = "Invalid number";
+                    reason = "Invalid integer";
                     return false;
                 }
 
@@ -80,7 +84,7 @@ namespace Ramsey.Utilities.UI
             }
 
             public object Parse(string str)
-                => int.Parse(str);
+                => int.Parse(str, NumberStyles.Integer, CultureInfo.InvariantCulture);
         }
     }
 }

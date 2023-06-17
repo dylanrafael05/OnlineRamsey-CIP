@@ -9,10 +9,9 @@ using Ramsey.UI;
 
 namespace Ramsey.Gameplayer
 {
+    [NonAutomatedStrategy]
     public class UserBuilder : Builder, IUserMode<BoardManager>
     {
-        public override bool IsAutomated => false;
-
         public override async Task<BuilderMove> GetMove(GameState gameState)
         {
             UserModeHandler<BoardManager>.AddMode(this);
@@ -58,10 +57,9 @@ namespace Ramsey.Gameplayer
 
     }
 
+    [NonAutomatedStrategy]
     public class UserPainter : Painter, IUserMode<BoardManager>
     {
-        public override bool IsAutomated => false;
-
         public override async Task<PainterMove> GetMove(GameState gameState)
         {
             UserModeHandler<BoardManager>.AddMode(this);

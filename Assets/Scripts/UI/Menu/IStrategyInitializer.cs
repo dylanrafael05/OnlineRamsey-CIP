@@ -18,5 +18,8 @@ namespace Ramsey.UI
         bool InputIsValid();
 
         string Name { get; }
+
+        bool IsDeterministic { get; }
+        bool IsAutomated { get; }
     }
 }
