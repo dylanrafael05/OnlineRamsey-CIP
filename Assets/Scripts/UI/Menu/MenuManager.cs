@@ -11,6 +11,8 @@ using UnityEngine;
 using Ramsey.Utilities;
 using System;
 
+using Text = TMPro.TMP_Text;
+
 namespace Ramsey.UI
 {
     public class MenuManager
@@ -21,7 +23,12 @@ namespace Ramsey.UI
         WheelSelect builderSelect;
         WheelSelect painterSelect;
 
+        Text builderParamsTitle;
+        Text painterParamsTitle;
+
         float inputDistance;
+
+        bool firstUpdate;
 
         public event Action<IStrategyInitializer<Builder>, IStrategyInitializer<Painter>> OnStrategyChanged;
         
@@ -34,30 +41,46 @@ namespace Ramsey.UI
             painterSelect = new(wheelRadiusPainter, wheelThickness, tickDim ?? new(0.02f, 0.1f), painterInitializers.Count, knobRadius);
 
             this.inputDistance = inputDistance;
+
+            builderParamsTitle = GameObject.Find("Builder Params Title").GetComponent<Text>();
+            painterParamsTitle = GameObject.Find("Painter Params Title").GetComponent<Text>();
+
+            firstUpdate = true;
         }
 
         public void UpdateWheels(InputData input)
         {
             bool strategyChanged = false;
 
-            strategyChanged |= UpdateWheel(input, builderSelect, builderInitializers);
-            strategyChanged |= UpdateWheel(input, painterSelect, painterInitializers);
+            strategyChanged |= UpdateWheel(input, builderSelect, builderInitializers, false);
+            strategyChanged |= UpdateWheel(input, painterSelect, painterInitializers, true);
 
             if(strategyChanged)
                 OnStrategyChanged?.Invoke(BuilderInit, PainterInit);
+            
+            firstUpdate = false;
         }
 
-        bool UpdateWheel(InputData input, WheelSelect wheel, IReadOnlyList<IStrategyInitializer<IPlayer>> initializers)
+        bool UpdateWheel(InputData input, WheelSelect wheel, IReadOnlyList<IStrategyInitializer<IPlayer>> initializers, bool painter)
         {
             int prev = wheel.CurrentTick;
             int curr = wheel.Update(input.mouse, input.lmb, input.lmbp);
 
-            if(prev != curr)
+            if(prev != curr || firstUpdate)
             {
                 initializers[prev].HideTextInputs();
 
-                var knobPos = wheel.KnobPos;
-                initializers[curr].ShowTextInputs();
+                if(initializers[curr].Parameters.Count > 0)
+                {
+                    (painter ? painterParamsTitle : builderParamsTitle).gameObject.SetActive(true);
+                    (painter ? painterParamsTitle : builderParamsTitle).text = initializers[curr].Name + (painter ? " Painter" : " Builder");
+
+                    initializers[curr].ShowTextInputs();
+                }
+                else 
+                {
+                    (painter ? painterParamsTitle : builderParamsTitle).gameObject.SetActive(false);
+                }
 
                 return true;
             }

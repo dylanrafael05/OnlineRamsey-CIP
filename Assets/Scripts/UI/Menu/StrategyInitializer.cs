@@ -32,7 +32,6 @@ namespace Ramsey.UI
         public IReadOnlyList<TextParameter> Parameters { get; }
         public Func<object[], T> Construct { get; }
 
-        private GameObject container;
         private InputBox[] inputs;
         public IReadOnlyList<InputBox> Inputs => inputs;
 
@@ -42,33 +41,30 @@ namespace Ramsey.UI
             {
                 inputs = new InputBox[Parameters.Count];
 
-                container = new GameObject(Name + " Input Container");
-                container.AddComponent<RectTransform>();
-                container.AddComponent<VerticalLayoutGroup>();
-                container.transform.SetParent(GameObject.Find("Leftside Menu Content").transform);
-
                 foreach(var (param, i) in Parameters.Indexed())
                 {
-                    var box = Textboxes.CreateTextbox(
-                        float2(0), 
-                        float2(1),
-                        param.Name,
-                        param.Verifier
-                    );
+                    var box = InputBox.Prefab(Textboxes.InputPrefab, param.Name, param.Verifier, param.DefaultValue);
 
-                    box.MainTransform.SetParent(container.transform);
+                    var parent = "Painter Params Title";
+                    if(typeof(Builder).IsAssignableFrom(typeof(T)))
+                        parent = "Builder Params Title";
+
+                    box.MainTransform.SetParent(GameObject.Find("Leftside Menu Content").transform);
+                    box.MainTransform.SetSiblingIndex(GameObject.Find(parent).transform.GetSiblingIndex() + 1);
+                    box.MainTransform.localPosition = new float3(box.MainTransform.localPosition.xy(), 0);
+                    box.MainTransform.localScale = new float3(1.3f, 1.3f, 1f);
 
                     inputs[i] = box;
                 }
             }
 
-            container.gameObject.SetActive(true);
+            inputs.Foreach(i => i.GameObject.SetActive(true));
         }
 
         public void HideTextInputs()
         {
             if(inputs != null)
-                container.gameObject.SetActive(false);
+                inputs.Foreach(i => i.GameObject.SetActive(false));
         }
 
         public bool InputIsValid()

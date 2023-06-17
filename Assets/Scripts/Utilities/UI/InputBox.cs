@@ -7,9 +7,10 @@ namespace Ramsey.Utilities.UI
 {
     public class InputBox
     {
-        public Transform MainTransform => Textbox.transform;
-        public GameObject GameObject => Textbox.gameObject;
+        public Transform MainTransform => Head.transform;
+        public GameObject GameObject => Head.gameObject;
 
+        public GameObject Head { get; }
         public TextInput Textbox { get; }
 
         public IInputVerifier Verifier { get; }
@@ -38,13 +39,15 @@ namespace Ramsey.Utilities.UI
 
         public InputBox(GameObject head, string name, IInputVerifier verifier, string defaultValue = "") 
         {
-            Textbox = head.GetComponent<TextInput>();
+            Head = head;
+
+            Textbox = head.GetComponentInChildren<TextInput>();
             Textbox.text = defaultValue;
 
             Verifier = verifier;
 
-            Title = MainTransform.GetChild(1).GetComponent<Text>();
-            Error = MainTransform.GetChild(2).GetComponent<Text>();
+            Title = Textbox.transform.GetChild(1).GetComponent<Text>();
+            Error = Textbox.transform.GetChild(2).GetComponent<Text>();
 
             Title.text = name;
 
@@ -67,6 +70,10 @@ namespace Ramsey.Utilities.UI
         public static InputBox Find(string name, IInputVerifier verifier, string defaultValue = "")
         {
             return new(GameObject.Find(name), name, verifier, defaultValue);
+        }
+        public static InputBox Prefab(GameObject prefab, string name, IInputVerifier verifier, string defaultValue = "")
+        {
+            return new(GameObject.Instantiate(prefab), name, verifier, defaultValue);
         }
         public static bool AllValid(params InputBox[] boxes)
         {
