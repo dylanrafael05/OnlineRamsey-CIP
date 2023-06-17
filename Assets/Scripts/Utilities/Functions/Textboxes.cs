@@ -3,6 +3,7 @@ using UnityEngine;
 
 using TextInput = TMPro.TMP_InputField;
 using Text = TMPro.TMP_Text;
+using Ramsey.Utilities.UI;
 
 namespace Ramsey.Utilities
 {
@@ -19,7 +20,7 @@ namespace Ramsey.Utilities
             rect = GameObject.Find("Menu").GetComponent<RectTransform>();
         }
 
-        public static TextInput CreateTextbox(float2 position, float2 scale) 
+        public static InputBox CreateTextbox(float2 position, float2 scale, string name, IInputVerifier verifier) 
         {
             if(!isSetup)
             {
@@ -38,7 +39,7 @@ namespace Ramsey.Utilities
 
             //trans.SetPositionAndRotation(trans.position, Quaternion.identity);
 
-            return go.GetComponent<TextInput>();
+            return new(go, name, verifier);
         }
 
         public static void SetPlaceholder(this TextInput ti, string value)

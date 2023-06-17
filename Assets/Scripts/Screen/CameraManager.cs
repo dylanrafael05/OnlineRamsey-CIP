@@ -35,10 +35,9 @@ namespace Ramsey.Screen
 
         public static void Update() 
         {
-            var scl = UnityReferences.BackgroundRenderer.transform.localScale;
             UnityReferences.BackgroundRenderer.transform.localPosition = new Vector3(
-                x: MathUtils.Round(BoardCamera.transform.localPosition.x, scl.x * 0.01f * 20), //TODO: this 0.01f should be a uniform!,
-                y: MathUtils.Round(BoardCamera.transform.localPosition.y, scl.y * 0.01f * 20), //TODO: this 0.01f should be a uniform!
+                x: BoardCamera.transform.localPosition.x,
+                y: BoardCamera.transform.localPosition.y,
                 z: UnityReferences.BackgroundRenderer.transform.localPosition.z
             );
         }

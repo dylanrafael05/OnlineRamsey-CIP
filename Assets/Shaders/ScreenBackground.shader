@@ -45,7 +45,7 @@ Shader "Unlit/Screen/Background"
                 vOut o;
 
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = v.uv;
+                o.uv = mul(UNITY_MATRIX_M, v.vertex).xy * 0.008;
 
                 return o;
             }
@@ -82,7 +82,7 @@ Shader "Unlit/Screen/Background"
             {
                 float2 dir = float2(sin(_Time.x * 3.f), cos(_Time.x * 3.3f));
 
-                float2 uv = (fmod(i.uv + SCL * SCROLL * dir, SCL) / SCL) * 2.f - 1.f;
+                float2 uv = (amod(i.uv + SCL * SCROLL * dir, SCL) / SCL) * 2.f - 1.f;
                 uv = rotate(uv, _Time.x);
 
                 float2 id = i.uv - SCL*(uv*.5+.5);
