@@ -173,7 +173,7 @@ namespace Ramsey.UI
 
             material.SetInteger("_NodeLocation", CurrentTick);
 
-            Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.WheelSelectTransform.localToWorldMatrix, material, UnityReferences.ScreenLayer);
+            Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.WheelSelectTransform.localToWorldMatrix, material, UnityReferences.BoardLayer);
 
         }
 
