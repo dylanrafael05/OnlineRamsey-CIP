@@ -12,5 +12,8 @@ namespace Ramsey.Gameplayer
             n1 = n2;
             return move;
         }
+
+        public static BuilderMove Extend(Node n1, GameState state)
+            => new(n1, state.CreateNode());
     }
 }

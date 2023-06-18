@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 
 namespace Ramsey.Gameplayer
 {
-    public class FavoriteColorPainter : Painter 
+    public class AntiPainter : Painter 
     {
-        public FavoriteColorPainter(int favoriteColor)
+        public AntiPainter(int favoriteColor)
         {
             FavoriteColor = favoriteColor;
         }

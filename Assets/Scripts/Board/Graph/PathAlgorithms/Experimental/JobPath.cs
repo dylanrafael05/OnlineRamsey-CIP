@@ -30,6 +30,7 @@ namespace Ramsey.Graph.Experimental
                 nodes = new Node[Length + 1];
                 nodes[0]  = Start;
                 nodes[^1] = End;
+                nodes[(int) ((nodes.Length - 1) * .5f)] = Middle;
 
                 Assert.IsTrue(
                     FindSequence(graph, nodes, 1, remainingNodes), 
@@ -73,6 +74,7 @@ namespace Ramsey.Graph.Experimental
         public IEnumerable<Node> Nodes => nodes;
 
         public Node Start { get; }
+        public Node Middle { get; }
         public Node End { get; }
         public int Length { get; }
         public int Type { get; }

@@ -51,6 +51,7 @@ namespace Ramsey.UI
                     StrategyInitializer.For<PolygonBuilder>(o => new((int)o[0], Main.Game.State),
                         new TextParameter { Name = "Side Count", Verifier = new IInputVerifier.Integer(3), DefaultValue = "8" }
                     ),
+                    StrategyInitializer.For<AntiBuilder>()
                 }, 
                 new() 
                 { 
@@ -58,7 +59,7 @@ namespace Ramsey.UI
                     StrategyInitializer.For<RandomPainter>(),
                     StrategyInitializer.For<AlternatingPainter>(),
                     StrategyInitializer.For<LengthyPainter>(),
-                    StrategyInitializer.For<FavoriteColorPainter>(o => new((int)o[0]), 
+                    StrategyInitializer.For<AntiPainter>(o => new((int)o[0]), 
                         new TextParameter { Name = "Color", Verifier = new IInputVerifier.Integer(0, 2), DefaultValue = "0" }
                     ),
                 }
