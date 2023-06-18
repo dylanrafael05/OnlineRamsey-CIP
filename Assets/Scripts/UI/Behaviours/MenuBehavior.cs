@@ -41,15 +41,15 @@ namespace Ramsey.UI
                     StrategyInitializer.For<UserBuilder>(),
                     StrategyInitializer.For<CapBuilder>(() => new(Main.Game.State)),
                     StrategyInitializer.For<RandomBuilder>(o => new((float)o[0], (float)o[1], (float)o[2]), 
-                        new TextParameter { Name = "Pendant Weight",  Verifier = new IInputVerifier.Float(0, 1) },
-                        new TextParameter { Name = "Internal Weight", Verifier = new IInputVerifier.Float(0, 1) },
-                        new TextParameter { Name = "Isolated Weight", Verifier = new IInputVerifier.Float(0, 1) }
+                        new TextParameter { Name = "Pendant Weight",  Verifier = new IInputVerifier.Float(0, 1), DefaultValue = "0.5" },
+                        new TextParameter { Name = "Internal Weight", Verifier = new IInputVerifier.Float(0, 1), DefaultValue = "0.4" },
+                        new TextParameter { Name = "Isolated Weight", Verifier = new IInputVerifier.Float(0, 1), DefaultValue = "0.1" }
                     ),
                     StrategyInitializer.For<ConstrainedRandomBuilder>(o => new((int)o[0]), 
-                        new TextParameter { Name = "Node Count", Verifier = new IInputVerifier.Integer(2, 40) }
+                        new TextParameter { Name = "Node Count", Verifier = new IInputVerifier.Integer(2, 40), DefaultValue = "20" }
                     ),
                     StrategyInitializer.For<PolygonBuilder>(o => new((int)o[0], Main.Game.State),
-                        new TextParameter { Name = "Side Count", Verifier = new IInputVerifier.Integer(3) }
+                        new TextParameter { Name = "Side Count", Verifier = new IInputVerifier.Integer(3), DefaultValue = "8" }
                     ),
                 }, 
                 new() 
@@ -57,7 +57,10 @@ namespace Ramsey.UI
                     StrategyInitializer.For<UserPainter>(),
                     StrategyInitializer.For<RandomPainter>(),
                     StrategyInitializer.For<AlternatingPainter>(),
-                    StrategyInitializer.For<LengthyPainter>()
+                    StrategyInitializer.For<LengthyPainter>(),
+                    StrategyInitializer.For<FavoriteColorPainter>(o => new((int)o[0]), 
+                        new TextParameter { Name = "Color", Verifier = new IInputVerifier.Integer(0, 2), DefaultValue = "0" }
+                    ),
                 }
             );
 

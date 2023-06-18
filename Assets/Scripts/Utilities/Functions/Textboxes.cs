@@ -4,19 +4,30 @@ using UnityEngine;
 using TextInput = TMPro.TMP_InputField;
 using Text = TMPro.TMP_Text;
 using Ramsey.Utilities.UI;
+using System;
 
 namespace Ramsey.Utilities
 {
 
     public static class Textboxes
     {
+        private static GameObject prefab;
+
         private static bool isSetup;
-        private static GameObject inputPrefab;
+        public static GameObject InputPrefab 
+        { 
+            get 
+            {
+                if(!isSetup) Create();
+                return prefab;
+            }
+        }
+
         private static RectTransform rect;
 
         private static void Create() 
         {
-            inputPrefab = Resources.Load<GameObject>("Prefabs/TextInput");
+            prefab = Resources.Load<GameObject>("Prefabs/TextInput");
             rect = GameObject.Find("Menu").GetComponent<RectTransform>();
         }
 
@@ -28,7 +39,7 @@ namespace Ramsey.Utilities
                 isSetup = true;
             }
 
-            var go = GameObject.Instantiate(inputPrefab);
+            var go = GameObject.Instantiate(InputPrefab);
             var trans = go.GetComponent<RectTransform>();
 
             trans.SetParent(rect);

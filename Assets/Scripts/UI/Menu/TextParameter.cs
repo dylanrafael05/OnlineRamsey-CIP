@@ -6,5 +6,6 @@ namespace Ramsey.UI
     {
         public string Name { get; set; }
         public IInputVerifier Verifier { get; set; }
+        public string DefaultValue { get; set; }
     }
 }

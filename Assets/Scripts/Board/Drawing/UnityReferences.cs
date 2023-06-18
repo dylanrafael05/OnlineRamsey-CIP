@@ -74,9 +74,6 @@ namespace Ramsey.Drawing
 
             BoardLayer = LayerMask.NameToLayer("Board");
             ScreenLayer = LayerMask.NameToLayer("Screen");
-
-            //TransitionRenderer = GameObject.Find("Transition").GetComponent<MeshRenderer>();
-            //TransitionRenderer.material = TransitionMaterial;
         }
     }
 }
