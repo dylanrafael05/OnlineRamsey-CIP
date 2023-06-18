@@ -29,6 +29,8 @@ namespace Ramsey.Drawing
         public static Material BackgroundMaterial { get; private set; }
         public static Material WheelMaterial { get; private set; }
 
+        public static GameObject MenuBackground { get; private set; } //idk if this follows ur design so far feel free to move to menubehavior
+
         public static int BoardLayer { get; private set; }
         public static int ScreenLayer { get; private set; }
 
@@ -64,7 +66,8 @@ namespace Ramsey.Drawing
             EdgeMaterial.enableInstancing = true;
             NodeMaterial.enableInstancing = true;
 
-            GameObject.Find("Menu Background").GetComponent<MeshRenderer>().material = BackgroundMenuMaterial;
+            MenuBackground = GameObject.Find("Menu Background");
+            MenuBackground.GetComponent<MeshRenderer>().material = BackgroundMenuMaterial;
 
             BackgroundRenderer = GameObject.Find("Background").GetComponent<MeshRenderer>();
             BackgroundRenderer.material = BackgroundMaterial;

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.12731749, g: 0.13414757, b: 0.1210787, a: 1}
+  m_IndirectSpecularColor: {r: 0.12731715, g: 0.13414735, b: 0.121078536, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1138,7 +1138,7 @@ RectTransform:
   m_GameObject: {fileID: 715410966}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 500, y: 500, z: 1}
+  m_LocalScale: {x: 500, y: 500, z: 0.99999994}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 809615486}
@@ -1146,7 +1146,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 228, y: 0}
+  m_AnchoredPosition: {x: 228.00003, y: 0}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &809615485
@@ -1266,7 +1266,7 @@ GameObject:
   - component: {fileID: 849061015}
   - component: {fileID: 849061014}
   m_Layer: 6
-  m_Name: MenuBackground
+  m_Name: Menu Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1279,13 +1279,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 849061012}
-  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 8.35}
-  m_LocalScale: {x: 1.7628, y: 1, z: 0.9916}
+  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 226.02077}
+  m_LocalScale: {x: 118.93414, y: 67.46888, z: 66.90214}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1643165439}
-  m_RootOrder: 5
+  m_Father: {fileID: 1570393997}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!64 &849061014
 MeshCollider:
@@ -3224,6 +3224,7 @@ RectTransform:
   m_Children:
   - {fileID: 1431593658}
   - {fileID: 1489769534}
+  - {fileID: 849061013}
   m_Father: {fileID: 809615486}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3265,7 +3266,6 @@ Transform:
   - {fileID: 1330980147}
   - {fileID: 558013771}
   - {fileID: 369097544}
-  - {fileID: 849061013}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
