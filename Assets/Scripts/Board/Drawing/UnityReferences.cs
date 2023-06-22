@@ -27,7 +27,7 @@ namespace Ramsey.Drawing
         public static Material TransitionMaterial { get; private set; }
         public static Material BackgroundMenuMaterial { get; private set; }
         public static Material BackgroundMaterial { get; private set; }
-        public static Material WheelMaterial { get; private set; }
+        public static Shader WheelShader { get; private set; }
 
         public static GameObject MenuBackground { get; private set; } //idk if this follows ur design so far feel free to move to menubehavior
 
@@ -58,9 +58,9 @@ namespace Ramsey.Drawing
             LoadingMaterial = new(Shader.Find("Unlit/UIShaders/LoadingCircle"));
             ScreenMaterial = new(Shader.Find("Unlit/Fullscreen/Pulse"));
             BackgroundMaterial = new(Shader.Find("Unlit/Screen/Background"));
-            BackgroundMenuMaterial = new(Shader.Find("Unlit/Screen/MenuBackground"));
+            BackgroundMenuMaterial = new(Shader.Find("Unlit/Screen/MenuBackground2"));
 
-            WheelMaterial = new(Shader.Find("Unlit/UIShaders/WheelSelect"));
+            WheelShader = Shader.Find("Unlit/UIShaders/WheelSelect2");
             TransitionMaterial = new(Shader.Find("Unlit/Screen/Transition"));
 
             EdgeMaterial.enableInstancing = true;

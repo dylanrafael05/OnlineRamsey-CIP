@@ -32,7 +32,7 @@ namespace Ramsey.UI
 
         public event Action<IStrategyInitializer<Builder>, IStrategyInitializer<Painter>> OnStrategyChanged;
         
-        public MenuManager(List<IStrategyInitializer<Builder>> builderInitializers, List<IStrategyInitializer<Painter>> painterInitializers, float2? tickDim = null, float drawSize = 1f, float inputDistance = 1f, float wheelRadiusBuilder = 0.35f, float wheelRadiusPainter = 0.2f, float wheelThickness = .03f, float knobRadius = .05f)
+        public MenuManager(List<IStrategyInitializer<Builder>> builderInitializers, List<IStrategyInitializer<Painter>> painterInitializers, float2? tickDim = null, float drawSize = 1f, float inputDistance = 1f, float wheelRadiusBuilder = 0.35f, float wheelRadiusPainter = 0.2f, float wheelThickness = .029f, float knobRadius = .04f)
         {
             this.builderInitializers = builderInitializers;
             this.painterInitializers = painterInitializers;
@@ -66,6 +66,7 @@ namespace Ramsey.UI
             int prev = wheel.CurrentTick;
             int curr = wheel.Update(input.mouse, input.lmb, input.lmbp);
 
+            // If Current Tick Changed
             if(prev != curr || firstUpdate)
             {
                 initializers[prev].HideTextInputs();
@@ -151,9 +152,9 @@ namespace Ramsey.UI
             this.knobSize = knobSize;
 
             //
-            material = new(Shader.Find("Unlit/UIShaders/WheelSelect"));
+            material = new(UnityReferences.WheelShader);
 
-            material.SetColor("_BaseColor", Color.white);
+            material.SetColor("_BaseColor", Color.black);
             material.SetColor("_NodeColor", Color.white);
             material.SetFloat("_WheelRadius", radius);
             material.SetFloat("_WheelThickness", wheelThickness);
