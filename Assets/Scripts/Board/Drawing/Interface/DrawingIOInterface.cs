@@ -47,7 +47,7 @@ namespace Ramsey.Drawing
                 data.EdgeHighlights.Add(0);
                 data.EdgeReversal.Add(0);
 
-                drawer.UpdateEdgeBuffer();
+                data.ShouldUpdateEdgeBuffer = true;
             }
             public void AddNode(Node n)
             {
@@ -57,7 +57,7 @@ namespace Ramsey.Drawing
                 data.NodePositions.Add(n.Position);
                 data.NodeHighlights.Add(0);
 
-                drawer.UpdateNodeBuffer();
+                data.ShouldUpdateNodeBuffer = true;
             }
 
             public void UpdateNodePosition(Node n)
@@ -72,8 +72,8 @@ namespace Ramsey.Drawing
                     UpdateEdgeTransform(e);
                 }
 
-                drawer.UpdateNodeBuffer();
-                drawer.UpdateEdgeBuffer();
+                data.ShouldUpdateNodeBuffer = true;
+                data.ShouldUpdateEdgeBuffer = true;
             }
 
             public void HighlightNode(Node n)
@@ -81,14 +81,14 @@ namespace Ramsey.Drawing
                 Assert.IsTrue(data.NodePositions.Count >= n.ID, "Nodes must be added to renderer before they are highlighted!");
 
                 data.NodeHighlights[n.ID] = 1;
-                drawer.UpdateNodeBuffer();
+                data.ShouldUpdateNodeBuffer = true;
             }
             public void UnhighlightNode(Node n)
             {
                 Assert.IsTrue(data.NodePositions.Count >= n.ID, "Nodes must be added to renderer before they are highlighted!");
 
                 data.NodeHighlights[n.ID] = 0;
-                drawer.UpdateNodeBuffer();
+                data.ShouldUpdateNodeBuffer = true;
             }
 
             internal void UpdateEdgeTransform(Edge e)
@@ -101,7 +101,7 @@ namespace Ramsey.Drawing
             public void UpdateEdgeType(Edge e)
             {
                 data.EdgeColors[e.ID] = preferences.TypeToColor(e.Type);
-                drawer.UpdateEdgeBuffer();
+                data.ShouldUpdateEdgeBuffer = true;
             }
 
             public void SetLoading(bool isLoading)

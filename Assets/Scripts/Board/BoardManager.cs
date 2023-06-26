@@ -10,8 +10,6 @@ using System.Threading.Tasks;
 using UnityEngine.Profiling;
 using System.Linq;
 
-using Rand = UnityEngine.Random;
-
 namespace Ramsey.Board
 {
     public class BoardManager : IGraphManager
@@ -78,7 +76,7 @@ namespace Ramsey.Board
 
         public Node CreateNode(float2? position = default)
         {
-            var n = graphManager.CreateNode(position ?? new float2(Rand.Range(-6f, 6f), Rand.Range(-3f, 3f)));
+            var n = graphManager.CreateNode(position ?? new float2(ThreadSafeRandom.Range(-6f, 6f), ThreadSafeRandom.Range(-3f, 3f)));
 
             renderManager.IOInterface.AddNode(n);
 
