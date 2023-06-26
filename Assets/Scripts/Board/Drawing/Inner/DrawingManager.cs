@@ -4,23 +4,29 @@ namespace Ramsey.Drawing
 {
     public class DrawingManager
     {
-
         public DrawingActionInterface ActionInterface { get; private set; }
         public DrawingIOInterface IOInterface { get; private set; }
 
-        DrawingStorage data;
-        Drawer drawer;
+        #if HEADLESS
+            public DrawingManager(Camera _, DrawingPreferences _)
+            {
+                ActionInterface = new();
+                IOInterface = new();
+            }
+        #else
+            DrawingStorage data;
+            Drawer drawer;
 
-        public DrawingManager(Camera camera, DrawingPreferences preferences)
-        {
+            public DrawingManager(Camera camera, DrawingPreferences preferences)
+            {
 
-            data = new();
-            drawer = new(data, preferences, camera);
+                data = new();
+                drawer = new(data, preferences, camera);
 
-            ActionInterface = new(drawer, data);
-            IOInterface = new(data, preferences, drawer);
+                ActionInterface = new(drawer, data);
+                IOInterface = new(data, preferences, drawer);
 
-        }
-
+            }
+        #endif
     }
 }

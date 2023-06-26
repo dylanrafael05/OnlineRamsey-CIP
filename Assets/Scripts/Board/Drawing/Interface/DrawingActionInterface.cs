@@ -6,22 +6,24 @@ namespace Ramsey.Drawing
 {
     public class DrawingActionInterface
     {
+        #if HEADLESS
+            public void RenderBoard() {}
+            public void RenderUI() {}
+            public void Cleanup() {}
+        #else
+            readonly Drawer drawer;
+            readonly DrawingStorage data;
 
-        //
-        readonly Drawer drawer;
-        readonly DrawingStorage data;
+            internal DrawingActionInterface(Drawer drawer, DrawingStorage data)
+            { this.drawer = drawer; this.data = data; }
 
-        internal DrawingActionInterface(Drawer drawer, DrawingStorage data)
-        { this.drawer = drawer; this.data = data; }
-
-        //
-        public void RenderBoard()
-            => drawer.DrawBoard();
-        public void RenderUI()
-            => drawer.DrawUI();
-
-        public void Cleanup()
-            => drawer.Cleanup();
+            public void RenderBoard()
+                => drawer.DrawBoard();
+            public void RenderUI()
+                => drawer.DrawUI();
+            public void Cleanup()
+                => drawer.Cleanup();
+        #endif
 
     }
 }

@@ -1,4 +1,5 @@
 using Ramsey.Board;
+using Ramsey.Utilities;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -9,11 +10,9 @@ namespace Ramsey.Gameplayer
     [NonDeterministicStrategy]
     public class RandomPainter : Painter
     {
-        public override Task<PainterMove> GetMove(GameState gameState)
+        public override PainterMove GetMove(GameState gameState)
         {
-            return Task.FromResult<PainterMove>(
-                new(gameState.NewestEdge, Random.Range(0, 2))
-            );
+            return new(gameState.NewestEdge, ThreadSafeRandom.Range(0, 2));
         }
         
         public override void Reset() {}

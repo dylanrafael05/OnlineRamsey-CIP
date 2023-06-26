@@ -71,6 +71,8 @@ namespace Ramsey.UI
             UnityReferences.TurnText.gameObject.SetActive(true);
 
             Canvas.willRenderCanvases += Main.Game.RenderUI;
+            
+            UserModeHandler<BoardManager>.SetAllStatuses(true);
         }
 
         public override void OnExit()
@@ -84,6 +86,8 @@ namespace Ramsey.UI
             Main.Board.ClearScreen();
             
             Canvas.willRenderCanvases -= Main.Game.RenderUI;
+
+            UserModeHandler<BoardManager>.SetAllStatuses(false);
         }
 
         public override void OnCleanup()

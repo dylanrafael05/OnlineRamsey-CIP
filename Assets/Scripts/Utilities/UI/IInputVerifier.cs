@@ -9,6 +9,18 @@ namespace Ramsey.Utilities.UI
         bool IsValid(string str, out string reason);
         object Parse(string str);
 
+        public class None : IInputVerifier
+        {
+            public bool IsValid(string str, out string reason)
+            {
+                reason = null;
+                return true;
+            }
+
+            public object Parse(string str) 
+                => str;
+        }
+
         public class Float : IInputVerifier
         {
             public Float(float? min = null, float? max = null)

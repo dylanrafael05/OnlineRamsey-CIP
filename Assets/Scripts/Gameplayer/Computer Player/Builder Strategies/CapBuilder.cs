@@ -12,13 +12,13 @@ using static Ramsey.Gameplayer.BuilderUtils;
 
 public class CapBuilder : Builder
 {
-    public CapBuilder(GameState state)
-        => seq = new(InitialTree(state), LoopTree(state));
+    public CapBuilder()
+        => seq = new(InitialTree, LoopTree);
 
     SequenceNavigator<BuilderMove> seq;
 
-    public override Task<BuilderMove> GetMove(GameState state)
-       => Task.FromResult(seq.Loop());
+    public override BuilderMove GetMove(GameState state)
+       => seq.Loop(state);
 
     public override void Reset()
     {

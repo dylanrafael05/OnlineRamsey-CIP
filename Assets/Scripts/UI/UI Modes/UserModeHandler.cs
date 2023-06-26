@@ -42,6 +42,12 @@ namespace Ramsey.UI
         public static void SetStatus(IUserMode<D> mode, bool status)
         { var i = currentModes.FindIndex(m => m == mode); if (i != -1) activationStatuses[i] = status; }
 
+        public static void SetAllStatuses(bool status)
+        {
+            foreach(var mode in Modes)
+                SetStatus(mode, status);
+        }
+
         public static IEnumerable<IUserMode<D>> GameplayModes => Modes.Where(m => m.IsGameplayMode);
 
     }

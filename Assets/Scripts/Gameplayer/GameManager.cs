@@ -117,7 +117,7 @@ namespace Ramsey.UI
             {
                 if(player.IsAutomated && !synchronous) await Task.Delay((int)(Delay * 1000));
 
-                return await player.GetMove(board.GameState).AssertSync(synchronous);
+                return await Utils.Run(synchronous, () => player.GetMove(board.GameState));
             }
             
             // Repeat until move is valid

@@ -6,6 +6,7 @@ using static Unity.Mathematics.math;
 using UnityEngine;
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace Ramsey.Utilities
 {
@@ -97,6 +98,11 @@ namespace Ramsey.Utilities
             if(synchronous) action();
             else await Task.Run(action).UnityReport();
         }
+        public static async Task<T> Run<T>(bool synchronous, Func<T> func)
+        {
+            if(synchronous) return func();
+            else return await Task.Run(func).UnityReport();
+        }
 
         public static TaskT AssertSync<TaskT>(this TaskT t, bool synchronous) where TaskT : Task
         {
@@ -150,21 +156,17 @@ namespace Ramsey.Utilities
             );
         }
 
-        public static async Task WaitUntil(Func<bool> func, int milliDelay = 10)
+        public static bool WaitUntil(Func<bool> func, int milliDelay = 10, int timeout = 1000)
         {
-            while (!func.Invoke())
-            {
-                await Task.Delay(milliDelay);
-            }
-        }
+            var totalt = 0;
 
-        public static async Task WaitUntil(Func<bool> func, Action action, int milliDelay = 10)
-        {
-            while(!func.Invoke())
+            while (!func.Invoke() && totalt < timeout)
             {
-                action();
-                await Task.Delay(milliDelay);
+                Thread.Sleep(milliDelay);
+                totalt += milliDelay;
             }
+
+            return totalt < timeout;
         }
 
         public static IEnumerable<T> Merge<T>(this IEnumerable<IEnumerable<T>> self)
