@@ -14,12 +14,12 @@ namespace Ramsey.Gameplayer
     public class AntiBuilder : Builder
     {
 
-        public override Task<BuilderMove> GetMove(GameState state)
+        public override BuilderMove GetMove(GameState state)
         {
             if (UnityEngine.Random.Range(0f, 1f) < 0.8f) //not a param since it should be whatever parameter makes it a bad builder (without making it impossible to win)
-                return Task.FromResult(Extend(state.MaxPath.Middle, state));
+                return Extend(state.MaxPath.Middle, state);
             else
-                return Task.FromResult(new BuilderMove(state.MaxPath.Middle, state.Nodes.RandomElement()));
+                return new BuilderMove(state.MaxPath.Middle, state.Nodes.RandomElement());
         }
 
         public override void Reset() { }

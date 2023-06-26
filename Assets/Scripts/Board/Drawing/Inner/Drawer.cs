@@ -79,6 +79,12 @@ namespace Ramsey.Drawing
 
         public void DrawBoard()
         {
+            if(presentStorage.ShouldUpdateNodeBuffer)
+            {
+                UpdateNodeBuffer();
+                presentStorage.ShouldUpdateNodeBuffer = false;
+            }
+            
             if(presentStorage.ShouldUpdateEdgeBuffer)
             {
                 UpdateEdgeBuffer();

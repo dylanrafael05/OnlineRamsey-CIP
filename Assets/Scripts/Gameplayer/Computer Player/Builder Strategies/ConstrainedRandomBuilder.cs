@@ -3,6 +3,7 @@ using Ramsey.Gameplayer;
 using System.Collections.Generic;
 using Ramsey.Graph;
 using System.Threading.Tasks;
+using Ramsey.Utilities;
 
 [NonDeterministicStrategy]
 public class ConstrainedRandomBuilder : Builder 
@@ -45,16 +46,16 @@ public class ConstrainedRandomBuilder : Builder
         return nodes[x];
     }
 
-    public override Task<BuilderMove> GetMove(GameState state)
+    public override BuilderMove GetMove(GameState state)
     {
         if(availablePairs.Count == 0)
             throw new GraphTooComplexException(state.Nodes.Count, $"{nameof(ConstrainedRandomBuilder)} of target {target} cannot expand graph any further!");
 
-        var i = UnityEngine.Random.Range(0, availablePairs.Count);
+        var i = ThreadSafeRandom.Range(0, availablePairs.Count);
 
         var (a, b) = availablePairs[i];
         availablePairs.RemoveAt(i);
 
-        return Task.FromResult(new BuilderMove(GetNode(state, a), GetNode(state, b)));
+        return new BuilderMove(GetNode(state, a), GetNode(state, b));
     }
 }

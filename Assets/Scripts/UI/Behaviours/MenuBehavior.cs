@@ -7,10 +7,14 @@ using Ramsey.Visualization;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
-using Dropdown = TMPro.TMP_Dropdown;
 
 namespace Ramsey.UI
 {
+    // public class HeadlessInteractionBehaviour : Behavior
+    // {
+
+    // }
+
     public class MenuBehavior : Behavior
     {
         //
@@ -39,7 +43,7 @@ namespace Ramsey.UI
                 new() 
                 { 
                     StrategyInitializer.For<UserBuilder>(),
-                    StrategyInitializer.For<CapBuilder>(() => new(Main.Game.State)),
+                    StrategyInitializer.For<CapBuilder>(),
                     StrategyInitializer.For<RandomBuilder>(o => new((float)o[0], (float)o[1], (float)o[2]), 
                         new TextParameter { Name = "Pendant Weight",  Verifier = new IInputVerifier.Float(0, 1), DefaultValue = "0.5" },
                         new TextParameter { Name = "Internal Weight", Verifier = new IInputVerifier.Float(0, 1), DefaultValue = "0.4" },
@@ -48,8 +52,11 @@ namespace Ramsey.UI
                     StrategyInitializer.For<ConstrainedRandomBuilder>(o => new((int)o[0]), 
                         new TextParameter { Name = "Node Count", Verifier = new IInputVerifier.Integer(2, 40), DefaultValue = "20" }
                     ),
-                    StrategyInitializer.For<PolygonBuilder>(o => new((int)o[0], Main.Game.State),
+                    StrategyInitializer.For<PolygonBuilder>(o => new((int)o[0]),
                         new TextParameter { Name = "Side Count", Verifier = new IInputVerifier.Integer(3), DefaultValue = "8" }
+                    ),
+                    StrategyInitializer.For<ExternalBuilder>(o => new((string)o[0]),
+                        new TextParameter { Name = "Program", Verifier = new IInputVerifier.None(), DefaultValue = "" }
                     ),
                     StrategyInitializer.For<AntiBuilder>()
                 }, 
@@ -61,6 +68,9 @@ namespace Ramsey.UI
                     StrategyInitializer.For<LengthyPainter>(),
                     StrategyInitializer.For<AntiPainter>(o => new((int)o[0]), 
                         new TextParameter { Name = "Color", Verifier = new IInputVerifier.Integer(0, 2), DefaultValue = "0" }
+                    ),
+                    StrategyInitializer.For<ExternalPainter>(o => new((string)o[0]),
+                        new TextParameter { Name = "Program", Verifier = new IInputVerifier.None(), DefaultValue = "" }
                     ),
                 }
             );

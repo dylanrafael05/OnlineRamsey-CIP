@@ -13,10 +13,10 @@ namespace Ramsey.Gameplayer
     [NonDeterministicStrategy]
     public class PolygonBuilder : Builder
     {
-        public PolygonBuilder(int sideCount, GameState state)
+        public PolygonBuilder(int sideCount)
         {
             this.sideCount = sideCount;
-            sequenceNavigator = new(LoopTree(state));
+            sequenceNavigator = new(LoopTree);
         }
 
         SequenceNavigator<BuilderMove> sequenceNavigator;
@@ -24,8 +24,8 @@ namespace Ramsey.Gameplayer
 
         Node startNode;
 
-        public override Task<BuilderMove> GetMove(GameState gameState)
-            => Task.FromResult(sequenceNavigator.Loop());
+        public override BuilderMove GetMove(GameState gameState)
+            => sequenceNavigator.Loop(gameState);
 
         IEnumerable<BuilderMove> LoopTree(GameState state)
         {
@@ -34,7 +34,7 @@ namespace Ramsey.Gameplayer
             var returnNode = startNode;
             var currentNode = startNode;
 
-            int nextStartNode = UnityEngine.Random.Range(0, sideCount);
+            int nextStartNode = ThreadSafeRandom.Range(0, sideCount);
             for (int i = 0; i < sideCount-1; i++)
             {
                 if (i == nextStartNode) startNode = currentNode;

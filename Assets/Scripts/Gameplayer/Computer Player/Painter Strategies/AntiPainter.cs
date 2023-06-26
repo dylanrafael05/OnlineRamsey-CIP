@@ -12,11 +12,9 @@ namespace Ramsey.Gameplayer
 
         public int FavoriteColor { get; }
 
-        public override Task<PainterMove> GetMove(GameState gameState)
+        public override PainterMove GetMove(GameState gameState)
         {
-            return Task.FromResult<PainterMove>(
-                new(gameState.NewestEdge, FavoriteColor)
-            );
+            return new(gameState.NewestEdge, FavoriteColor);
         }
 
         public override void Reset() {}

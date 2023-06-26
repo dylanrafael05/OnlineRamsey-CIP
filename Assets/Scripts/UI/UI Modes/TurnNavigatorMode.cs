@@ -10,7 +10,6 @@ namespace Ramsey.UI
 {
     public class TurnNavigatorMode : IUserMode<BoardManager>
     {
-
         public const float RecorderOffset = 3f;
         public const float RecorderForce = 0.2f;
         public const float RecorderTolerance = 0.02f;
@@ -69,9 +68,12 @@ namespace Ramsey.UI
             UserModeHandler<BoardManager>.GameplayModes.Foreach(m => UserModeHandler<BoardManager>.SetStatus(m, board.IsCurrentTurn));
 
         }
-        public void End(BoardManager board) { }
+        public void End(BoardManager board) 
+        { 
+            RecorderY = lowerpos;
+            recorderOffScreen = true;
+        }
 
         public bool IsGameplayMode => false;
-
     }
 }

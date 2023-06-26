@@ -26,9 +26,6 @@ namespace Ramsey.Board
         public bool IsGameWon => MaxPath is not null && MaxPath.Length >= TargetPathLength;
         public bool IsGameDone => GraphTooComplex || IsGameWon;
 
-        public Edge EdgeStart(int i) => MaxPaths[i].Edges.First();
-        public Edge EdgeEnd(int i)   => MaxPaths[i].Edges.Last();
-
         public Edge NewestEdge { get; internal set; }
         public int NewestPaint { get; internal set; }
 

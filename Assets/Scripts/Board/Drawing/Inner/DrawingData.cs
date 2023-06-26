@@ -29,6 +29,7 @@ namespace Ramsey.Drawing
         public List<float> NodeHighlights { get; private set; }
 
         public bool ShouldUpdateEdgeBuffer { get; set; }
+        public bool ShouldUpdateNodeBuffer { get; set; }
 
         public bool IsLoading { get; set; }
 

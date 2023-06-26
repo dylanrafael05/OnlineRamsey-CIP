@@ -17,13 +17,18 @@ namespace Ramsey.Gameplayer
     [AttributeUsage(AttributeTargets.Class)]
     public sealed class NonAutomatedStrategyAttribute : Attribute
     {}
+    
+    [AttributeUsage(AttributeTargets.Class)]
+    public sealed class UnsupportedInHeadlessAttribute : Attribute
+    {}
 
     public interface IPlayer
     {
         bool IsDeterministic { get; }
         bool IsAutomated { get; }
+        bool IsSupportedInHeadless { get; }
 
-        Task<IMove> GetMove(GameState gameState);
+        IMove GetMove(GameState gameState);
 
         void Reset();
     }
@@ -39,25 +44,32 @@ namespace Ramsey.Gameplayer
             => !Attribute.IsDefined(type, typeof(NonAutomatedStrategyAttribute));
         public static bool IsAutomated<T>() where T : IPlayer
             => IsAutomated(typeof(T));
+        
+        public static bool IsSupportedInHeadless(Type type)
+            => !Attribute.IsDefined(type, typeof(UnsupportedInHeadlessAttribute));
+        public static bool IsSupportedInHeadless<T>() where T : IPlayer
+            => IsSupportedInHeadless(typeof(T));
     }
 
     public abstract class Builder : IPlayer
     {
         public bool IsDeterministic { get; }
         public bool IsAutomated { get; }
+        public bool IsSupportedInHeadless { get; }
 
         public Builder() 
         {
             IsDeterministic = Player.IsDeterminstic(GetType());
             IsAutomated = Player.IsAutomated(GetType());
+            IsSupportedInHeadless = Player.IsSupportedInHeadless(GetType());
         }
 
-        async Task<IMove> IPlayer.GetMove(GameState gameState)
+        IMove IPlayer.GetMove(GameState gameState)
         {
-            return await GetMove(gameState);
+            return GetMove(gameState);
         }
 
-        public abstract Task<BuilderMove> GetMove(GameState gameState);
+        public abstract BuilderMove GetMove(GameState gameState);
         public abstract void Reset();
     }
 
@@ -65,19 +77,21 @@ namespace Ramsey.Gameplayer
     {
         public bool IsDeterministic { get; }
         public bool IsAutomated { get; }
+        public bool IsSupportedInHeadless { get; }
 
         public Painter() 
         {
             IsDeterministic = Player.IsDeterminstic(GetType());
             IsAutomated = Player.IsAutomated(GetType());
+            IsSupportedInHeadless = Player.IsSupportedInHeadless(GetType());
         }
 
-        async Task<IMove> IPlayer.GetMove(GameState gameState)
+        IMove IPlayer.GetMove(GameState gameState)
         {
-            return await GetMove(gameState);
+            return GetMove(gameState);
         }
 
-        public abstract Task<PainterMove> GetMove(GameState gameState);
+        public abstract PainterMove GetMove(GameState gameState);
         public abstract void Reset();
     }
 }

@@ -9,13 +9,13 @@ using Ramsey.UI;
 
 namespace Ramsey.Gameplayer
 {
-    [NonAutomatedStrategy]
+    [NonAutomatedStrategy, UnsupportedInHeadless]
     public class UserBuilder : Builder, IUserMode<BoardManager>
     {
-        public override async Task<BuilderMove> GetMove(GameState gameState)
+        public override BuilderMove GetMove(GameState gameState)
         {
             UserModeHandler<BoardManager>.AddMode(this);
-            await Utils.WaitUntil(() => currNode != null && prevNode != null);
+            Utils.WaitUntil(() => currNode != null && prevNode != null);
             UserModeHandler<BoardManager>.DelMode(this);
 
             return new BuilderMove(currNode, prevNode);
@@ -57,13 +57,13 @@ namespace Ramsey.Gameplayer
 
     }
 
-    [NonAutomatedStrategy]
+    [NonAutomatedStrategy, UnsupportedInHeadless]
     public class UserPainter : Painter, IUserMode<BoardManager>
     {
-        public override async Task<PainterMove> GetMove(GameState gameState)
+        public override PainterMove GetMove(GameState gameState)
         {
             UserModeHandler<BoardManager>.AddMode(this);
-            await Utils.WaitUntil(() => currEdge != null);
+            Utils.WaitUntil(() => currEdge != null);
             UserModeHandler<BoardManager>.DelMode(this);
 
             return new PainterMove(currEdge, currEdgeType);
