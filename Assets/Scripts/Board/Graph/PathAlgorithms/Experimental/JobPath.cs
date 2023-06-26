@@ -30,11 +30,12 @@ namespace Ramsey.Graph.Experimental
                 nodes = new Node[Length + 1];
                 nodes[0]  = Start;
                 nodes[^1] = End;
-                nodes[(int) ((nodes.Length - 1) * .5f)] = Middle;
 
                 Assert.IsTrue(
                     FindSequence(graph, nodes, 1, remainingNodes), 
                     "Must be able to find a sequence!");
+                
+                Middle = nodes[(int) ((nodes.Length - 1) * .5f)];
             }
         }
 
