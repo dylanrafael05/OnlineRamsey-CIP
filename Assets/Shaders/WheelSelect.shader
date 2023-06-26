@@ -11,7 +11,7 @@ Shader "Unlit/UIShaders/WheelSelect"
         _TickCount ("Tick Count", Integer) = 2
         _TickDim ("Tick Dimensions", Vector) = (0.05, 0.2, 0., 0.)
 
-        _NodeLocation ("Node Location", Integer) = 0
+        _NodeLocation ("Node Location", Float) = 0
         _NodeRadius ("Node Radius", Float) = 0.1
 
     }
@@ -56,7 +56,7 @@ Shader "Unlit/UIShaders/WheelSelect"
             float2 _TickDim;
 
             float _NodeRadius;
-            int _NodeLocation;
+            float _NodeLocation;
 
             vOut vert (vIn v)
             {
@@ -88,16 +88,18 @@ Shader "Unlit/UIShaders/WheelSelect"
 
                 // Node
                 float id = (polar.y - fmod(polar.y, partitionSize)) / partitionSize;
-                float canNode = step(abs(id - float(_NodeLocation)), 0.001);
-                float isNode = canNode * step(length(polar.x * newSpace - float2(0., _WheelRadius)) - _NodeRadius, 0.);
+                float2 nodePos = toCartesian(float2(_WheelRadius, (_NodeLocation+.5) * TAU / float(_TickCount)));
+                //float canNode = step(abs(id - float(_NodeLocation)), 0.001);
+                //float isNode = canNode * step(length(polar.x * newSpace - float2(0., _WheelRadius)) - _NodeRadius, 0.);
+                float isNode = step(length(i.uv - nodePos) - _NodeRadius, 0.);
                 exists += isNode;
 
                 //
-                float2 nodeCol = float3(1.,0.,0.);//normalize(cartesian(float2(1., TAU * float(_NodeLocation) / float(_TickCount))))*.5+.5;
+                //float2 nodeCol = float3(1.,0.,0.);//normalize(cartesian(float2(1., TAU * float(_NodeLocation) / float(_TickCount))))*.5+.5;
 
                 // Composite
                 exists = step(0.01, exists);
-                return exists * (_BaseColor + (float4(nodeCol.xyx, 1.) - _BaseColor) * isNode);
+                return exists * (_BaseColor + (_NodeColor - _BaseColor) * isNode);
 
             }
             ENDCG

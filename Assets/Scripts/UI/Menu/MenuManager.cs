@@ -32,7 +32,7 @@ namespace Ramsey.UI
 
         public event Action<IStrategyInitializer<Builder>, IStrategyInitializer<Painter>> OnStrategyChanged;
         
-        public MenuManager(List<IStrategyInitializer<Builder>> builderInitializers, List<IStrategyInitializer<Painter>> painterInitializers, float2? tickDim = null, float drawSize = 1f, float inputDistance = 1f, float wheelRadiusBuilder = 0.35f, float wheelRadiusPainter = 0.2f, float wheelThickness = .03f, float knobRadius = .06f)
+        public MenuManager(List<IStrategyInitializer<Builder>> builderInitializers, List<IStrategyInitializer<Painter>> painterInitializers, float2? tickDim = null, float drawSize = 1f, float inputDistance = 1f, float wheelRadiusBuilder = 0.35f, float wheelRadiusPainter = 0.2f, float wheelThickness = .029f, float knobRadius = .04f)
         {
             this.builderInitializers = builderInitializers;
             this.painterInitializers = painterInitializers;
@@ -56,7 +56,7 @@ namespace Ramsey.UI
             strategyChanged |= UpdateWheel(input, painterSelect, painterInitializers, true);
 
             if(strategyChanged)
-                OnStrategyChanged?.Invoke(BuilderInit, PainterInit);
+                OnStrategyChanged?.Invoke(BuilderCurrInit, PainterCurrInit);
             
             firstUpdate = false;
         }
@@ -66,6 +66,7 @@ namespace Ramsey.UI
             int prev = wheel.CurrentTick;
             int curr = wheel.Update(input.mouse, input.lmb, input.lmbp);
 
+            // If Current Tick Changed
             if(prev != curr || firstUpdate)
             {
                 initializers[prev].HideTextInputs();
@@ -88,27 +89,27 @@ namespace Ramsey.UI
             return false;
         }
 
-        public IStrategyInitializer<Builder> BuilderInit => builderInitializers[builderSelect.CurrentTick];
-        public IStrategyInitializer<Painter> PainterInit => painterInitializers[painterSelect.CurrentTick];
+        public IStrategyInitializer<Builder> BuilderCurrInit => builderInitializers[builderSelect.CurrentTick];
+        public IStrategyInitializer<Painter> PainterCurrInit => painterInitializers[painterSelect.CurrentTick];
 
-        public bool ValidParameters => BuilderInit.InputIsValid() && PainterInit.InputIsValid();
+        public bool ValidParameters => BuilderCurrInit.InputIsValid() && PainterCurrInit.InputIsValid();
 
-        public Builder ConstructBuilder() => BuilderInit.Initialize();
-        public Painter ConstructPainter() => PainterInit.Initialize();
+        public Builder ConstructBuilder() => BuilderCurrInit.Initialize();
+        public Painter ConstructPainter() => PainterCurrInit.Initialize();
 
         public void Draw()
         {
             builderSelect.Draw();
             painterSelect.Draw();
 
-            TextRenderer.Draw(builderSelect.KnobPos, BuilderInit.Name, Color.black, screen: true);
-            TextRenderer.Draw(painterSelect.KnobPos, PainterInit.Name, Color.black, screen: true);
+            TextRenderer.Draw(builderSelect.KnobPos, BuilderCurrInit.Name, Color.black, screen: true);
+            TextRenderer.Draw(painterSelect.KnobPos, PainterCurrInit.Name, Color.black, screen: true);
         }
 
         public void ShowActiveTextInputs()
         {
-            BuilderInit.ShowTextInputs();
-            PainterInit.ShowTextInputs();
+            BuilderCurrInit.ShowTextInputs();
+            PainterCurrInit.ShowTextInputs();
         }
 
         public void HideAllTextInputs()
@@ -133,6 +134,7 @@ namespace Ramsey.UI
 
         // Current
         public int CurrentTick { get; private set; }
+        float currentContinuousTick;
         public float2 KnobPos 
             => UnityReferences.WheelSelectTransform.position.xy() 
                 + UnityReferences.WheelSelectTransform.lossyScale.xy() * float2(radius, (CurrentTick + .5f) * MathUtils.TAU / tickCount).ToCartesian();
@@ -150,9 +152,10 @@ namespace Ramsey.UI
             this.knobSize = knobSize;
 
             //
-            material = new(Shader.Find("Unlit/UIShaders/WheelSelect"));
+            material = new(UnityReferences.WheelShader);
 
-            material.SetColor("_BaseColor", Color.white);
+            material.SetColor("_BaseColor", Color.black);
+            material.SetColor("_NodeColor", Color.white);
             material.SetFloat("_WheelRadius", radius);
             material.SetFloat("_WheelThickness", wheelThickness);
 
@@ -167,7 +170,7 @@ namespace Ramsey.UI
             //mouse -= UnityReferences.WheelSelectTransform.position.xy(); Debug.Log(mouse);
             //mouse /= UnityReferences.WheelSelectTransform.localScale.xy();
             mouse = UnityReferences.WheelSelectTransform.InverseTransformPoint(mouse.xyz()).xy(); //(UnityReferences.WheelSelectTransform.worldToLocalMatrix * (Vector4) mouse.xyzw(0f, 1f)).xy();//
-            float2 pos = float2(radius, (MathUtils.TAU * (CurrentTick*1f+0.5f) / tickCount)).ToCartesian();
+            float2 pos = float2(radius, (MathUtils.TAU * (currentContinuousTick+0.5f) / tickCount)).ToCartesian();
             return (length(mouse - pos) - knobSize) <= 0f;
         }
         public int Update(float2 mouse, bool isDown, bool isPress)
@@ -182,11 +185,13 @@ namespace Ramsey.UI
             float2 polar = UnityReferences.WheelSelectTransform.InverseTransformPoint(mouse.xyz()).xy().ToPolar();
             float partitionSize = MathUtils.TAU / tickCount;
             float rtheta = fmod(polar.y, partitionSize)-partitionSize*.5f;
+            currentContinuousTick = (polar.y - partitionSize*.5f) / partitionSize;
             if (abs(rtheta) > tickCollisionSize * .5f) return CurrentTick;
 
             //
             float id = (polar.y - rtheta - partitionSize * .5f) / partitionSize;
             CurrentTick = (int) id;
+            currentContinuousTick = CurrentTick;
 
             return CurrentTick;
         }
@@ -194,9 +199,9 @@ namespace Ramsey.UI
         public void Draw()
         {
 
-            material.SetInteger("_NodeLocation", CurrentTick);
+            material.SetFloat("_NodeLocation", currentContinuousTick);
 
-            Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.WheelSelectTransform.localToWorldMatrix, material, UnityReferences.BoardLayer);
+            Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.WheelSelectTransform.localToWorldMatrix, material, UnityReferences.ScreenLayer);
 
         }
 

@@ -12,6 +12,9 @@ namespace Ramsey.Utilities
 {
     public static class Utils
     {
+        public static T RandomElement<T>(this IReadOnlyList<T> L)
+            => L[UnityEngine.Random.Range(0, L.Count)];
+
         public static Color ColorFromHex(string hex)
         {
             ColorUtility.TryParseHtmlString(hex[0] == '#' ? hex : "#"+hex, out var c);

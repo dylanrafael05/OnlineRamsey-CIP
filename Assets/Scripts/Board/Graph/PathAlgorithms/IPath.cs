@@ -9,6 +9,7 @@ namespace Ramsey.Graph
 
         int Length { get; }
         Node Start { get; }
+        Node Middle { get; }
         Node End { get; }
 
         IEnumerable<Edge> Edges { get; }
