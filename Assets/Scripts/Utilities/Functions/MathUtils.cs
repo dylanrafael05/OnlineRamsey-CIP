@@ -9,6 +9,12 @@ namespace Ramsey.Utilities
     {
         public static readonly float TAU = 6.28318f;
 
+        public static float amod(float v, float g)
+        {
+            float m = fmod(abs(v), g);
+            return m + (-sign(v) * .5f + .5f) * (g - 2f * m);
+        }
+
         public static Matrix4x4 Inverse(this Matrix4x4 m)
             => Matrix4x4.Inverse(m);
 

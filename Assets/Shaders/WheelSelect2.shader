@@ -11,10 +11,13 @@ Shader "Unlit/UIShaders/WheelSelect2"
         _WheelThickness ("Wheel Thickness", Float) = 0.3
 
         _TickCount ("Tick Count", Integer) = 2
-        _TickDim ("Tick Dimensions", Vector) = (0.05, 0.2, 0., 0.)
 
-        _NodeLocation ("Node Location", Float) = 0
+        _KnobColor("Knob Color", Color) = (1.,1.,1.,1.)
+        _KnobRadius("Knob Radius Mult", Float) = 0.15
+        _KnobLocation ("Knob Location", Float) = 0
         _NodeRadius ("Node Radius", Float) = 0.1
+        
+        _ThetaNormalizedOffset ("Offset", Float) = 0.
 
     }
     SubShader
@@ -58,8 +61,12 @@ Shader "Unlit/UIShaders/WheelSelect2"
 
             int _TickCount;
 
+            float4 _KnobColor;
+            float _KnobRadius;
+            float _KnobLocation;
             float _NodeRadius;
-            float _NodeLocation;
+
+            float _ThetaNormalizedOffset;
 
             vOut vert (vIn v)
             {
@@ -84,8 +91,8 @@ Shader "Unlit/UIShaders/WheelSelect2"
                 //
                 float partitionSize = TAU / float(partitionCount);
 
-                thetaOffset -= partitionSize*.5 * float((partitionCount+1) % 2);
-                float2 polar = toPolar(p); polar.y = polar.y - thetaOffset;
+                thetaOffset += partitionSize * _ThetaNormalizedOffset;// partitionSize * .5 * float((partitionCount + 1) % 2);
+                float2 polar = toPolar(p); polar.y = amod(polar.y - thetaOffset, TAU);
                 float rtheta = amod(polar.y, partitionSize) - partitionSize*.5;
 
                 float2 startPoint = toCartesian(float2(r, partitionSize*.5));
@@ -112,17 +119,19 @@ Shader "Unlit/UIShaders/WheelSelect2"
                 _NodeColor.rgb *= 1.-nodeOutline;
 
                 //
-                float knobTheta = _NodeLocation*partitionSize + partitionSize*.5 - thetaOffset;
+                float knobTheta = _KnobLocation * partitionSize;
                 float rKnobTheta = amod(knobTheta, partitionSize)-partitionSize*.5;
                 float rKnob = r * cos(partitionSize*.5) / cos(rKnobTheta);
-                float2 knobPos = toCartesian(float2(rKnob, knobTheta));
-                float isKnob = step(length(p - knobPos) - _NodeRadius*1.5, 0.);
+                float2 knobPos = toCartesian(float2(rKnob, knobTheta+thetaOffset));
+                float sdKnob = length(p - knobPos) - _KnobRadius;
+                float isKnob = step(sdKnob, 0.);
+                _KnobColor.rgb *= step(sdKnob, -outlineThickness);
                 exists += isKnob; //fix misalignment and collision is still a circle
 
                 //
                 exists = saturate(exists);
 
-                return exists * ( (1.-isKnob) *(edgeCol + isNode * (_NodeColor - edgeCol)) + isKnob * _NodeColor);
+                return exists * ( (1.-isKnob) * (edgeCol + isNode * (_NodeColor - edgeCol)) + isKnob * _KnobColor);
 
             }
 
