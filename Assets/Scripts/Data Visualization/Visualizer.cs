@@ -220,7 +220,7 @@ namespace Ramsey.Visualization
         public void Draw()
         {
 
-            Matrix4x4 curveMatrix = UnityReferences.VisualizerGraphTransform.WorldMatrix() * graphPrefs.GetCurveOffsetMatrix();
+            Matrix4x4 curveMatrix = UnityReferences.VisualizerGraphTransform.WorldMatrix();// * graphPrefs.GetCurveOffsetMatrix();
 
             //Draw Graph
             Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.VisualizerGraphTransform.WorldMatrix(), graphPrefs.GetMaterial(), layer); 

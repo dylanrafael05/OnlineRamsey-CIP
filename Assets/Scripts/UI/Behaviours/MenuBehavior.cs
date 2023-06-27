@@ -168,13 +168,13 @@ namespace Ramsey.UI
 
         public void InitAfterRealtime(int2 gameData)
         {
-            
+
         }
 
         public void InitAfterGather(MatchupData data)
         {
             Debug.Log(data.Count);
-
+            //visualizing = true;
             visualizer.AddCurve(data, 0f);
         }
 
