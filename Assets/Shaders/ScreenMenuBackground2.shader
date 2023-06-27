@@ -44,7 +44,7 @@ Shader "Unlit/Screen/MenuBackground2"
             float4 _HighlightColor;
             float cover;
 
-            #define highlightDim float2(0.07, 0.02)
+            #define highlightDim float2(0.07, 0.015)
             #define highlightDomainDim float2(0.12, 0.08)
 
             float sbHighlight(float2 p, float2 ps, float2 pe, float offset)
@@ -97,7 +97,7 @@ Shader "Unlit/Screen/MenuBackground2"
                 float exists = 0.;
                 cover = 0.;
     
-                float4 polyPoint = float4(.67, 0., .75, t*.9);
+                float4 polyPoint = float4(.67, 0., .70, t * .9);
                 exists += (1.-cover) * sbHighlightPolygon(p - polyPoint.xy, polyPoint.z, 8, polyPoint.a, t);
     
                 exists += (1.-cover) * sbHighlight(p, float2(-1.,-1.), float2(1.,1.), -t*.8);
@@ -115,8 +115,55 @@ Shader "Unlit/Screen/MenuBackground2"
                 exists += (1.-cover) * sbHighlight(p, float2(1.05, -1.), float2(1.62, -.1), t);
                 exists += (1.-cover) * sbHighlight(p, float2(1.77, -.25), float2(-.9, .9), t);
                 exists += (1.-cover) * sbHighlight(p, float2(-1.77, -.5), float2(1.77, -.8), t);
+                exists += (1.-cover) * sbHighlight(p, float2(-1.3, -1.), float2(-1.8, 1.), t);
+                exists += (1.-cover) * sbHighlight(p, float2(-.72, -.8), float2(-1.5, 1.), t);
 
-                return _BaseColor + exists * (_HighlightColor - _BaseColor); //temp mult
+                p = rot(p+0.8, 2.); //smth like it but less unorganized and get the entire screen and not so uniform of course.. and prolly too much arund bottom left
+
+
+                exists += (1. - cover) * sbHighlight(p, float2(-1., -1.), float2(1., 1.), -t * .8);
+                exists += (1. - cover) * sbHighlight(p, float2(1., -1.), float2(-1., 1.), t);
+                exists += (1. - cover) * sbHighlight(p, float2(-.5, -1.), float2(-.2, .8), t);
+                exists += (1. - cover) * sbHighlight(p, float2(1.2, -.7), float2(.3, 1.), t);
+                exists += (1. - cover) * sbHighlight(p, float2(-1.9, -.2), float2(1., .3), t);
+                exists += (1. - cover) * sbHighlight(p, float2(-1.3, -1.), float2(-1.1, 1.), t);
+                exists += (1. - cover) * sbHighlight(p, float2(.7, -1.), float2(0., 1.), t);
+                exists += (1. - cover) * sbHighlight(p, float2(.1, -1.), float2(-1.5, .8), t);
+                exists += (1. - cover) * sbHighlight(p, float2(-1.6, .4), float2(1., -.4), t);
+                exists += (1. - cover) * sbHighlight(p, float2(.4, -1.), float2(1.4, .8), t);
+                exists += (1. - cover) * sbHighlight(p, float2(-1.4, -1.), float2(1., .2), t);
+                exists += (1. - cover) * sbHighlight(p, float2(-1.77, -.8), float2(-.6, 1.), t);
+                exists += (1. - cover) * sbHighlight(p, float2(1.05, -1.), float2(1.62, -.1), t);
+                exists += (1. - cover) * sbHighlight(p, float2(1.77, -.25), float2(-.9, .9), t);
+                exists += (1. - cover) * sbHighlight(p, float2(-1.77, -.5), float2(1.77, -.8), t);
+                exists += (1. - cover) * sbHighlight(p, float2(-1.3, -1.), float2(-1.8, 1.), t);
+                exists += (1. - cover) * sbHighlight(p, float2(-.72, -.8), float2(-1.5, 1.), t);
+
+                p = rot(p - 1.8, -2.);
+
+
+                exists += (1. - cover) * sbHighlight(p, float2(-1., -1.), float2(1., 1.), -t * .8);
+                exists += (1. - cover) * sbHighlight(p, float2(1., -1.), float2(-1., 1.), t);
+                exists += (1. - cover) * sbHighlight(p, float2(-.5, -1.), float2(-.2, .8), t);
+                exists += (1. - cover) * sbHighlight(p, float2(1.2, -.7), float2(.3, 1.), t);
+                exists += (1. - cover) * sbHighlight(p, float2(-1.9, -.2), float2(1., .3), t);
+                exists += (1. - cover) * sbHighlight(p, float2(-1.3, -1.), float2(-1.1, 1.), t);
+                exists += (1. - cover) * sbHighlight(p, float2(.7, -1.), float2(0., 1.), t);
+                exists += (1. - cover) * sbHighlight(p, float2(.1, -1.), float2(-1.5, .8), t);
+                exists += (1. - cover) * sbHighlight(p, float2(-1.6, .4), float2(1., -.4), t);
+                exists += (1. - cover) * sbHighlight(p, float2(.4, -1.), float2(1.4, .8), t);
+                exists += (1. - cover) * sbHighlight(p, float2(-1.4, -1.), float2(1., .2), t);
+                exists += (1. - cover) * sbHighlight(p, float2(-1.77, -.8), float2(-.6, 1.), t);
+                exists += (1. - cover) * sbHighlight(p, float2(1.05, -1.), float2(1.62, -.1), t);
+                exists += (1. - cover) * sbHighlight(p, float2(1.77, -.25), float2(-.9, .9), t);
+                exists += (1. - cover) * sbHighlight(p, float2(-1.77, -.5), float2(1.77, -.8), t);
+                exists += (1. - cover) * sbHighlight(p, float2(-1.3, -1.), float2(-1.8, 1.), t);
+                exists += (1. - cover) * sbHighlight(p, float2(-.72, -.8), float2(-1.5, 1.), t);
+
+
+                exists *= 4.;
+                _HighlightColor.rgb = 0.;
+                return _BaseColor + exists * (_HighlightColor - _BaseColor); 
             }
             ENDCG
         }

@@ -33,13 +33,13 @@ namespace Ramsey.UI
         float currentContinuousTick;
         public float2 KnobPos
             => UnityReferences.WheelSelectTransform.position.xy()
-                + UnityReferences.WheelSelectTransform.lossyScale.xy() * float2(radius, (CurrentTick + .5f) * MathUtils.TAU / tickCount).ToCartesian();
+                + UnityReferences.WheelSelectTransform.lossyScale.xy() * float2(radius, (currentContinuousTick + thetaNormalizedOffset) * MathUtils.TAU / tickCount).ToCartesian();
         bool hasNode;
 
         //
         Material material;
 
-        public WheelSelect(float radius, float wheelThickness, int tickCount, float nodeSize, float tickCollisionSize = 0.3f, float thetaNormalizedOffset = 0.5f)
+        public WheelSelect(float radius, float wheelThickness, int tickCount, float nodeSize, float thetaNormalizedOffset = 0.5f, float tickCollisionSize = 0.3f)
         {
             this.radius = radius;
             this.wheelThickness = wheelThickness;
@@ -74,7 +74,7 @@ namespace Ramsey.UI
 
             mouse = UnityReferences.WheelSelectTransform.InverseTransformPoint(mouse.xyz()).xy(); //(UnityReferences.WheelSelectTransform.worldToLocalMatrix * (Vector4) mouse.xyzw(0f, 1f)).xy();//
             float2 pos = float2(r, (MathUtils.TAU * (currentContinuousTick+thetaNormalizedOffset) / tickCount)).ToCartesian();
-            return ((length(mouse - pos) - currentKnobSize) > 0f);
+            return ((length(mouse - pos) - currentKnobSize) <= 0f);
         }
         public int Update(float2 mouse, bool isDown, bool isPress, float dt)
         {

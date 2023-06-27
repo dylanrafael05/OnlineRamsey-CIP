@@ -58,7 +58,8 @@ namespace Ramsey.UI
                     StrategyInitializer.For<ExternalBuilder>(o => new((string)o[0]),
                         new TextParameter { Name = "Program", Verifier = new IInputVerifier.None(), DefaultValue = "" }
                     ),
-                    StrategyInitializer.For<AntiBuilder>()
+                    StrategyInitializer.For<AntiBuilder>(),
+                    StrategyInitializer.For<AntiBuilder>() //this is only to make the wheel even
                 }, 
                 new() 
                 { 
