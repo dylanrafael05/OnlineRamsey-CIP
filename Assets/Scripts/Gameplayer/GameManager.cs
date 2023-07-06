@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 using Ramsey.Board;
 using Ramsey.Gameplayer;
 using Ramsey.Graph;
+using Ramsey.Graph.Experimental;
 using Ramsey.Utilities;
 using Ramsey.Visualization;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace Ramsey.UI 
+namespace Ramsey.Gameplayer 
 {
     public class GameManager
     {
@@ -90,6 +91,11 @@ namespace Ramsey.UI
 
             isBuilderTurn = true;
             InGame = false;
+        }
+
+        public static GameManager CreateDefault()
+        {
+            return new(new(Camera.main, new(), new JobPathFinder()));
         }
         
         internal void RunUntilDone()

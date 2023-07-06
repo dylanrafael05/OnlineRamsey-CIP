@@ -12,6 +12,9 @@ using Ramsey.Screen;
 using Ramsey.Graph.Experimental;
 using Ramsey.Visualization;
 using System;
+using Python.Runtime;
+using System.IO;
+using Ramsey.Gameplayer;
 
 namespace Ramsey 
 {
@@ -26,9 +29,41 @@ namespace Ramsey
         [SerializeField] Camera boardCamera;
         [SerializeField] Camera screenCamera;
 
+        private static void RunPyScript(string[] args)
+        {
+            var file = args[^1];
+
+            Runtime.PythonDLL = "python310.dll";
+
+            PythonEngine.Initialize();
+
+            try 
+            {
+                using(Py.GIL())
+                {
+                    using var mod = PythonEngine.Compile(File.ReadAllText(file), file);
+                }
+            }
+            finally 
+            {
+                PythonEngine.Shutdown();
+                Application.Quit(0);
+            }
+        }
+
         // Start is called before the first frame update
         void Awake()
         {
+            var vargs = Environment.GetCommandLineArgs();
+
+            Debug.Log("Starting execution . . .");
+            Debug.Log("args = " + string.Join(',', vargs));
+
+            if(vargs.Contains("--python"))
+            {
+                RunPyScript(vargs);
+            }
+
             Board = BoardManager.UsingAlgorithm<JobPathFinder>(CameraManager.BoardCamera, new BoardPreferences
             {
                 drawingPreferences = new DrawingPreferences

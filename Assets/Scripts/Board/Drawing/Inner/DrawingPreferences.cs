@@ -26,7 +26,12 @@ namespace Ramsey.Drawing
         public Color backgroundHighlightColor;
 
         public readonly Color TypeToColor(int type)
-            => type == -1 ? nullColor : colors[type];
+        {
+            if(type == -1) return nullColor;
+            if(colors is null || type >= colors.Length) return Color.white;
+
+            return colors[type];
+        }
 
         public readonly void UniformPreferences()
         {
