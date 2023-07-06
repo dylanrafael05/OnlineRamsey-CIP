@@ -102,11 +102,13 @@ namespace Ramsey.Visualization
 
         static List<float2> GetPoints(MatchupData matchupData, float2 scale)
         {
-            List<float2> points = new();
-            points.Add(float2(0f));
+            List<float2> points = new()
+            {
+                float2(0f)
+            };
             foreach (var p in matchupData)
                 points.Add(p.Datapoint * scale);
-            return points;
+            return new() { float2(0f), float2(1f), float2(2f) };
         }
 
         static float GetPointOnLine(float2 p1, float2 p2, float x)
@@ -148,7 +150,7 @@ namespace Ramsey.Visualization
 
                 for (int v = 0; v < vertCount; v++)
                 {
-                    p = p2 + to * ((float)v / (float)vertCount);
+                    p = p2 + to * (v * 1f / vertCount);
 
                     yBa = GetPointOnLine(p1, p2, p.x);
                     yOn = GetPointOnLine(p2, p3, p.x);
@@ -156,11 +158,11 @@ namespace Ramsey.Visualization
 
                     float interpolate = (p.x - p2.x) / (p3.x - p2.x);
 
-                    smoothedPoints.Add(float2(p.x, Smooth(yOn, yBa, k) * (1f - interpolate) + Smooth(yOn, yFo, k) * interpolate));
+                    smoothedPoints.Add(float2(p.x, Smooth(yOn, yBa, k) * (1f - interpolate) + Smooth(yOn, yFo, k) * interpolate)); //causing the NaNs p sure (debug for.. div k 0?)
                 }
 
             }
-            //smoothedPoints = points;
+            smoothedPoints = points;
 
             float2 normal;
             List<Vector3> vertices = new();
@@ -173,6 +175,7 @@ namespace Ramsey.Visualization
 
                 normal = normalize(normal1 + normal2);
 
+                Debug.Log(.1f * (point - normal * 1f).xyzV());
                 vertices.Add(.1f*(point - normal*1f).xyzV()); uvs.Add(new(0f, -1));
                 vertices.Add(.1f*(point + normal*1f).xyzV()); uvs.Add(new(0f,  1));
             });

@@ -174,7 +174,7 @@ namespace Ramsey.UI
         public void InitAfterGather(MatchupData data)
         {
             Debug.Log(data.Count);
-            //visualizing = true;
+            visualizing = true;
             visualizer.AddCurve(data, 0f);
         }
 

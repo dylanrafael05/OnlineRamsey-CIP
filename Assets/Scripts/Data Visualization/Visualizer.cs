@@ -124,7 +124,6 @@ namespace Ramsey.Visualization
 
         public void FillCurveMaterial(Material m)
         {
-            Debug.Log(PartitionSize);
             m.SetVector("_Scale", 10f*PartitionSize.xyzw());
             m.SetVector("_SizeBounds", sizeBounds.xyzw());
         }
@@ -220,7 +219,7 @@ namespace Ramsey.Visualization
         public void Draw()
         {
 
-            Matrix4x4 curveMatrix = UnityReferences.VisualizerGraphTransform.WorldMatrix();// * graphPrefs.GetCurveOffsetMatrix();
+            Matrix4x4 curveMatrix = UnityReferences.VisualizerGraphTransform.WorldMatrix() * graphPrefs.GetCurveOffsetMatrix();
 
             //Draw Graph
             Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.VisualizerGraphTransform.WorldMatrix(), graphPrefs.GetMaterial(), layer); 
