@@ -8,6 +8,9 @@ using System.Text.RegularExpressions;
 using UnityEngine.UI;
 using Ramsey.Utilities;
 using Ramsey.Utilities.UI;
+using UnityEngine;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Ramsey.Gameplayer
 {
@@ -78,6 +81,18 @@ namespace Ramsey.Gameplayer
             else 
             {
                 painterInits.Add(new StrategyInitializer<Painter>(p => construct(p) as Painter, parameters));
+            }
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+        public static void RunStaticConstructors()
+        {
+            foreach(var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                foreach(var type in assembly.GetTypes().Where(typeof(IPlayer).IsAssignableFrom))
+                {
+                    RuntimeHelpers.RunClassConstructor(type.TypeHandle);
+                }
             }
         }
     }

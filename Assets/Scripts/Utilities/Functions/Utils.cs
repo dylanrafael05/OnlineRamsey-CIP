@@ -78,12 +78,11 @@ namespace Ramsey.Utilities
         /// <summary>
         /// A condensed version of . . .
         /// <code>
-        /// foreach (var e in items) 
-        ///     Debug.Log(e.ToString());
+        /// Debug.Log(string.Join("\n", items.Select(e => e.ToString())));
         /// </code>
         /// </summary>
         public static void Print<T>(this IEnumerable<T> E)
-        { foreach (T e in E) Debug.Log(e.ToString()); }
+        { Debug.Log(string.Join("\n", E.Select(e => e.ToString()))); }
 
         /// <summary>
         /// A condensed version of . . .
