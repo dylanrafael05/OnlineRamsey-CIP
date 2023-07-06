@@ -10,5 +10,8 @@ namespace Ramsey.Gameplayer
             => new(gameState.NewestEdge, gameState.TurnNum / Mathf.Max(gameState.TargetPathLength - 1, 1) % 2);
         
         public override void Reset() {}
+
+        static LengthyPainter()
+            => StrategyInitializer.RegisterFor<LengthyPainter>();
     }
 }

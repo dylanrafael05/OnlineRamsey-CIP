@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace Ramsey.Utilities
 {
+    /// <summary>
+    /// A simple mono behaviour used as a coroutine runner.
+    /// </summary>
     internal class CoroRunner : MonoBehaviour
     {
         private static CoroRunner ins = null;

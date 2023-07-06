@@ -2,6 +2,12 @@ using Unity.Mathematics;
 
 namespace Ramsey.Utilities
 {
+    /// <summary>
+    /// Perform thread-safe random calculations.
+    /// 
+    /// Use this instead of any unity methods if retreiving
+    /// random information for generating a move for a strategy.
+    /// </summary>
     public static class ThreadSafeRandom
     {
         private static readonly System.Random rand = new();

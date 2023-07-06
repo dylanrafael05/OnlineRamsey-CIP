@@ -12,13 +12,14 @@ using Ramsey.Utilities;
 using System;
 
 using Text = TMPro.TMP_Text;
+using System.Linq;
 
 namespace Ramsey.UI
 {
     public class MenuManager
     {
-        IReadOnlyList<IStrategyInitializer<Builder>> builderInitializers;
-        IReadOnlyList<IStrategyInitializer<Painter>> painterInitializers;
+        IReadOnlyList<IStrategySetting<Builder>> builderSettings;
+        IReadOnlyList<IStrategySetting<Painter>> painterSettings;
 
         WheelSelect builderSelect;
         WheelSelect painterSelect;
@@ -30,15 +31,15 @@ namespace Ramsey.UI
 
         bool firstUpdate;
 
-        public event Action<IStrategyInitializer<Builder>, IStrategyInitializer<Painter>> OnStrategyChanged;
+        public event Action<IStrategySetting<Builder>, IStrategySetting<Painter>> OnStrategyChanged;
         
-        public MenuManager(List<IStrategyInitializer<Builder>> builderInitializers, List<IStrategyInitializer<Painter>> painterInitializers, float drawSize = 1f, float inputDistance = 1f, float wheelRadiusBuilder = 0.35f, float wheelRadiusPainter = 0.2f, float wheelThickness = .029f, float knobRadius = .04f)
+        public MenuManager(float drawSize = 1f, float inputDistance = 1f, float wheelRadiusBuilder = 0.35f, float wheelRadiusPainter = 0.2f, float wheelThickness = .029f, float knobRadius = .04f)
         {
-            this.builderInitializers = builderInitializers;
-            this.painterInitializers = painterInitializers;
+            builderSettings = StrategyInitializer.BuilderInitializers.Select(b => new StrategySetting<Builder>(b)).ToArray();
+            painterSettings = StrategyInitializer.PainterInitializers.Select(b => new StrategySetting<Painter>(b)).ToArray();
 
-            builderSelect = new(wheelRadiusBuilder, wheelThickness, builderInitializers.Count, knobRadius);
-            painterSelect = new(wheelRadiusPainter, wheelThickness, painterInitializers.Count, knobRadius);
+            builderSelect = new(wheelRadiusBuilder, wheelThickness, builderSettings.Count, knobRadius);
+            painterSelect = new(wheelRadiusPainter, wheelThickness, painterSettings.Count, knobRadius);
 
             this.inputDistance = inputDistance;
 
@@ -52,8 +53,8 @@ namespace Ramsey.UI
         {
             bool strategyChanged = false;
 
-            strategyChanged |= UpdateWheel(input, builderSelect, builderInitializers, false);
-            strategyChanged |= UpdateWheel(input, painterSelect, painterInitializers, true);
+            strategyChanged |= UpdateWheel(input, builderSelect, builderSettings, false);
+            strategyChanged |= UpdateWheel(input, painterSelect, painterSettings, true);
 
             if(strategyChanged)
                 OnStrategyChanged?.Invoke(BuilderCurrInit, PainterCurrInit);
@@ -61,7 +62,7 @@ namespace Ramsey.UI
             firstUpdate = false;
         }
 
-        bool UpdateWheel(InputData input, WheelSelect wheel, IReadOnlyList<IStrategyInitializer<IPlayer>> initializers, bool painter)
+        bool UpdateWheel(InputData input, WheelSelect wheel, IReadOnlyList<IStrategySetting<IPlayer>> initializers, bool painter)
         {
             int prev = wheel.CurrentTick;
             int curr = wheel.Update(input.mouse, input.lmb, input.lmbp, Time.deltaTime);
@@ -71,10 +72,10 @@ namespace Ramsey.UI
             {
                 initializers[prev].HideTextInputs();
 
-                if(initializers[curr].Parameters.Count > 0)
+                if(initializers[curr].Initializer.Parameters.Count > 0)
                 {
                     (painter ? painterParamsTitle : builderParamsTitle).gameObject.SetActive(true);
-                    (painter ? painterParamsTitle : builderParamsTitle).text = initializers[curr].Name + (painter ? " Painter" : " Builder");
+                    (painter ? painterParamsTitle : builderParamsTitle).text = initializers[curr].Initializer.Name + (painter ? " Painter" : " Builder");
 
                     initializers[curr].ShowTextInputs();
                 }
@@ -89,8 +90,8 @@ namespace Ramsey.UI
             return false;
         }
 
-        public IStrategyInitializer<Builder> BuilderCurrInit => builderInitializers[builderSelect.CurrentTick];
-        public IStrategyInitializer<Painter> PainterCurrInit => painterInitializers[painterSelect.CurrentTick];
+        public IStrategySetting<Builder> BuilderCurrInit => builderSettings[builderSelect.CurrentTick];
+        public IStrategySetting<Painter> PainterCurrInit => painterSettings[painterSelect.CurrentTick];
 
         public bool ValidParameters => BuilderCurrInit.InputIsValid() && PainterCurrInit.InputIsValid();
 
@@ -102,8 +103,8 @@ namespace Ramsey.UI
             builderSelect.Draw();
             painterSelect.Draw();
 
-            TextRenderer.Draw(builderSelect.KnobPos, BuilderCurrInit.Name, Color.black, screen: true);
-            TextRenderer.Draw(painterSelect.KnobPos, PainterCurrInit.Name, Color.black, screen: true);
+            TextRenderer.Draw(builderSelect.KnobPos, BuilderCurrInit.Initializer.Name, Color.black, screen: true);
+            TextRenderer.Draw(painterSelect.KnobPos, PainterCurrInit.Initializer.Name, Color.black, screen: true);
         }
 
         public void ShowActiveTextInputs()
@@ -114,8 +115,8 @@ namespace Ramsey.UI
 
         public void HideAllTextInputs()
         {
-            foreach(var i in builderInitializers) i.HideTextInputs();
-            foreach(var i in painterInitializers) i.HideTextInputs();
+            foreach(var i in builderSettings) i.HideTextInputs();
+            foreach(var i in painterSettings) i.HideTextInputs();
         }
     }
 

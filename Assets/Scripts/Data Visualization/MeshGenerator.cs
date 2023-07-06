@@ -95,6 +95,9 @@ namespace Ramsey.Visualization
             => new(pathsize, (float)games.Average(), games.Length);
 
         public float2 Datapoint => float2(PathSize, AverageGameLength);
+
+        public override string ToString()
+            => $"Path size = {PathSize}, Game length = {AverageGameLength}, Sample = {SampleSize}";
     }
 
     public static class MeshGenerator

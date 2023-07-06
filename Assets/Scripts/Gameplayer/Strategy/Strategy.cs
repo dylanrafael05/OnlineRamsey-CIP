@@ -49,6 +49,16 @@ namespace Ramsey.Gameplayer
             => !Attribute.IsDefined(type, typeof(UnsupportedInHeadlessAttribute));
         public static bool IsSupportedInHeadless<T>() where T : IPlayer
             => IsSupportedInHeadless(typeof(T));
+
+        public static bool IsBuilder(Type type)
+            => typeof(Builder).IsAssignableFrom(type);
+        public static bool IsBuilder<T>()
+            => IsBuilder(typeof(T));
+        
+        public static bool IsPainter(Type type)
+            => typeof(Painter).IsAssignableFrom(type);
+        public static bool IsPainter<T>()
+            => IsBuilder(typeof(T));
     }
 
     public abstract class Builder : IPlayer

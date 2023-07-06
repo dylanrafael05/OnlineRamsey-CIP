@@ -25,6 +25,8 @@ namespace Ramsey.Gameplayer
 
         public override void Reset() { }
 
+        static AntiBuilder()
+            => StrategyInitializer.RegisterFor<AntiBuilder>();
     }
 
 }

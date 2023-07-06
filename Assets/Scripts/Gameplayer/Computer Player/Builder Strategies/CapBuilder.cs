@@ -102,4 +102,7 @@ public class CapBuilder : Builder
             
     }
 
+    
+    static CapBuilder()
+        => StrategyInitializer.RegisterFor<CapBuilder>();
 }

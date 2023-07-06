@@ -3,19 +3,13 @@ using Unity.Mathematics;
 using Ramsey.Gameplayer;
 using Ramsey.Utilities.UI;
 
-namespace Ramsey.UI
+namespace Ramsey.Gameplayer
 {
     public interface IStrategyInitializer<out T> where T : IPlayer
     {
         IReadOnlyList<TextParameter> Parameters { get; }
-        IReadOnlyList<InputBox> Inputs { get; }
 
-        void ShowTextInputs();
-        void HideTextInputs();
-
-        T Initialize();
-
-        bool InputIsValid();
+        T Initialize(object[] parameters);
 
         string Name { get; }
 

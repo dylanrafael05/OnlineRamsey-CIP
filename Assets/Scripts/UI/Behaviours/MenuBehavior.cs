@@ -39,42 +39,7 @@ namespace Ramsey.UI
         public MenuBehavior(GraphPreferences graphPreferences)
         {
             visualizer = new(CameraManager.ScreenCamera, graphPreferences);
-            menu = new(
-                new() 
-                { 
-                    StrategyInitializer.For<UserBuilder>(),
-                    StrategyInitializer.For<CapBuilder>(),
-                    StrategyInitializer.For<RandomBuilder>(o => new((float)o[0], (float)o[1], (float)o[2]), 
-                        new TextParameter { Name = "Pendant Weight",  Verifier = new IInputVerifier.Float(0, 1), DefaultValue = "0.5" },
-                        new TextParameter { Name = "Internal Weight", Verifier = new IInputVerifier.Float(0, 1), DefaultValue = "0.4" },
-                        new TextParameter { Name = "Isolated Weight", Verifier = new IInputVerifier.Float(0, 1), DefaultValue = "0.1" }
-                    ),
-                    StrategyInitializer.For<ConstrainedRandomBuilder>(o => new((int)o[0]), 
-                        new TextParameter { Name = "Node Count", Verifier = new IInputVerifier.Integer(2, 40), DefaultValue = "20" }
-                    ),
-                    StrategyInitializer.For<PolygonBuilder>(o => new((int)o[0]),
-                        new TextParameter { Name = "Side Count", Verifier = new IInputVerifier.Integer(3), DefaultValue = "8" }
-                    ),
-                    StrategyInitializer.For<ExternalBuilder>(o => new((string)o[0]),
-                        new TextParameter { Name = "Program", Verifier = new IInputVerifier.None(), DefaultValue = "" }
-                    ),
-                    StrategyInitializer.For<AntiBuilder>(),
-                    StrategyInitializer.For<AntiBuilder>() //this is only to make the wheel even
-                }, 
-                new() 
-                { 
-                    StrategyInitializer.For<UserPainter>(),
-                    StrategyInitializer.For<RandomPainter>(),
-                    StrategyInitializer.For<AlternatingPainter>(),
-                    StrategyInitializer.For<LengthyPainter>(),
-                    StrategyInitializer.For<AntiPainter>(o => new((int)o[0]), 
-                        new TextParameter { Name = "Color", Verifier = new IInputVerifier.Integer(0, 2), DefaultValue = "0" }
-                    ),
-                    StrategyInitializer.For<ExternalPainter>(o => new((string)o[0]),
-                        new TextParameter { Name = "Program", Verifier = new IInputVerifier.None(), DefaultValue = "" }
-                    ),
-                }
-            );
+            menu = new();
 
             menuObj = GameObject.Find("Menu");
 
@@ -146,7 +111,7 @@ namespace Ramsey.UI
 
             menu.OnStrategyChanged += (painter, builder) => 
             {
-                var canSetDelay = !painter.IsAutomated || !builder.IsAutomated;
+                var canSetDelay = !painter.Initializer.IsAutomated || !builder.Initializer.IsAutomated;
 
                 if(prevCouldSetDelay && !canSetDelay)
                 {

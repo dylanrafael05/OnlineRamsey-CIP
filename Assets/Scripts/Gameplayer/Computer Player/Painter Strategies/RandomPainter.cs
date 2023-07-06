@@ -17,5 +17,8 @@ namespace Ramsey.Gameplayer
         }
         
         public override void Reset() {}
+
+        static RandomPainter()
+            => StrategyInitializer.RegisterFor<RandomPainter>();
     }
 }
