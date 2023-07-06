@@ -195,11 +195,11 @@ namespace Ramsey.Utilities
                 await action(elem);
         }
 
-        public static bool WaitUntil(Func<bool> func, int milliDelay = 10, int timeout = 1000)
+        public static bool WaitUntil(Func<bool> func, int milliDelay = 10, int timeout = -1)
         {
             var totalt = 0;
 
-            while (!func.Invoke() && totalt < timeout)
+            while (!func.Invoke() && (timeout < 0 || totalt < timeout))
             {
                 Thread.Sleep(milliDelay);
                 totalt += milliDelay;
