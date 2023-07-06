@@ -30,7 +30,7 @@ namespace Ramsey.UI
                     var box = InputBox.Base(param.Name, param.Verifier, param.DefaultValue);
 
                     var parent = "Painter Params Title";
-                    if(typeof(Builder).IsAssignableFrom(typeof(T)))
+                    if(Player.IsBuilder<T>())
                         parent = "Builder Params Title";
 
                     box.MainTransform.SetParent(GameObject.Find("Leftside Menu Content").transform);

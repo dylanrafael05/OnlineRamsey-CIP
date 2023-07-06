@@ -24,14 +24,14 @@ namespace Ramsey.Gameplayer
         public bool IsDeterministic { get; } = Player.IsDeterminstic(typeof(T));
         public bool IsAutomated { get; } = Player.IsAutomated(typeof(T));
 
-        public StrategyInitializer(Func<object[], T> construct, params TextParameter[] parameters)
+        public StrategyInitializer(Type constype, Func<object[], T> construct, params TextParameter[] parameters)
         {
             Parameters = parameters;
             Construct = construct;
 
             Name = string.Join(
                 ' ', 
-                Regex.Replace(typeof(T).Name, @"[A-Z][a-z0-9]+", m => m.Value + " ")
+                Regex.Replace(constype.Name, @"[A-Z][a-z0-9]+", m => m.Value + " ")
                     .TrimEnd()
                     .Split(' ')
                     .SkipLast(1)
@@ -54,33 +54,33 @@ namespace Ramsey.Gameplayer
         {
             if(Player.IsBuilder<T>())
             {
-                builderInits.Add(new StrategyInitializer<Builder>(p => new T() as Builder));
+                builderInits.Add(new StrategyInitializer<Builder>(typeof(T), p => new T() as Builder));
             }
             else 
             {
-                painterInits.Add(new StrategyInitializer<Painter>(p => new T() as Painter));
+                painterInits.Add(new StrategyInitializer<Painter>(typeof(T), p => new T() as Painter));
             }
         }
         public static void RegisterFor<T>(Func<T> construct) where T : IPlayer
         {
             if(Player.IsBuilder<T>())
             {
-                builderInits.Add(new StrategyInitializer<Builder>(p => construct() as Builder));
+                builderInits.Add(new StrategyInitializer<Builder>(typeof(T), p => construct() as Builder));
             }
             else 
             {
-                painterInits.Add(new StrategyInitializer<Painter>(p => construct() as Painter));
+                painterInits.Add(new StrategyInitializer<Painter>(typeof(T), p => construct() as Painter));
             }
         }
         public static void RegisterFor<T>(Func<object[], T> construct, params TextParameter[] parameters) where T : IPlayer
         {
             if(Player.IsBuilder<T>())
             {
-                builderInits.Add(new StrategyInitializer<Builder>(p => construct(p) as Builder, parameters));
+                builderInits.Add(new StrategyInitializer<Builder>(typeof(T), p => construct(p) as Builder, parameters));
             }
             else 
             {
-                painterInits.Add(new StrategyInitializer<Painter>(p => construct(p) as Painter, parameters));
+                painterInits.Add(new StrategyInitializer<Painter>(typeof(T), p => construct(p) as Painter, parameters));
             }
         }
 

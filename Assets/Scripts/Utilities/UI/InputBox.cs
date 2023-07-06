@@ -10,8 +10,7 @@ namespace Ramsey.Utilities.UI
         private static GameObject basePrefab;
         public static GameObject BasePrefab 
         {
-            get => basePrefab;
-            set => basePrefab ??= Resources.Load<GameObject>("Prefabs/TextInput");
+            get => basePrefab ??= Resources.Load<GameObject>("Prefabs/TextInput");
         }
 
         public Transform MainTransform => Head.transform;
