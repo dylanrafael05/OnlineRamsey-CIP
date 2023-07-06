@@ -7,6 +7,13 @@ namespace Ramsey.Utilities.UI
 {
     public class InputBox
     {
+        private static GameObject basePrefab;
+        public static GameObject BasePrefab 
+        {
+            get => basePrefab;
+            set => basePrefab ??= Resources.Load<GameObject>("Prefabs/TextInput");
+        }
+
         public Transform MainTransform => Head.transform;
         public GameObject GameObject => Head.gameObject;
 
@@ -74,6 +81,10 @@ namespace Ramsey.Utilities.UI
         public static InputBox Prefab(GameObject prefab, string name, IInputVerifier verifier, string defaultValue = "")
         {
             return new(GameObject.Instantiate(prefab), name, verifier, defaultValue);
+        }
+        public static InputBox Base(string name, IInputVerifier verifier, string defaultValue = "")
+        {
+            return new(GameObject.Instantiate(BasePrefab), name, verifier, defaultValue);
         }
         public static bool AllValid(params InputBox[] boxes)
         {

@@ -7,6 +7,7 @@ using static Ramsey.Gameplayer.BuilderUtils;
 using System.Collections.Generic;
 using System.Linq;
 using Ramsey.Utilities;
+using Ramsey.Utilities.UI;
 
 namespace Ramsey.Gameplayer
 {
@@ -53,5 +54,13 @@ namespace Ramsey.Gameplayer
         }
 
         public override void Reset() {}
+
+        static RandomBuilder()
+            => StrategyInitializer.RegisterFor<RandomBuilder>(
+                p => new((float)p[0], (float)p[1], (float)p[2]), 
+                new TextParameter { Name = "Pendant Weight",  Verifier = new IInputVerifier.Float(0, 1), DefaultValue = "0.5" },
+                new TextParameter { Name = "Internal Weight", Verifier = new IInputVerifier.Float(0, 1), DefaultValue = "0.4" },
+                new TextParameter { Name = "Isolated Weight", Verifier = new IInputVerifier.Float(0, 1), DefaultValue = "0.1" }
+            );
     }
 }

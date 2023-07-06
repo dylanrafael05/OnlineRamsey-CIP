@@ -1,6 +1,7 @@
 using Ramsey.Board;
 using Ramsey.Graph;
 using Ramsey.Utilities;
+using Ramsey.Utilities.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,5 +53,15 @@ namespace Ramsey.Gameplayer
             sequenceNavigator.Reset();
         }
 
+        static PolygonBuilder()
+            => StrategyInitializer.RegisterFor<PolygonBuilder>(
+                p => new((int)p[0]), 
+                new TextParameter 
+                { 
+                    Name = "Side Count", 
+                    Verifier = new IInputVerifier.Integer(3), 
+                    DefaultValue = "8"
+                }
+            );
     }
 }

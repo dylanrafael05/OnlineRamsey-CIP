@@ -5,6 +5,13 @@ using Unity.Mathematics;
 
 namespace Ramsey.Utilities
 {
+    /// <summary>
+    /// Represents a set of 256 bits.
+    /// 
+    /// This struct supports simple bitwise operations
+    /// like &amp;, |, ^, &gt;&gt;, &lt;&lt;, and ~, alongside basics like == 
+    /// and !=.
+    /// </summary>
     [BurstCompile(CompileSynchronously = true)]
     [StructLayout(LayoutKind.Explicit)]
     public readonly struct Bit256
@@ -90,11 +97,20 @@ namespace Ramsey.Utilities
             + Convert.ToString((long)l3, 2).PadLeft(64, '0') 
             + Convert.ToString((long)l4, 2).PadLeft(64, '0') ;
 
+        /// <summary>
+        /// Shift the data within this structure left by 64 bits.
+        /// </summary>
         public static Bit256 Shl64(Bit256 a)
             => new(a.l2, a.l3, a.l4, 0);
+        /// <summary>
+        /// Shift the data within this structure right by 64 bits.
+        /// </summary>            
         public static Bit256 Shr64(Bit256 a)
             => new(0, a.l1, a.l2, a.l3);
 
+        /// <summary>
+        /// Get the number of bits within this structure that are set.
+        /// </summary>
         public static int Bitcount(Bit256 a) 
             => math.countbits(a.l1) + math.countbits(a.l2) + math.countbits(a.l3) + math.countbits(a.l4);
 
@@ -109,14 +125,26 @@ namespace Ramsey.Utilities
         public static explicit operator Bit256(int a)
             => new(0, 0, 0, (ulong)a);
 
+        /// <summary>
+        /// Get an iterator over the set bit positions in the
+        /// given Bit256.
+        /// </summary>
         public static BitposIterator IterateBitpos(Bit256 b) 
             => new(b);
+        /// <summary>
+        /// Get the first bit position set within the given
+        /// Bit256.
+        /// </summary>
         public static int FirstBitpos(Bit256 b) 
         {
             IterateBitpos(b).GetNext(out var x);
             return x;
         }
 
+        /// <summary>
+        /// Iterates over the bits within a Bit256,
+        /// returning their positions.
+        /// </summary>
         public struct BitposIterator
         {
             private Bit256 bits;
@@ -128,6 +156,11 @@ namespace Ramsey.Utilities
                 currentIndex = 0;
             }
 
+            /// <summary>
+            /// Get the next bit position from the Bit256 this operates on,
+            /// returned through <paramref name="pos"/>. Returns true if there was
+            /// a next position, and false if the end of the set bits has been reached.
+            /// </summary>
             public bool GetNext(out int pos)
             {
                 pos = -1;

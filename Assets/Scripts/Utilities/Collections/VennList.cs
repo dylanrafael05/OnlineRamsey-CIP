@@ -5,9 +5,6 @@ using System.Linq;
 
 namespace Ramsey.Utilities
 {
-    // NOTE: should an 'index' property be stored in each node
-    // to make it faster to index a venn list?
-
     /// <summary>
     /// An immutable list of items which shares a single allocation for 
     /// its elements with extended versions of itself created by 'appending'
@@ -18,7 +15,7 @@ namespace Ramsey.Utilities
     /// Access to the first and last elements of a list is an O(1) operation,
     /// while any other elements must be accessed through an iterator with O(n)
     /// complexity at worst. Appending and prepending are both O(1) operations.
-    /// Iterating through a venn list using <see cref="Values"/> is faster
+    /// Iterating through a venn list using <see cref="ValuesUnordered"/> is faster
     /// than iterating through it normally.
     /// </summary>
     public class VennList<T> : IEnumerable<T>
@@ -169,7 +166,7 @@ namespace Ramsey.Utilities
         /// </summary>
         public bool Contains(T item) 
         {
-            return Values.Contains(item);
+            return ValuesUnordered.Contains(item);
         }
 
         /// <summary>
@@ -233,7 +230,7 @@ namespace Ramsey.Utilities
         /// without being in order. Iterating this is faster than iterating
         /// the values in order.
         /// </summary>
-        public IEnumerable<T> Values
+        public IEnumerable<T> ValuesUnordered
         {
             get 
             {

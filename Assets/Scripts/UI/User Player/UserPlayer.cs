@@ -55,6 +55,8 @@ namespace Ramsey.Gameplayer
 
         public bool IsGameplayMode => true;
 
+        static UserBuilder()
+            => StrategyInitializer.RegisterFor<UserBuilder>();
     }
 
     [NonAutomatedStrategy, UnsupportedInHeadless]
@@ -87,5 +89,8 @@ namespace Ramsey.Gameplayer
         public void End(BoardManager board) { }
 
         public bool IsGameplayMode => true;
+        
+        static UserPainter()
+            => StrategyInitializer.RegisterFor<UserPainter>();
     }
 }

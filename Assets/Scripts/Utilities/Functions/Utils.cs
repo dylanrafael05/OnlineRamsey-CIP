@@ -12,28 +12,49 @@ namespace Ramsey.Utilities
 {
     public static class Utils
     {
+        /// <summary>
+        /// Get a random element in a thread safe manner 
+        /// from the given list.
+        /// </summary>
         public static T RandomElement<T>(this IReadOnlyList<T> L)
-            => L[UnityEngine.Random.Range(0, L.Count)];
+            => L[ThreadSafeRandom.Range(0, L.Count)];
 
+        /// <summary>
+        /// Parse a color from a hexadecimal string into a color object.
+        /// </summary>
         public static Color ColorFromHex(string hex)
         {
             ColorUtility.TryParseHtmlString(hex[0] == '#' ? hex : "#"+hex, out var c);
             return c;
         }
 
+        /// <summary>
+        /// Enumerate the given values alongside their index.
+        /// </summary>
         public static IEnumerable<(T value, int index)> Indexed<T>(this IEnumerable<T> e) 
             => e.Select((v, i) => (v, i));
 
+        /// <summary>
+        /// A condensed version of . . .
+        /// <code>
+        /// for (int i = 0; i &lt; length; i++) 
+        ///     action(i);
+        /// </code>
+        /// </summary>
         public static void ForLength(int length, Action<int> action)
         { for (int i = 0; i < length; i++) action(i); }
 
+        /// <summary>
+        /// Swap the contents of two references.
+        /// </summary>
         public static void Swap<T>(ref T a, ref T b)
         {
-            T tempA = a;
-            a = b;
-            b = tempA;
+            (b, a) = (a, b);
         }
 
+        /// <summary>
+        /// Get the world matrix of a RectTransform.
+        /// </summary>
         public static Matrix4x4 WorldMatrix(this RectTransform transform) 
         {
             var corners = new Vector3[4];
@@ -54,9 +75,23 @@ namespace Ramsey.Utilities
         public static int ToDecimal(this IEnumerable<int> num, int previousBase)
             => num.Select((n, i) => n * (int) pow(previousBase, i)).Sum();
 
+        /// <summary>
+        /// A condensed version of . . .
+        /// <code>
+        /// foreach (var e in items) 
+        ///     Debug.Log(e.ToString());
+        /// </code>
+        /// </summary>
         public static void Print<T>(this IEnumerable<T> E)
         { foreach (T e in E) Debug.Log(e.ToString()); }
 
+        /// <summary>
+        /// A condensed version of . . .
+        /// <code>
+        /// for (int i = 0; i &lt; items.Count; i++)
+        ///     items[i] = value;
+        /// </code>
+        /// </summary>
         public static void Fill<T>(this IList<T> E, T e)
         {
             for (int i = 0; i < E.Count; i++)
@@ -73,6 +108,10 @@ namespace Ramsey.Utilities
             }    
         }
 
+        /// <summary>
+        /// Wrap a task so that errors generated within them
+        /// are correctly reported to the unity console.
+        /// </summary>
         public static Task UnityReport(this Task task) 
         {
             return task.ContinueWith(t => 
@@ -83,6 +122,10 @@ namespace Ramsey.Utilities
                 }
             });
         }
+        /// <summary>
+        /// Wrap a task so that errors generated within them
+        /// are correctly reported to the unity console.
+        /// </summary>
         public static async Task<T> UnityReport<T>(this Task<T> task) 
         {
             try 
@@ -96,17 +139,26 @@ namespace Ramsey.Utilities
             }
         }
 
+        /// <summary>
+        /// Run code conditionally synchronously.
+        /// </summary>
         public static async Task Run(bool synchronous, Action action)
         {
             if(synchronous) action();
             else await Task.Run(action).UnityReport();
         }
+        /// <summary>
+        /// Run code conditionally synchronously.
+        /// </summary>
         public static async Task<T> Run<T>(bool synchronous, Func<T> func)
         {
             if(synchronous) return func();
             else return await Task.Run(func).UnityReport();
         }
 
+        /// <summary>
+        /// Ensure that the given task is synchronous (i.e. already completed) if necessary.
+        /// </summary>
         public static TaskT AssertSync<TaskT>(this TaskT t, bool synchronous) where TaskT : Task
         {
             if(synchronous && !t.IsCompleted)
@@ -117,10 +169,16 @@ namespace Ramsey.Utilities
             return t;
         }
 
+        /// <summary>
+        /// Convert a boolean to an integer with true being '1' and false being '0'.
+        /// </summary>
         public static int ToInt(this bool b)
             => b ? 1 : 0;
 
-        public static List<T> Copy<T>(this List<T> list) where T : struct
+        /// <summary>
+        /// Copy the contents of one list into another
+        /// </summary>
+        public static List<T> Copy<T>(this List<T> list)
         {
             List<T> rList = new();
             list.ForEach(e => rList.Add(e));
@@ -137,27 +195,6 @@ namespace Ramsey.Utilities
             foreach (T elem in self)
                 await action(elem);
         }
-        
-        public static Task ForeachParallel<T>(this IEnumerable<T> self, Func<T, Task> action, int parallelCount = 20) 
-        {
-            async Task DoPartition(IEnumerator<T> partition)
-            {
-                using(partition)
-                {
-                    while(partition.MoveNext())
-                    {
-                        await action(partition.Current);
-                    }
-                }
-            }
-
-            return Task.WhenAll(
-                Partitioner.Create(self)
-                    .GetPartitions(parallelCount)
-                    .AsParallel()
-                    .Select(DoPartition)
-            );
-        }
 
         public static bool WaitUntil(Func<bool> func, int milliDelay = 10, int timeout = 1000)
         {
@@ -172,21 +209,25 @@ namespace Ramsey.Utilities
             return totalt < timeout;
         }
 
-        public static IEnumerable<T> Merge<T>(this IEnumerable<IEnumerable<T>> self)
+        /// <summary>
+        /// Flatten the given enumerable.
+        /// </summary>
+        public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> self)
         {
             return self.SelectMany(t => t);
         }
 
-        public static IEnumerable<(T item, int index)> Enumerate<T>(this IEnumerable<T> self)
-        {
-            return self.Select((x, i) => (x, i));
-        }
-
+        /// <summary>
+        /// Create a unique ID for each element in the given enumerable.
+        /// </summary>
         public static Dictionary<T, int> AssignUniqueIDs<T>(this IEnumerable<T> self)
         {
-            return self.Enumerate().ToDictionary(k => k.item, k => k.index);
+            return self.Indexed().ToDictionary(k => k.value, k => k.index);
         }
 
+        /// <summary>
+        /// Convert the given boolean sequence to a bit set immediately.
+        /// </summary>
         public static BitSet ToBitSet(this IEnumerable<bool> self) 
         {
             var bs = new BitSet();
@@ -200,9 +241,17 @@ namespace Ramsey.Utilities
 
             return bs;
         }
+        /// <summary>
+        /// Convert the given sequence to a bit set immediately, using
+        /// the provided function to convert values to booleans.
+        /// </summary>
         public static BitSet ToBitSet<T>(this IEnumerable<T> self, Func<T, bool> pred) 
             => self.Select(pred).ToBitSet();
 
+        /// <summary>
+        /// Get the element in the given sequence with the largest value 
+        /// according to the provided function.
+        /// </summary>
         public static T MaxBy<T>(this IEnumerable<T> self, Func<T, float> value)
         {
             var v = default(T);
@@ -223,6 +272,10 @@ namespace Ramsey.Utilities
             
             return v;
         }
+        /// <summary>
+        /// Get the element in the given sequence with the largest value 
+        /// according to the provided function.
+        /// </summary>
         public static T MinBy<T>(this IEnumerable<T> self, Func<T, float> value)
         {
             var v = default(T);
@@ -244,6 +297,10 @@ namespace Ramsey.Utilities
             return v;
         }
 
+        /// <summary>
+        /// Pad the list up to the given index with the default value 
+        /// of its element type.
+        /// </summary>
         public static void PadDefaultUpto<T>(this IList<T> t, int index)
         {
             while(t.Count <= index) 
@@ -251,6 +308,10 @@ namespace Ramsey.Utilities
                 t.Add(default);
             }
         }
+        /// <summary>
+        /// Pad the list up to the given index with a new value 
+        /// of its element type.
+        /// </summary>
         public static void PadNewUpto<T>(this IList<T> t, int index) 
             where T : new()
         {
@@ -259,6 +320,10 @@ namespace Ramsey.Utilities
                 t.Add(new());
             }
         }
+        /// <summary>
+        /// Pad the list up to the given index with a value 
+        /// of its element type constructed by the given function.
+        /// </summary>
         public static void PadUpto<T>(this IList<T> t, int index, Func<T> cons)
         {
             while(t.Count <= index) 
@@ -266,5 +331,12 @@ namespace Ramsey.Utilities
                 t.Add(cons());
             }
         }
+
+        /// <summary>
+        /// Trick C# into believing an object is of the given type.
+        /// Throws a runtime error if it is not of that type.
+        /// </summary>
+        public static T Pun<T>(this object obj)
+            => (T)obj;
     }
 }

@@ -9,6 +9,9 @@ using Text = TMPro.TMP_Text;
 
 namespace Ramsey.Drawing
 {
+    /// <summary>
+    /// Render text to the screen with an OpenGL-like API
+    /// </summary>
     public static class TextRenderer
     {
         private static int count;

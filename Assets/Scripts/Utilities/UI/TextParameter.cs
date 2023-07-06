@@ -1,6 +1,6 @@
 using Ramsey.Utilities.UI;
 
-namespace Ramsey.UI
+namespace Ramsey.Utilities.UI
 {
     public struct TextParameter
     {

@@ -9,6 +9,11 @@ namespace Ramsey.Utilities
     {
         public static readonly float TAU = 6.28318f;
 
+        /// <summary>
+        /// Perform a mathematical modulus, which ignores sign.
+        /// This differs from the builtin modulus operator, which
+        /// multiplies output by the sign of its first input.
+        /// </summary>
         public static float amod(float v, float g)
         {
             float m = fmod(abs(v), g);
@@ -89,22 +94,6 @@ namespace Ramsey.Utilities
             => xy.div(inSize).mul(outSize);
         public static float3 rescale(this float3 xy, float2 inSize, float2 outSize)
             => xy.div(float3(inSize, 1)).mul(float3(outSize, 1));
-
-        public static IReadOnlyList<int> BitPositions(Bit256 mask) 
-        {
-            var res = new List<int>();
-            var i = 0;
-
-            while(i < 256)
-            {
-                var b = mask & 1;
-                if(b == 1) res.Add(i);
-                mask >>= 1;
-                i++;
-            }
-
-            return res;
-        }
 
         public static float Round(float value, float amt)
             => value - value % amt;

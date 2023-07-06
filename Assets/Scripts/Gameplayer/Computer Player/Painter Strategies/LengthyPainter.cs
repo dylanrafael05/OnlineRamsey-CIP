@@ -12,5 +12,8 @@ namespace Ramsey.Gameplayer
         }
         
         public override void Reset() {}
+
+        static LengthyPainter()
+            => StrategyInitializer.RegisterFor<LengthyPainter>();
     }
 }

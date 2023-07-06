@@ -7,12 +7,20 @@ namespace Ramsey.Utilities
 {
     /// <summary>
     /// Represents a set of booleans as a list of bits.
+    /// 
+    /// The "elements" of this set are <see cref="ulong"/>s,
+    /// which are 64 bits in size, meaning that each element
+    /// can store 64 boolean values.
     /// </summary>
     public class BitSet : IEnumerable<bool>
     {
         private int count;
         private ulong[] values;
 
+        /// <summary>
+        /// Get the number of elements which are required to store at most
+        /// "count" booleans.
+        /// </summary>
         public static int ElementsNeededForSize(int count)
         {
             return (count + ElementSize - 1) / ElementSize;
@@ -55,6 +63,9 @@ namespace Ramsey.Utilities
             values = new ulong[0];
         }
 
+        /// <summary>
+        /// Create a bitset with the provided underlying values and count.
+        /// </summary>
         public BitSet(ulong[] values, int count)
         {
             this.count = count;
@@ -74,6 +85,10 @@ namespace Ramsey.Utilities
         public BitSet Clone() 
             => new(this);
 
+        /// <summary>
+        /// Calculate the common values needed to index 
+        /// the internal values of this set.
+        /// </summary>
         private void HandleIndex(int index, out int valueIndex, out ulong mask) 
         {   
             // INVARIANTS //
@@ -86,6 +101,10 @@ namespace Ramsey.Utilities
             mask = 1ul << subIndex;
         }
 
+        /// <summary>
+        /// Calculate the common values needed to modify 
+        /// the internal values of this set.
+        /// </summary>
         private void HandleIndexMutable(int index, out int valueIndex, out ulong mask) 
         {
             // INVARIANTS //
@@ -99,7 +118,7 @@ namespace Ramsey.Utilities
         }
 
         /// <summary>
-        /// Set the bit at the given index to 'true'
+        /// Set the bit at the given index to 'true'.
         /// </summary>
         public void Set(int index)
         {
@@ -108,7 +127,7 @@ namespace Ramsey.Utilities
             values[valueIndex] |= mask;
         }
         /// <summary>
-        /// Set the bit at the given index to 'false'
+        /// Set the bit at the given index to 'false'.
         /// </summary>
         public void Unset(int index)
         {
@@ -117,7 +136,7 @@ namespace Ramsey.Utilities
             values[valueIndex] &= ~mask;
         }
         /// <summary>
-        /// Flip the bit at the given index
+        /// Flip the bit at the given index.
         /// </summary>
         public void Flip(int index)
         {
@@ -127,7 +146,7 @@ namespace Ramsey.Utilities
         }
 
         /// <summary>
-        /// Check if the bit at the given index is set to 'true'
+        /// Check if the bit at the given index is set to 'true'.
         /// </summary>
         public bool IsSet(int index) 
         {
@@ -138,7 +157,7 @@ namespace Ramsey.Utilities
             return (values[valueIndex] & mask) != 0;
         }
         /// <summary>
-        /// Check if the bit at the given index is set to 'false'
+        /// Check if the bit at the given index is set to 'false'.
         /// </summary>
         public bool IsUnset(int index) 
         {
@@ -147,6 +166,14 @@ namespace Ramsey.Utilities
             HandleIndexMutable(index, out var valueIndex, out var mask);
 
             return (values[valueIndex] & mask) == 0;
+        }
+
+        /// <summary>
+        /// Check if this set is logically equal to another.
+        /// </summary>
+        public bool SetEquals(BitSet other)
+        {
+            return count == other.count && values.SequenceEqual(other.values);
         }
 
         /// <summary>
@@ -179,11 +206,9 @@ namespace Ramsey.Utilities
             oldValues.CopyTo(values, 0);
         }
 
-        public bool SetEquals(BitSet other)
-        {
-            return count == other.count && values.SequenceEqual(other.values);
-        }
-
+        /// <summary>
+        /// Get the values within this set.
+        /// </summary>
         public IEnumerator<bool> GetEnumerator()
         {
             var i = 0;

@@ -4,7 +4,17 @@ using System.Collections.Generic;
 using Ramsey.Graph;
 using System.Threading.Tasks;
 using Ramsey.Utilities;
+using Ramsey.Utilities.UI;
 
+/// <summary>
+/// Behaves as though there was a limited number of nodes available,
+/// as is determined by a parameter, selecting edges connecting two
+/// nodes of those available.
+/// 
+/// Throws a <see cref="GraphTooComplexException"/> if all possible
+/// edges connecting the available nodes are created and the game is
+/// not yet over. This ends the game early in a no-win state.
+/// </summary>
 [NonDeterministicStrategy]
 public class ConstrainedRandomBuilder : Builder 
 {
@@ -58,4 +68,15 @@ public class ConstrainedRandomBuilder : Builder
 
         return new BuilderMove(GetNode(state, a), GetNode(state, b));
     }
+
+    static ConstrainedRandomBuilder()
+        => StrategyInitializer.RegisterFor<ConstrainedRandomBuilder>(
+            p => new((int)p[0]), 
+            new TextParameter 
+            { 
+                Name = "Max Nodes", 
+                Verifier = new IInputVerifier.Integer(2), 
+                DefaultValue = "10"
+            }
+        );
 }

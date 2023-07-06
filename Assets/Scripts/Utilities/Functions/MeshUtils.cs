@@ -4,7 +4,10 @@ namespace Ramsey.Utilities
 {
     public static class MeshUtils
     {
-
+        /// <summary>
+        /// A simple quad mesh whose vertices lie on (+-1, +-1, 0)
+        /// and which has uvs ranging from [-1, 1].
+        /// </summary>
         public static readonly Mesh QuadMesh = new()
         {
             vertices = new Vector3[]
