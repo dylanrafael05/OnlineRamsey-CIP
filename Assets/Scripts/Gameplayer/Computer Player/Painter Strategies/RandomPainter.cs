@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace Ramsey.Gameplayer
 {
+    //Will choose a random color to paint the edge
     [NonDeterministicStrategy]
     public class RandomPainter : Painter
     {

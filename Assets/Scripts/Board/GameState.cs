@@ -29,11 +29,12 @@ namespace Ramsey.Board
         public Edge NewestEdge { get; internal set; }
         public int NewestPaint { get; internal set; }
 
-        //Painter Commands
+        /// <summary>
+        /// Creates a node at (0,0) - Though, because of the physics, it'll quickly be attracted to the graph as a whole.
+        /// </summary>
+        /// <returns></returns>
         public Node CreateNode()
-        {
-            return Board.CreateNode();
-        }
+            => Board.CreateNode();
 
     }
 }

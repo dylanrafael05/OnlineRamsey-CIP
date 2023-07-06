@@ -10,6 +10,7 @@ using static Ramsey.Gameplayer.BuilderUtils;
 
 namespace Ramsey.Gameplayer
 {
+    //This strategy will create polygons of a given sideCount, connecting each next one to the last at a random vertex
     [NonDeterministicStrategy]
     public class PolygonBuilder : Builder
     {
