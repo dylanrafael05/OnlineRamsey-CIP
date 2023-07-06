@@ -171,7 +171,7 @@ namespace Ramsey.Visualization
 
             smoothedPoints.ForEachIndex((point, i) =>
             {
-                float2 normal1 = i - 1 >= 0 ? normalize((smoothedPoints[i] - smoothedPoints[i - 1]).perp()) : float2(0f);
+                float2 normal1 = i - 1 >= 0 ? normalize((smoothedPoints[i] - smoothedPoints[i - 1]).perp()) : float2(0f); //perp method being weird problem?
                 float2 normal2 = i + 1 < smoothedPoints.Count ? normalize((smoothedPoints[i + 1] - smoothedPoints[i]).perp()) : float2(0f);
 
                 normal = normalize(normal1 + normal2);
