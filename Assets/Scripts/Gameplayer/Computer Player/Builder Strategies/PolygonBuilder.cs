@@ -64,5 +64,8 @@ namespace Ramsey.Gameplayer
                     DefaultValue = "8"
                 }
             );
+
+        public override string ToString()
+            => "Polygon Builder";
     }
 }

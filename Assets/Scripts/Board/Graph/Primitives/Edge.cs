@@ -20,11 +20,32 @@ namespace Ramsey.Graph
             ID = id;
         }
 
+        /// <summary>
+        /// The node at the start of the edge (arbitrary direction).
+        /// </summary>
         public Node Start { get; }
+        /// <summary>
+        /// The node at the end of the edge (arbitrary direction).
+        /// </summary>
         public Node End { get; }
+        /// <summary>
+        /// -1 - Nulltype
+        /// 0 - Blue
+        /// 1 - Red
+        /// (All Configurable)
+        /// </summary>
         public int Type { get; internal set; }
+        /// <summary>
+        /// Unique identifier that distinguishes it from other edges.
+        /// </summary>
         public int ID { get;}
 
+        /// <summary>
+        /// If the node is on the edge, it'll get the opposite node.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
         internal Node NodeOpposite(Node node) 
         {
             if(node == Start) return End;

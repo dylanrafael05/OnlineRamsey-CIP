@@ -16,12 +16,22 @@ namespace Ramsey.Graph
         public IReadOnlyList<Node> Nodes => nodes;
         public IReadOnlyList<Edge> Edges => edges;
 
+        /// <summary>
+        /// Get a node from its unique identifier.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public Node NodeFromID(int id) 
         {
             // Assert.IsTrue(nodes.Count > id, $"Cannot get a node of id {id} from this graph, it does not yet exist!");
 
             return nodes[id];
         }
+        /// <summary>
+        /// Get an edge from its unique identifier.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public Edge EdgeFromID(int id) 
         {
             Assert.IsTrue(edges.Count > id, $"Cannot get an edge of id {id} from this graph, it does not yet exist!");
@@ -29,6 +39,12 @@ namespace Ramsey.Graph
             return edges[id];
         }
 
+        /// <summary>
+        /// Check if an edge is valid.
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
         public bool IsValidEdge(Node start, Node end) 
         {
             if(start == end) return false;
@@ -36,6 +52,10 @@ namespace Ramsey.Graph
 
             return true;
         }
+        /// <summary>
+        /// Check if the Graph is a Complete Graph.
+        /// </summary>
+        /// <returns></returns>
         public bool IsComplete()
         {
             foreach(var node in nodes)
@@ -50,6 +70,10 @@ namespace Ramsey.Graph
 
             return true;
         }
+        /// <summary>
+        /// Check if the Graph is a Complete Graph and that every edge is colored.
+        /// </summary>
+        /// <returns></returns>
         public bool IsCompleteColored()
             => IsComplete() && edges.All(e => e.Type != Edge.NullType);
 
@@ -77,6 +101,11 @@ namespace Ramsey.Graph
             node.Position = position;
         }
 
+        /// <summary>
+        /// Paint an edge a certain color.  Can't change its color if it's already painted (not NullType).
+        /// </summary>
+        /// <param name="edge"></param>
+        /// <param name="type"></param>
         public void PaintEdge(Edge edge, int type)
         {
             Assert.AreEqual(edge.Type, Edge.NullType, "Cannot change the color of a painted edge!");

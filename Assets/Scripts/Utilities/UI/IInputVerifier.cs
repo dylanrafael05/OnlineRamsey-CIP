@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Ramsey.Utilities.UI
 {
+    /// <summary>
+    /// Different primitive types that you can make sure your textbox conforms to.
+    /// </summary>
     public interface IInputVerifier
     {
         bool IsValid(string str, out string reason);

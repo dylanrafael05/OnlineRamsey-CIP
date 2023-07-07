@@ -27,5 +27,8 @@ namespace Ramsey.Gameplayer
                     DefaultValue = "0"
                 }
             );
+
+        public override string ToString()
+            => "Anti Painter";
     }
 }

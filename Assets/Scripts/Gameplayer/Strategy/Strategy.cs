@@ -81,6 +81,8 @@ namespace Ramsey.Gameplayer
 
         public abstract BuilderMove GetMove(GameState gameState);
         public abstract void Reset();
+
+        public abstract override string ToString();
     }
 
     public abstract class Painter : IPlayer
@@ -103,5 +105,7 @@ namespace Ramsey.Gameplayer
 
         public abstract PainterMove GetMove(GameState gameState);
         public abstract void Reset();
+
+        public abstract override string ToString();
     }
 }

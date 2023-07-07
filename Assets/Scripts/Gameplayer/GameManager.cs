@@ -69,7 +69,7 @@ namespace Ramsey.Gameplayer
 
             if(matchups.Count == 0) return null;
 
-            return MatchupResult.Average(target, matchups.Select(t => t.AverageGameLength).ToArray());
+            return MatchupResult.Average(target, builder.ToString(), painter.ToString(), matchups.Select(t => t.AverageGameLength).ToArray());
         }
         
         public MatchupData SimulateMany(int startTarget, int endTarget, int step, Builder builder, Painter painter, int attempts = 1)
@@ -188,7 +188,7 @@ namespace Ramsey.Gameplayer
         public MatchupResult? GetMatchupData()
         {
             if(State.GraphTooComplex) return null;
-            return new(State.TargetPathLength, State.TurnNum);
+            return new(State.TargetPathLength, State.TurnNum, builder.ToString(), painter.ToString());
         }
 
         public void Cleanup()

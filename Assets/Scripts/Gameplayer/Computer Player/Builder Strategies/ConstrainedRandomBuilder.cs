@@ -79,4 +79,7 @@ public class ConstrainedRandomBuilder : Builder
                 DefaultValue = "10"
             }
         );
+
+    public override string ToString()
+            => "Constrained Random Builder";
 }

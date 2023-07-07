@@ -101,8 +101,10 @@ public class CapBuilder : Builder
         else { longBase--; longOther++; }
             
     }
-
     
     static CapBuilder()
         => StrategyInitializer.RegisterFor<CapBuilder>();
+
+    public override string ToString()
+            => "Cap Builder";
 }

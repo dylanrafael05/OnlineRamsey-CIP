@@ -76,6 +76,13 @@ namespace Ramsey.Visualization
         {
             return ((IEnumerable)results).GetEnumerator();
         }
+
+        public override string ToString()
+        {
+            string s = "";
+            results.ForEach(m => s += m.ToString() + "\n");
+            return s;
+        }
     }
 
     public readonly struct MatchupResult
@@ -83,21 +90,25 @@ namespace Ramsey.Visualization
         public int PathSize { get; }
         public float AverageGameLength { get; }
         public int SampleSize { get; }
+        public string BuilderName { get; }
+        public string PainterName { get; }
 
-        public MatchupResult(int pathsize, float gamelen, int samplesize = 1)
+        public MatchupResult(int pathsize, float gamelen, string builderName = "UNKNOWN Builder", string painterName = "UNKNOWN Painter", int samplesize = 1)
         {
             PathSize = pathsize;
             AverageGameLength = gamelen;
             SampleSize = samplesize;
+            BuilderName = builderName;
+            PainterName = painterName;
         }
 
-        public static MatchupResult Average(int pathsize, params float[] games)
-            => new(pathsize, (float)games.Average(), games.Length);
+        public static MatchupResult Average(int pathsize, string builderName, string painterName, params float[] games)
+            => new(pathsize, (float)games.Average(), builderName, painterName, games.Length);
 
         public float2 Datapoint => float2(PathSize, AverageGameLength);
 
         public override string ToString()
-            => $"Path size = {PathSize}, Game length = {AverageGameLength}, Sample = {SampleSize}";
+            => $"Using {BuilderName} and {PainterName} - Path Size = {PathSize}, Game Length = {AverageGameLength}, Sample = {SampleSize}";
     }
 
     public static class MeshGenerator

@@ -58,6 +58,9 @@ namespace Ramsey.Gameplayer
                 new TextParameter { Name = "Internal Weight", Verifier = new IInputVerifier.Float(0, 1), DefaultValue = "0.4" },
                 new TextParameter { Name = "Isolated Weight", Verifier = new IInputVerifier.Float(0, 1), DefaultValue = "0.1" }
         );
+
+        public override string ToString()
+            => "Random Builder";
     }
 }
 

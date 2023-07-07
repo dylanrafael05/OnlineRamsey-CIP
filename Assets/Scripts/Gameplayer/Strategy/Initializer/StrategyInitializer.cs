@@ -50,6 +50,10 @@ namespace Ramsey.Gameplayer
         public static IReadOnlyList<IStrategyInitializer<Builder>> BuilderInitializers => builderInits; 
         public static IReadOnlyList<IStrategyInitializer<Painter>> PainterInitializers => painterInits; 
 
+        /// <summary>
+        /// Register a strategy initializer with no parameters.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         public static void RegisterFor<T>() where T : IPlayer, new()
         {
             if(Player.IsBuilder<T>())
@@ -61,6 +65,11 @@ namespace Ramsey.Gameplayer
                 painterInits.Add(new StrategyInitializer<Painter>(typeof(T), p => new T() as Painter));
             }
         }
+        /// <summary>
+        /// Register a strategy initializer with a function that creates the strategy.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="construct"></param>
         public static void RegisterFor<T>(Func<T> construct) where T : IPlayer
         {
             if(Player.IsBuilder<T>())
@@ -72,6 +81,14 @@ namespace Ramsey.Gameplayer
                 painterInits.Add(new StrategyInitializer<Painter>(typeof(T), p => construct() as Painter));
             }
         }
+        /// <summary>
+        /// Register a strategy initializer with a function that takes in an array of objects.  
+        /// The array of "objects" is actually filled with the types that you set in the "parameters" parameter.
+        /// For example, if you have two ints in your "parameters" parameter, you'll cast the first and second element of object array to int.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="construct"></param>
+        /// <param name="parameters"></param>
         public static void RegisterFor<T>(Func<object[], T> construct, params TextParameter[] parameters) where T : IPlayer
         {
             if(Player.IsBuilder<T>())

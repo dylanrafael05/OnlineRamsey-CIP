@@ -31,5 +31,8 @@ namespace Ramsey.Gameplayer
                     DefaultValue = "1"
                 }
             );
+
+        public override string ToString()
+            => "Alternating Painter";
     }
 }
