@@ -123,7 +123,7 @@ namespace Ramsey.Gameplayer
             {
                 if(player.IsAutomated && !synchronous) await Task.Delay((int)(Delay * 1000));
 
-                return await Utils.Run(synchronous, () => player.GetMove(board.GameState));
+                return await player.GetMoveAsync(State).AssertSync(synchronous);
             }
             
             // Repeat until move is valid
@@ -135,11 +135,11 @@ namespace Ramsey.Gameplayer
                 {
                     if(isBuilderTurn)
                     {
-                        move = await GetMove(builder).AssertSync(synchronous);
+                        move = await GetMove(builder);
                     }
                     else 
                     {
-                        move = await GetMove(painter).AssertSync(synchronous);
+                        move = await GetMove(painter);
                     }
                 }
                 catch(GraphTooComplexException) 

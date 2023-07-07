@@ -6,21 +6,23 @@ using Random = Unity.Mathematics.Random;
 using System.Linq;
 using UnityEngine;
 using Ramsey.Graph.Experimental;
+using Ramsey.Utilities;
+using Unity.Burst;
 
 namespace Ramsey.Graph.Experimental
 {
-    public struct NodeSmootherJob : IJobParallelFor
+    public struct NodeSmoothingPhysicsJob : IJobParallelFor
     {
         [ReadOnly] public NativeBitMatrix matrix;
         [NativeMatchesParallelForLength, ReadOnly] public NativeArray<float2> positions;
         [NativeMatchesParallelForLength, WriteOnly] public NativeArray<float2> outPositions;
 
-        public float GetScaleFromRadiusSquared(float r2)
+        public static float GetScaleFromRadiusSquared(float r2)
         {
             return math.exp(-r2) + 4f * math.max(0, 2f - r2 * 0.5f);
         }
 
-        public float2 ModifyVelocity(float2 vel) 
+        public static float2 ModifyVelocity(float2 vel) 
         {
             const float A = 0.1f / math.PI;
             return math.atan(math.length(vel / A)) * A * math.normalizesafe(vel);

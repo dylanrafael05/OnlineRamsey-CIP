@@ -10,7 +10,7 @@ using Ramsey.Utilities;
 
 using static Ramsey.Gameplayer.BuilderUtils;
 
-public class CapBuilder : Builder
+public class CapBuilder : Builder.Synchronous
 {
     public CapBuilder()
         => seq = new(InitialTree, LoopTree);

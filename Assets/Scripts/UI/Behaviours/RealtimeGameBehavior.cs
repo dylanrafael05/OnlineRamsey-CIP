@@ -46,7 +46,7 @@ namespace Ramsey.UI
             }
 
             Main.Game.UpdateGameplay();
-            NodeSmoothing.Smooth(Main.Board, 2);
+            NodeSmoothing.Update(Main.Board);
 
             DisplayText.Update(Main.Game.State);
 

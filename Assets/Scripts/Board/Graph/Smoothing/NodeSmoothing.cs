@@ -4,40 +4,92 @@ using Unity.Jobs;
 using System.Linq;
 using Ramsey.Utilities;
 using Ramsey.Graph.Experimental;
+using System;
 
 namespace Ramsey.Graph.Experimental
 {
     public static class NodeSmoothing
     {
-        public static void Smooth(IGraphManager gm, int iterationCount = 1)
-        {
-            var positions = new NativeArray<float2>(
-                gm.Graph.Nodes.Select(n => n.Position).ToArray(),
-                Allocator.TempJob);
-            var outPositions = new NativeArray<float2>(positions, Allocator.TempJob);
-            var matrix = gm.Graph.GetNativeAdjacencyMatrix(Allocator.TempJob);
+        private const float MaxWaitSyncMillis = 10f;
+        private const int RepeatCount = 2;
 
-            var ns = new NodeSmootherJob
+        private static JobHandle? handle;
+
+        private static NativeArray<float2> positions;
+        private static NativeArray<float2> outPositions;
+        private static NativeBitMatrix matrix;
+
+        private static void ScheduleJob(IGraphManager gm)
+        {
+            positions = new NativeArray<float2>(
+                gm.Graph.Nodes.Select(n => n.Position).ToArray(),
+                Allocator.Persistent);
+            
+            outPositions = new NativeArray<float2>(positions, Allocator.Persistent);
+            matrix = gm.Graph.GetNativeAdjacencyMatrix(Allocator.Persistent);
+
+            var physicsJob = new NodeSmoothingPhysicsJob
             {
-                matrix = matrix,
                 positions = positions,
                 outPositions = outPositions,
+                matrix = matrix
             };
 
-            for(int count = 0; count < iterationCount; count++)
+            handle = physicsJob.Schedule(positions.Length, 32);
+        }
+
+        private static void CompleteJob(IGraphManager gm)
+        {
+            handle.Value.Complete();
+
+            for (int i = 0; i < outPositions.Length; i++)
             {
-                (ns.outPositions, ns.positions) = (ns.positions, ns.outPositions);
-                ns.Run(positions.Length);
+                gm.MoveNode(gm.Graph.Nodes[i], outPositions[i]);
             }
 
-            for (int i = 0; i < ns.outPositions.Length; i++)
-            {
-                gm.MoveNode(gm.Graph.Nodes[i], ns.outPositions[i]);
-            }
-
+            matrix.Dispose();
             positions.Dispose();
             outPositions.Dispose();
-            matrix.Dispose();
+        }
+
+        public static void Update(IGraphManager gm)
+        {
+            // Schedule new job if necessary
+            if(handle is null)
+            {
+                ScheduleJob(gm);
+            }
+
+            var startTime = DateTime.Now;
+            var count = 0;
+
+            while(true)
+            {
+                if(DateTime.Now.Millisecond - startTime.Millisecond >= MaxWaitSyncMillis)
+                {
+                    // Timeout
+                    return;
+                }
+
+                if(handle.Value.IsCompleted)
+                {
+                    // Complete job
+                    CompleteJob(gm);
+
+                    count++;
+
+                    // Restart job if necessary
+                    if(count == RepeatCount)
+                    {
+                        handle = null;
+                        return;
+                    }
+                    else 
+                    {
+                        ScheduleJob(gm);
+                    }
+                }
+            }
         }
     }
 }

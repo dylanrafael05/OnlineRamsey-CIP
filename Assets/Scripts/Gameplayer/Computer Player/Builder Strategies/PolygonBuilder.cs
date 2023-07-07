@@ -2,18 +2,20 @@ using Ramsey.Board;
 using Ramsey.Graph;
 using Ramsey.Utilities;
 using Ramsey.Utilities.UI;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Assertions;
 using static Ramsey.Gameplayer.BuilderUtils;
 
 namespace Ramsey.Gameplayer
 {
     //This strategy will create polygons of a given sideCount, connecting each next one to the last at a random vertex
     [NonDeterministicStrategy]
-    public class PolygonBuilder : Builder
+    public class PolygonBuilder : Builder.Synchronous
     {
         public PolygonBuilder(int sideCount)
         {

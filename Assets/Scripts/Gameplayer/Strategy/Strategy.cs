@@ -28,7 +28,7 @@ namespace Ramsey.Gameplayer
         bool IsAutomated { get; }
         bool IsSupportedInHeadless { get; }
 
-        IMove GetMove(GameState gameState);
+        Task<IMove> GetMoveAsync(GameState gameState);
 
         void Reset();
     }
@@ -74,15 +74,24 @@ namespace Ramsey.Gameplayer
             IsSupportedInHeadless = Player.IsSupportedInHeadless(GetType());
         }
 
-        IMove IPlayer.GetMove(GameState gameState)
+        async Task<IMove> IPlayer.GetMoveAsync(GameState gameState)
         {
-            return GetMove(gameState);
+            return await GetMoveAsync(gameState);
         }
 
-        public abstract BuilderMove GetMove(GameState gameState);
+        public abstract Task<BuilderMove> GetMoveAsync(GameState gameState);
         public abstract void Reset();
 
         public abstract override string ToString();
+
+        public abstract class Synchronous : Builder
+        {
+            public sealed override Task<BuilderMove> GetMoveAsync(GameState gameState)
+                => Task.FromResult(GetMove(gameState));
+            
+            public abstract BuilderMove GetMove(GameState gameState);
+        }
+
     }
 
     public abstract class Painter : IPlayer
@@ -98,14 +107,22 @@ namespace Ramsey.Gameplayer
             IsSupportedInHeadless = Player.IsSupportedInHeadless(GetType());
         }
 
-        IMove IPlayer.GetMove(GameState gameState)
+        async Task<IMove> IPlayer.GetMoveAsync(GameState gameState)
         {
-            return GetMove(gameState);
+            return await GetMoveAsync(gameState);
         }
 
-        public abstract PainterMove GetMove(GameState gameState);
+        public abstract Task<PainterMove> GetMoveAsync(GameState gameState);
         public abstract void Reset();
 
         public abstract override string ToString();
+
+        public abstract class Synchronous : Painter
+        {
+            public sealed override Task<PainterMove> GetMoveAsync(GameState gameState)
+                => Task.FromResult(GetMove(gameState));
+            
+            public abstract PainterMove GetMove(GameState gameState);
+        }
     }
 }

@@ -9,7 +9,7 @@ namespace Ramsey.Gameplayer
 {
     //Will choose a random color to paint the edge
     [NonDeterministicStrategy]
-    public class RandomPainter : Painter
+    public class RandomPainter : Painter.Synchronous
     {
         public override PainterMove GetMove(GameState gameState)
         {

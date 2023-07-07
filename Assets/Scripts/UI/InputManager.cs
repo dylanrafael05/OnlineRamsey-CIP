@@ -69,8 +69,11 @@ namespace Ramsey.UI
 
             if (board is null) return data;
 
-            data.collidingNodes = board.Nodes.Where(n => CollideNode(data.mouse, n)).ToHashSet();
-            data.collidingEdges = board.Edges.Where(e => CollideEdge(data.mouse, e)).ToHashSet();
+            lock(board)
+            {
+                data.collidingNodes = board.Nodes.Where(n => CollideNode(data.mouse, n)).ToHashSet();
+                data.collidingEdges = board.Edges.Where(e => CollideEdge(data.mouse, e)).ToHashSet();
+            }
 
             board.SetMousePosition(data.normalizedMouse);
 

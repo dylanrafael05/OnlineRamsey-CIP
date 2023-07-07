@@ -5,7 +5,7 @@ using Ramsey.Utilities.UI;
 
 namespace Ramsey.Gameplayer
 {
-    public class AlternatingPainter : Painter
+    public class AlternatingPainter : Painter.Synchronous
     {
         public AlternatingPainter(int lengthPerColor)
         {

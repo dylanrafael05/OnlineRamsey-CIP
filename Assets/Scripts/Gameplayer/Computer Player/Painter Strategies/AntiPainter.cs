@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Ramsey.Gameplayer
 {
-    public class AntiPainter : Painter 
+    public class AntiPainter : Painter.Synchronous 
     {
         //Will try to lose the game by painting the same color each time
         public AntiPainter(int favoriteColor)

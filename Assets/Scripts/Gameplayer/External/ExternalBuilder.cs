@@ -85,7 +85,10 @@ namespace Ramsey.Gameplayer
             response = null;
             process.StandardInput.WriteLine(txt);
 
-            if(!Utils.WaitUntil(() => response != null, timeout: 2000))
+            var task = Utils.WaitUntil(() => response != null, timeout: 2000);
+            task.RunSynchronously();
+
+            if(!task.Result)
             {
                 Debug.LogError($"Call '{txt}' had no response!");
             }
@@ -235,7 +238,7 @@ namespace Ramsey.Gameplayer
             .Bind("makenode", p => "" + OperativeState.CreateNode().ID);
     }
 
-    public class ExternalBuilder : Builder
+    public class ExternalBuilder : Builder.Synchronous
     {
         public ExternalBuilder(string program)
         {
@@ -261,7 +264,7 @@ namespace Ramsey.Gameplayer
         }
     }
 
-    public class ExternalPainter : Painter
+    public class ExternalPainter : Painter.Synchronous
     {
         public ExternalPainter(string program)
         {
