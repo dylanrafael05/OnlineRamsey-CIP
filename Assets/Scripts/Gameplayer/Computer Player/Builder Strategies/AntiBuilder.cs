@@ -11,7 +11,7 @@ using static Ramsey.Gameplayer.BuilderUtils;
 namespace Ramsey.Gameplayer
 {
 
-    public class AntiBuilder : Builder
+    public class AntiBuilder : Builder.Synchronous
     {
 
         //Will try to lose the game in an interesting way; most of the time, it'll extend the node located in the middle of the longest path

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Ramsey.Gameplayer
 {
-    public class LengthyPainter : Painter
+    public class LengthyPainter : Painter.Synchronous
     {
         public override PainterMove GetMove(GameState gameState)
             => new(gameState.NewestEdge, gameState.TurnNum / Mathf.Max(gameState.TargetPathLength - 1, 1) % 2);

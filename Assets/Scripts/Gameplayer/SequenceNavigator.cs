@@ -13,13 +13,15 @@ namespace Ramsey.Gameplayer
         bool shouldReset;
         int current;
         List<IEnumerator<T>> navigators;
-        IList<Initializer> sequences;
+        
+        readonly IList<Initializer> sequences;
 
         public T Loop(GameState state)
         {
             if(shouldReset)
             {
                 PerformReset(state);
+                shouldReset = false;
             }
 
             if (!navigators[current].MoveNext())

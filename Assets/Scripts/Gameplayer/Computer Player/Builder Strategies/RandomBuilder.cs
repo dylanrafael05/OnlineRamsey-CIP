@@ -12,7 +12,7 @@ using Ramsey.Utilities.UI;
 namespace Ramsey.Gameplayer
 {
     [NonDeterministicStrategy]
-    public class RandomBuilder : Builder
+    public class RandomBuilder : Builder.Synchronous
     {
         //Will randomly choose between 3 substrategies: placing a pendant, placing an internal edge (between 2 nodes that have neighbors), and placing an isolated edge.
         float pendantProb;

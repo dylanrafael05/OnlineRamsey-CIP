@@ -16,7 +16,7 @@ using Ramsey.Utilities.UI;
 /// not yet over. This ends the game early in a no-win state.
 /// </summary>
 [NonDeterministicStrategy]
-public class ConstrainedRandomBuilder : Builder 
+public class ConstrainedRandomBuilder : Builder.Synchronous 
 {
     private readonly int target;
     private readonly Dictionary<int, Node> nodes;

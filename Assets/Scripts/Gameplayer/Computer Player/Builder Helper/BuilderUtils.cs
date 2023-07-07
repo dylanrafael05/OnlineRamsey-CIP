@@ -18,9 +18,13 @@ namespace Ramsey.Gameplayer
         /// <returns></returns>
         public static BuilderMove Extend(ref Node n1, GameState state)
         {
+            var n1o = n1;
+            
             var n2 = state.CreateNode();
-            var move = new BuilderMove(n1, n2);
             n1 = n2;
+
+            var move = new BuilderMove(n1o, n2);
+
             return move;
         }
 
