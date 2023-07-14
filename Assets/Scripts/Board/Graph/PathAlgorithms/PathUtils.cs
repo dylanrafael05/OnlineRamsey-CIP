@@ -4,6 +4,10 @@ using System.Linq;
 
 namespace Ramsey.Graph
 {
+    /// <summary>
+    /// Implemented generalized algorithms to extrapolate information
+    /// about any given path.
+    /// </summary>
     internal static class PathUtils
     {
         public static IEnumerable<Edge> GetEdgesConnecting(IEnumerable<Node> nodes) 

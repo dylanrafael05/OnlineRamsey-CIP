@@ -8,9 +8,13 @@ using Unity.Burst;
 
 namespace Ramsey.Graph.Experimental
 {
+    /// <summary>
+    /// Supplies the implementations of both all-at-once and one-at-a-time
+    /// path finding types.
+    /// </summary>
     internal static class JobPathFinderImpl
     {
-        internal static (JobPathInternal[] paths, JobPathInternal longest) FindAll(Graph graph, int type)
+        internal static (JobPathInternal[] paths, JobPathInternal longest) FindAll(IReadOnlyGraph graph, int type)
         {
             var nodeCount = graph.Nodes.Count;
 
@@ -33,7 +37,7 @@ namespace Ramsey.Graph.Experimental
             return Find(adjList, livePaths, deadPaths, default, type);
         }
 
-        internal static (JobPathInternal[] paths, JobPathInternal longest) FindIncr(Graph graph, JobPath longest, IReadOnlyList<JobPathInternal> existingPaths, Edge newEdge)
+        internal static (JobPathInternal[] paths, JobPathInternal longest) FindIncr(IReadOnlyGraph graph, JobPathInternal longest, IReadOnlyList<JobPathInternal> existingPaths, Edge newEdge)
         {
             NativeAdjacencyList adjList = graph.GetNativeAdjacencyList(Allocator.Persistent, newEdge.Type);
             NativeList<JobPathInternal> livePaths = new(existingPaths.Count * 2 + 1, Allocator.Persistent);
@@ -62,9 +66,14 @@ namespace Ramsey.Graph.Experimental
             livePaths.Add(edgepath); 
             // else deadPaths.Add(edgepath);
 
-            return Find(adjList, livePaths, deadPaths, longest?.Internal ?? default, newEdge.Type);
+            return Find(adjList, livePaths, deadPaths, longest, newEdge.Type);
         }
 
+        /// <summary>
+        /// Manages the jobs and memory allocations
+        /// necessary to find paths with the given start
+        /// conditions.
+        /// </summary>
         internal static (JobPathInternal[] paths, JobPathInternal longest) Find(NativeAdjacencyList adjacencies, NativeList<JobPathInternal> startLivePaths, NativeHashSet<JobPathInternal> startDeadPaths, JobPathInternal longest, int type) 
         {
             NativeList<JobPathInternal> livePaths = startLivePaths;

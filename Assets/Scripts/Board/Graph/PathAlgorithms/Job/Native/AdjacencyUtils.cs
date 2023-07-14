@@ -1,9 +1,12 @@
-using Unity.Collections;
-using System;
 using System.Linq;
+using Unity.Collections;
 
 namespace Ramsey.Graph.Experimental
 {
+    /// <summary>
+    /// Implements functions to gain access to native information
+    /// about a graph's adjacencies.
+    /// </summary>
     public static class AdjacencyUtils
     {
         public static NativeAdjacencyList GetNativeAdjacencyList(this IReadOnlyGraph g, Allocator alloc, int? type = null)
@@ -42,34 +45,6 @@ namespace Ramsey.Graph.Experimental
             }
             
             return am;
-        }
-    }
-
-    public readonly struct NativeBitMatrix : IDisposable 
-    {
-        public NativeBitMatrix(int w, int h, Allocator alloc) 
-        {
-            Width = w;
-            Height = h;
-            Area = w * h;
-
-            innerArray = new(Area, alloc);
-        }
-
-        private readonly NativeBitArray innerArray;
-        public int Width { get; }
-        public int Height { get; }
-        public int Area { get; }
-
-        public bool this[int x, int y]
-        {
-            get => innerArray.IsSet(x * Height + y);
-            set => innerArray.Set(x * Height + y, value);
-        }
-
-        public void Dispose()
-        {
-            innerArray.Dispose();
         }
     }
 }

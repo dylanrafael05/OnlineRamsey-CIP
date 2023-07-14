@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Ramsey.Graph.Experimental
 {
+    /// <summary>
+    /// Stores an efficient and native adjacency list.
+    /// </summary>
     public struct NativeAdjacencyList : IDisposable 
     {
         public NativeAdjacencyList(int nodecount, int maxlength, Allocator alloc) 

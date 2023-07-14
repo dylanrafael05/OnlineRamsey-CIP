@@ -13,8 +13,8 @@ namespace Ramsey.Graph
         internal Node(int id) 
             => ID = id;
 
-        private Dictionary<Node, Edge> edgesByOpposingID = new();
-        private List<List<Edge>> edgesByType = new();
+        private readonly Dictionary<Node, Edge> edgesByOpposingID = new();
+        private readonly List<List<Edge>> edgesByType = new();
 
         /// <summary>
         /// A sequence of edges connected to this node.

@@ -10,6 +10,22 @@ using Unity.Profiling;
 
 namespace Ramsey.Graph.Experimental
 {
+    /// <summary>
+    /// The job which actually expands all paths to any 
+    /// edges which connect to them.
+    /// <br/>
+    /// 
+    /// This job works by looping through all adjacencies
+    /// of the endpoints of each path, and attempting to
+    /// expand the path to include said adjacency. If this
+    /// suceeds, the expanded path is added to the pool of 
+    /// paths which could potentially still be expanded,
+    /// or the "live" paths.
+    /// 
+    /// After this is done, the current path is re-added
+    /// to the pool of paths which could not be expanded any
+    /// further, or the "death" paths.
+    /// </summary>
     [BurstCompile(CompileSynchronously = true)]
     internal struct PathGenerateJob : IJobParallelFor
     {

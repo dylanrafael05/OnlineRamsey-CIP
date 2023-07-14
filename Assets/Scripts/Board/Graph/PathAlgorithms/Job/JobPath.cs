@@ -9,11 +9,14 @@ using UnityEngine.Assertions;
 
 namespace Ramsey.Graph.Experimental
 {
+    /// <summary>
+    /// A path generated from a JobPathInternal.
+    /// </summary>
     public class JobPath : IPath
     {
         private static readonly ProfilerMarker GetNodesMarker = new(ProfilerCategory.Scripts, "JobPath.GetNodes");
 
-        internal JobPath(JobPathInternal from, int type, Graph graph)
+        internal JobPath(JobPathInternal from, int type, IReadOnlyGraph graph)
         {
             Internal = from;
 
@@ -39,7 +42,12 @@ namespace Ramsey.Graph.Experimental
             }
         }
 
-        private bool FindSequence(Graph g, Node[] nodesOut, int startCount, Bit256 nodesRemaining)
+        /// <summary>
+        /// Find an ordering of the given nodes such that they form a contiguous path 
+        /// connecting a start and end node, passed through the first and last indices of 
+        /// nodesOut. Then, store this ordering inside the nodesOut parameter.
+        /// </summary>
+        private bool FindSequence(IReadOnlyGraph g, Node[] nodesOut, int startCount, Bit256 nodesRemaining)
         {
             if(Bit256.Bitcount(nodesRemaining) == 1)
             {
