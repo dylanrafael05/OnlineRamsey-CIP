@@ -3,7 +3,8 @@ using System;
 namespace Ramsey.Graph
 {
     /// <summary>
-    /// Thrown when a graph's node count exceeds its maximum.
+    /// Thrown when a graph's node count exceeds its maximum or
+    /// a strategy cannot work with the given graph state.
     /// </summary>
     public class GraphTooComplexException : Exception
     {

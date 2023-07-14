@@ -15,7 +15,6 @@ namespace Ramsey.Graph
 
         public IReadOnlyList<Node> Nodes => graph.Nodes;
         public IReadOnlyList<Edge> Edges => graph.Edges;
-        public IEnumerable<IPath> Paths => pathFinder.AllPaths;
         public int? MaxNodeCount => pathFinder.MaxSupportedNodeCount;
 
         public event Action OnFinishPathCalculation;
@@ -25,9 +24,22 @@ namespace Ramsey.Graph
         public Edge EdgeFromID(int id) 
             => graph.EdgeFromID(id);
 
+        public void LoadGraph(IGraph graph)
+        {
+            this.graph = graph;
+            pathFinder.HandleFullGraph(graph);
+        }
+
         Task currentPathTask = null;
 
+        /// <summary>
+        /// Check if the graph manager is waiting for path finding
+        /// to complete.
+        /// </summary>
         public bool IsAwaitingPathTask => currentPathTask != null;
+        /// <summary>
+        /// Wait for path finding to complete.
+        /// </summary>
         public async Task AwaitPathTask()
         {
             if(IsAwaitingPathTask)
@@ -36,21 +48,22 @@ namespace Ramsey.Graph
 
         public IReadOnlyList<IPath> MaxPathsByType => pathFinder.MaxPathsByType;
 
-        internal readonly Graph graph;
+        internal IGraph graph;
         internal readonly IIncrementalPathFinder pathFinder;
 
-        internal GraphManager(Graph graph, IIncrementalPathFinder pathFinder)
+        internal GraphManager(IGraph graph, IIncrementalPathFinder pathFinder)
         {
             this.graph = graph;
             this.pathFinder = pathFinder;
         }
 
-        public GraphManager(IIncrementalPathFinder pathFinder) : this(new(), pathFinder)
+        public GraphManager(IIncrementalPathFinder pathFinder) : this(new Graph(), pathFinder)
         {}
 
         public static GraphManager UsingAlgorithm<TAlgo>() where TAlgo: IIncrementalPathFinder, new()
             => new(new TAlgo());
 
+        /// <inheritdoc cref="Graph.CreateNode(float2)"/>
         public Node CreateNode(float2 position = default)
         {
             if(pathFinder.MaxSupportedNodeCount is int max && Nodes.Count > max)
@@ -64,6 +77,7 @@ namespace Ramsey.Graph
             return n;
         }
 
+        /// <inheritdoc cref="Graph.CreateEdge(Node, Node)"/>
         public Edge CreateEdge(Node start, Node end)
         {
             var e = graph.CreateEdge(start, end);
@@ -71,7 +85,11 @@ namespace Ramsey.Graph
             return e;
         }
 
-
+        /// <summary>
+        /// Paint the given edge with the given type, updating
+        /// path finding either in the background (synchronous = false)
+        /// or immediately (synchronous = true).
+        /// </summary>
         public void PaintEdge(Edge e, int type, bool synchronous = false) //Will start background task
         {   
             graph.PaintEdge(e, type);
@@ -85,17 +103,20 @@ namespace Ramsey.Graph
             });
         }
 
+        /// <inheritdoc cref="Graph.MoveNode(Node, float2)"/>
         public void MoveNode(Node n, float2 position)
         {
             graph.MoveNode(n, position);
         }
 
+        /// <inheritdoc cref="Graph.Clear()"/>
         public void Clear()
         {
             graph.Clear();
             pathFinder.Clear();
         }
 
+        /// <inheritdoc cref="Graph.IsValidEdge(Node, Node)"/>
         public bool IsValidEdge(Node start, Node end)
         {
             return graph.IsValidEdge(start, end);

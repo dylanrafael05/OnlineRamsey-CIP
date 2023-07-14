@@ -16,6 +16,8 @@ namespace Ramsey.Graph
         public IReadOnlyList<Node> Nodes => nodes;
         public IReadOnlyList<Edge> Edges => edges;
 
+        public int NumTypes { get; private set; } = 0;
+
         /// <summary>
         /// Get a node from its unique identifier.
         /// </summary>
@@ -114,12 +116,15 @@ namespace Ramsey.Graph
 
             edge.Start.PaintEdge(edge);
             edge.End.PaintEdge(edge);
+
+            NumTypes = Mathf.Max(NumTypes, type + 1);
         }
         
         public void Clear()
         {
             nodes.Clear();
             edges.Clear();
+            NumTypes = 0;
         }
 
         internal bool Empty => nodes.Count == 0 && edges.Count == 0;

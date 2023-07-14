@@ -5,6 +5,11 @@ using Unity.Profiling;
 
 namespace Ramsey.Graph.Experimental
 {
+    /// <summary>
+    /// The job which handles the outputs of the generation job,
+    /// reoving duplicates and storing them into their appropriate 
+    /// places.
+    /// </summary>
     [BurstCompile(CompileSynchronously = true)]
     internal struct PathAggregateJob : IJob
     {

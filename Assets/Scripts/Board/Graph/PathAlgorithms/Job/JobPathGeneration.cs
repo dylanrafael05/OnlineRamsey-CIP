@@ -2,6 +2,10 @@ using Ramsey.Utilities;
 
 namespace Ramsey.Graph.Experimental
 {
+    /// <summary>
+    /// Represents a path as well as if it should be
+    /// considered a part of the live or dead pool.
+    /// </summary>
     internal readonly struct JobPathGeneration
     {
         public JobPathGeneration(JobPathInternal path, bool isLive)

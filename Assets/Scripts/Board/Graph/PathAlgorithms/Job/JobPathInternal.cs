@@ -3,6 +3,26 @@ using Ramsey.Utilities;
 
 namespace Ramsey.Graph.Experimental
 {
+    /// <summary>
+    /// Represents a path constructed using the jobs approach.
+    /// <br/>
+    /// 
+    /// The data stored within this structure is inadequate to 
+    /// distinguish any two arbitrary paths, since no true ordering
+    /// of nodes is present other than the knowledge of which is first
+    /// and which is last. This does not pose a problem however, since
+    /// the inclusion of a node anywhere within a path disqualifies it
+    /// from being included again within an expansion of the path, meaning
+    /// that true ordering is unnecessary to the path finder algorithm.
+    /// <br/>
+    /// 
+    /// By taking advantage of this fact, this structure requires no allocations
+    /// and has a constant size, making it much easier and faster to work with.
+    /// <br/>
+    /// 
+    /// However, this does mean that the final results of the algorithm
+    /// must be post-processed. <see cref="JobPath"/>
+    /// </summary>
     internal readonly struct JobPathInternal : IEquatable<JobPathInternal>
     {
         public JobPathInternal(Bit256 mask, byte start, byte end) 

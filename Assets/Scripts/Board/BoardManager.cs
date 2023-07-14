@@ -37,7 +37,6 @@ namespace Ramsey.Board
 
         public IReadOnlyList<Node> Nodes => graphManager.Nodes;
         public IReadOnlyList<Edge> Edges => graphManager.Edges;
-        public IEnumerable<IPath> Paths => graphManager.Paths;
         public int? MaxNodeCount => graphManager.MaxNodeCount;
 
         private readonly GameState gameState;
@@ -73,6 +72,9 @@ namespace Ramsey.Board
         {
             return new BoardManager(camera, prefs, GraphManager.UsingAlgorithm<TAlgo>());
         }
+
+        public void LoadGraph(IGraph graph)
+            => graphManager.LoadGraph(graph);
 
         public Node CreateNode(float2? position = default)
         {

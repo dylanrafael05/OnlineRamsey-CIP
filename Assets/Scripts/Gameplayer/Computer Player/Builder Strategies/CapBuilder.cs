@@ -13,6 +13,7 @@ using UnityEngine;
 
 public class CapBuilder : Builder.Synchronous
 {
+    private static int count;
     public CapBuilder()
         => seq = new(InitialTree, LoopTree);
 
@@ -110,5 +111,5 @@ public class CapBuilder : Builder.Synchronous
         => StrategyInitializer.RegisterFor<CapBuilder>();
 
     public override string ToString()
-            => "Cap Builder";
+        => "Cap Builder";
 }
