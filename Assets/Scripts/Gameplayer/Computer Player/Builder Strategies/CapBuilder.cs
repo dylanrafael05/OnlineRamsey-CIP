@@ -20,6 +20,7 @@ using UnityEngine;
 
 public class CapBuilder : Builder.Synchronous
 {
+    private static int count;
     public CapBuilder()
         => seq = new(InitialTree, LoopTree);
 

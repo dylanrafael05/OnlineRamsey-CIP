@@ -10,15 +10,15 @@ namespace Ramsey.UI
 {
     public class TurnNavigatorMode : IUserMode<BoardManager>
     {
-        public const float RecorderOffset = 3f;
+        public const float RecorderOffset = 1.5f;
         public const float RecorderForce = 0.2f;
-        public const float RecorderTolerance = 0.02f;
+        public const float RecorderTolerance = 0.01f;
 
         private static float RecorderY
         {
-            get => UnityReferences.RecordingTransform.position.y;
-            set => UnityReferences.RecordingTransform.position 
-                = new Vector3(UnityReferences.RecordingTransform.position.x, value, UnityReferences.RecordingTransform.position.z);
+            get => UnityReferences.RecordingTransform.localPosition.y;
+            set => UnityReferences.RecordingTransform.localPosition 
+                = new Vector3(UnityReferences.RecordingTransform.localPosition.x, value, UnityReferences.RecordingTransform.localPosition.z);
         }
         
         private IEnumerator Slide(float target) 

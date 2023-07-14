@@ -131,6 +131,8 @@ namespace Ramsey.Gameplayer
             {
                 IMove move;
 
+                await Utils.WaitUntil(() => board.IsCurrentTurn);
+
                 try 
                 {
                     if(isBuilderTurn)
@@ -147,6 +149,8 @@ namespace Ramsey.Gameplayer
                     board.MarkGraphTooComplex();
                     return;
                 }
+                
+                await Utils.WaitUntil(() => board.IsCurrentTurn);
 
                 // Run move
                 if(move.MakeMove(board, synchronous))
@@ -166,7 +170,7 @@ namespace Ramsey.Gameplayer
 
         public void UpdateGameplay() 
         {
-            if(InGame)
+            if(InGame && board.IsCurrentTurn)
             {
                 if(currentTask is null || currentTask.IsCompleted)
                 {

@@ -39,7 +39,9 @@ namespace Ramsey.Drawing
         public static void Initialize()
         {
 
-            RecordingTransform = GameObject.Find("Recording").GetComponent<RectTransform>();
+            var rec = GameObject.Find("Recording").GetComponent<RectTransform>();
+            RecordingTransform = rec.GetChild(0) as RectTransform;
+
             LoadingTransform = GameObject.Find("Loading").GetComponent<RectTransform>();
             WheelSelectTransform = GameObject.Find("Wheel Select").GetComponent<RectTransform>();
             VisualizerGraphTransform = GameObject.Find("Visualizer Graph").GetComponent<RectTransform>();
