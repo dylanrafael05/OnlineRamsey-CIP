@@ -16,6 +16,8 @@ namespace Ramsey.Drawing
         public static Text TurnText { get; private set; }
         public static Text OverText { get; private set; }
         public static Text ConfirmMenuText { get; private set; }
+        public static Text BuilderNameText { get; private set; }
+        public static Text PainterNameText { get; private set; }
         public static MeshRenderer BackgroundRenderer { get; private set; }
         public static MeshRenderer TransitionRenderer { get; private set; }
 
@@ -46,6 +48,8 @@ namespace Ramsey.Drawing
             TurnText = GameObject.Find("Turn Text").GetComponent<Text>();
             OverText = GameObject.Find("Over Text").GetComponent<Text>();
             ConfirmMenuText = GameObject.Find("Confirm Leave").GetComponent<Text>();
+            BuilderNameText = GameObject.Find("Builder Name").GetComponent<Text>();
+            PainterNameText = GameObject.Find("Painter Name").GetComponent<Text>();
 
             GoalText.gameObject.SetActive(false);
             TurnText.gameObject.SetActive(false);
