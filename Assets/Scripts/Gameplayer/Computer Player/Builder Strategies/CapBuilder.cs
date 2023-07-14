@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Ramsey.Utilities;
 
 using static Ramsey.Gameplayer.BuilderUtils;
+using UnityEngine;
 
 public class CapBuilder : Builder.Synchronous
 {
@@ -67,10 +68,12 @@ public class CapBuilder : Builder.Synchronous
 
     IEnumerable<BuilderMove> LoopTree(GameState state)
     {
+
+        var oldBase = n1.Neighbors.First();
         var oldOther = n2.Neighbors.First();
 
         //If the 'other' path has length 0 give it a node to start with
-        if (longOther == 0) n2 = state.CreateNode();
+        //if (longOther == 0) n2 = state.CreateNode();
 
         //Connect the ends of the two paths (we'll call this the bridge edge from now on)
         yield return new BuilderMove(n1, n2);
@@ -81,13 +84,15 @@ public class CapBuilder : Builder.Synchronous
             longOther++;
 
             t1 = 1 - t1;
-            Utils.Swap(ref n1, ref n2);
 
+            Utils.Swap(ref n1, ref n2);
+            Utils.Swap(ref oldBase, ref oldOther);
             Utils.Swap(ref longBase, ref longOther);
         }
         yield return Extend(ref n2, state);
 
         //If the newest paint is the same color as that just extended path, increment our longest base path length and update the end points of our paths
+        Debug.Log("T1: " + t1 + " Newest Paint: " + state.NewestPaint);
         if(state.NewestPaint == t1)
         {
             longBase++;
@@ -97,7 +102,7 @@ public class CapBuilder : Builder.Synchronous
 
             longOther--;
         }
-        //if the neweset paint isn't the same color as that just extended path, imagine the bridge edge doesn't exist (longBase--) and increment the longOther path length
+        //if the newest paint isn't the same color as that just extended path, imagine the bridge edge doesn't exist (longBase--) and increment the longOther path length
         else { longBase--; longOther++; }
             
     }
