@@ -92,7 +92,6 @@ public class CapBuilder : Builder.Synchronous
         yield return Extend(ref n2, state);
 
         //If the newest paint is the same color as that just extended path, increment our longest base path length and update the end points of our paths
-        Debug.Log("T1: " + t1 + " Newest Paint: " + state.NewestPaint);
         if(state.NewestPaint == t1)
         {
             longBase++;
