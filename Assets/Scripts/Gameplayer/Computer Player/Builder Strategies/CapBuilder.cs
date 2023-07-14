@@ -9,6 +9,14 @@ using System.Threading.Tasks;
 using Ramsey.Utilities;
 
 using static Ramsey.Gameplayer.BuilderUtils;
+using UnityEngine;
+
+//! IMPORTANT !//
+// This strategy fails completely against AlternatingPainter(3),
+// leading to a graph too large error even with a game size of 10.
+// This suggests there is a fatal error within the logic of the
+// following code which we unfortunately do not have time to find 
+// nor fix!
 
 public class CapBuilder : Builder.Synchronous
 {
@@ -106,5 +114,5 @@ public class CapBuilder : Builder.Synchronous
         => StrategyInitializer.RegisterFor<CapBuilder>();
 
     public override string ToString()
-            => "Cap Builder";
+        => "Cap Builder";
 }
