@@ -57,6 +57,9 @@ namespace Ramsey.Gameplayer
 
         static UserBuilder()
             => StrategyInitializer.RegisterFor<UserBuilder>();
+
+        public override string ToString()
+            => "User Builder";
     }
 
     [NonAutomatedStrategy, UnsupportedInHeadless]
@@ -92,5 +95,8 @@ namespace Ramsey.Gameplayer
         
         static UserPainter()
             => StrategyInitializer.RegisterFor<UserPainter>();
+        
+        public override string ToString()
+            => "User Painter";
     }
 }

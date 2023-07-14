@@ -20,6 +20,7 @@ namespace Ramsey.Gameplayer
     {
         public ExternalAPIInstance(ExternalAPI api, string consumerFilePath) 
         {
+            ConsumerFilePath = consumerFilePath;
             this.api = api;
 
             var startinfo = new ProcessStartInfo
@@ -72,6 +73,8 @@ namespace Ramsey.Gameplayer
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
         }
+
+        public string ConsumerFilePath { get; }
 
         private readonly ExternalAPI api;
         private readonly Process process;
@@ -262,6 +265,9 @@ namespace Ramsey.Gameplayer
         {
             api.Call("reset");
         }
+
+        public override string ToString()
+            => "External Builder " + api.ConsumerFilePath;
     }
 
     public class ExternalPainter : Painter.Synchronous
@@ -286,5 +292,8 @@ namespace Ramsey.Gameplayer
         {
             api.Call("reset");
         }
+
+        public override string ToString()
+            => "External Painter " + api.ConsumerFilePath;
     }
 }
