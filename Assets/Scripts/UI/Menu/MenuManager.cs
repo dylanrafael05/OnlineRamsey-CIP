@@ -72,6 +72,8 @@ namespace Ramsey.UI
             {
                 initializers[prev].HideTextInputs();
 
+                StrategyNameDisplayer.UpdateName(initializers[curr].Initializer.Name, painter);
+
                 if(initializers[curr].Initializer.Parameters.Count > 0)
                 {
                     (painter ? painterParamsTitle : builderParamsTitle).gameObject.SetActive(true);
@@ -103,8 +105,8 @@ namespace Ramsey.UI
             builderSelect.Draw();
             painterSelect.Draw();
 
-            TextRenderer.Draw(builderSelect.KnobPos, BuilderCurrInit.Initializer.Name, Color.black, screen: true);
-            TextRenderer.Draw(painterSelect.KnobPos, PainterCurrInit.Initializer.Name, Color.black, screen: true);
+            /*TextRenderer.Draw(builderSelect.KnobPos, BuilderCurrInit.Initializer.Name, Color.black, screen: true);
+            TextRenderer.Draw(painterSelect.KnobPos, PainterCurrInit.Initializer.Name, Color.black, screen: true);*/
         }
 
         public void ShowActiveTextInputs()
