@@ -60,7 +60,7 @@ namespace Ramsey.Gameplayer
         );
 
         public override string ToString()
-            => "Random Builder";
+            => $"Random({pendantProb}; {internalProb}; {isolatedProb})";
     }
 }
 

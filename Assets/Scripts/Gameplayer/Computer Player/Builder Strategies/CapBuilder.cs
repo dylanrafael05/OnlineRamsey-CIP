@@ -111,5 +111,5 @@ public class CapBuilder : Builder.Synchronous
         => StrategyInitializer.RegisterFor<CapBuilder>();
 
     public override string ToString()
-        => "Cap Builder";
+        => "Cap";
 }
