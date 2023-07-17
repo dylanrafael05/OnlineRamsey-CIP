@@ -105,7 +105,7 @@ namespace Ramsey.Visualization
         public string BuilderName { get; }
         public string PainterName { get; }
 
-        public MatchupResult(int pathsize, float gamelen, string builderName = "UNKNOWN Builder", string painterName = "UNKNOWN Painter", int samplesize = 1)
+        public MatchupResult(int pathsize, float gamelen, string builderName = "UNKNOWN Builder", string painterName = "UNKNOWN Painter", string compactBuilderName = null, string compactPainterName = null, int samplesize = 1)
         {
             PathSize = pathsize;
             AverageGameLength = gamelen;

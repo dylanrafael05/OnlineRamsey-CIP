@@ -192,7 +192,7 @@ namespace Ramsey.Gameplayer
         public MatchupResult? GetMatchupData()
         {
             if(State.GraphTooComplex) return null;
-            return new(State.TargetPathLength, State.TurnNum, builder.ToString(), painter.ToString());
+            return new(State.TargetPathLength, State.TurnNum, builder.ToString(), painter.ToString(), builder.ToString(true), painter.ToString(true));
         }
 
         public void Cleanup()
