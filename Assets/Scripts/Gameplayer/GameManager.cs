@@ -74,7 +74,7 @@ namespace Ramsey.Gameplayer
         
         public MatchupData SimulateMany(int startTarget, int endTarget, int step, Builder builder, Painter painter, int attempts = 1)
         {
-            MatchupData matchupData = new();
+            MatchupData matchupData = new(startTarget, endTarget, step, attempts);
 
             for(int t = startTarget; t <= endTarget; t += step)
             {

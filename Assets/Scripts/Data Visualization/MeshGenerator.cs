@@ -12,9 +12,12 @@ namespace Ramsey.Visualization
 {
     public class MatchupData : IList<MatchupResult>
     {
-        public MatchupData(string label = null)
+
+        int4 metaParams;
+        public MatchupData(int startTarget, int endTarget, int step, int attemptsPer, string label = null)
         {
             Label = label;
+            metaParams = new(startTarget, endTarget, step, attemptsPer);
         }
 
         public string Label { get; }
@@ -77,10 +80,19 @@ namespace Ramsey.Visualization
             return ((IEnumerable)results).GetEnumerator();
         }
 
-        public override string ToString()
+        public string ToString(bool compact = false)
         {
-            string s = "";
-            results.ForEach(m => s += m.ToString() + "\n");
+            //jank
+            string s = "Matchup Data - "
+                + results.Count + " Game" + (results.Count != 1 ? "s" : "") + " Run.  "
+                + "Step Size of " + metaParams.y + ".  "
+                + "Start Target Path of " + metaParams.x + " End Target Path of " + metaParams.y + ".  "
+                + metaParams.w + " Attempts per Target Path."
+                + "\n \n";
+
+            results.ForEach(m => s += m.ToString(compact) + "\n");
+            s += "\n\n";
+
             return s;
         }
     }
@@ -107,8 +119,9 @@ namespace Ramsey.Visualization
 
         public float2 Datapoint => float2(PathSize, AverageGameLength);
 
-        public override string ToString()
-            => $"Using {BuilderName} and {PainterName} - Path Size = {PathSize}, Game Length = {AverageGameLength}, Sample = {SampleSize}";
+        public string ToString(bool compact = false)
+            => compact ? $"{BuilderName} and {PainterName} - ({PathSize}, {AverageGameLength}, {SampleSize})"
+                       : $"Using {BuilderName} and {PainterName}, Path Size of {PathSize}, Game Length of {AverageGameLength}, Sample Size of {SampleSize}";
     }
 
     public static class MeshGenerator

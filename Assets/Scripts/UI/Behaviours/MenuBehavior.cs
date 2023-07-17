@@ -4,6 +4,8 @@ using Ramsey.Screen;
 using Ramsey.Utilities;
 using Ramsey.Utilities.UI;
 using Ramsey.Visualization;
+using SimpleFileBrowser;
+using System.IO;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,7 +30,7 @@ namespace Ramsey.UI
 
         readonly Button goAhead;
 
-        readonly Toggle runBulk;
+        readonly Toggle runBulk, bulkCompactExport;
 
         readonly GameObject standardMenu;
         readonly InputBox standardCount, standardDelay;
@@ -44,6 +46,7 @@ namespace Ramsey.UI
             menuObj = GameObject.Find("Menu");
 
             runBulk = GameObject.Find("Run in Bulk").GetComponent<Toggle>();
+            bulkCompactExport = GameObject.Find("Compact Export").GetComponent<Toggle>();
 
             standardMenu = GameObject.Find("Standard Options");
             standardCount = InputBox.Find("Game Length", new IInputVerifier.Integer(min: 1, max: 255), "10");
@@ -138,21 +141,14 @@ namespace Ramsey.UI
 
         public void InitAfterGather(MatchupData data)
         {
-            Debug.Log(data.Count);
-            visualizing = true;
-            visualizer.AddCurve(data, 0f);
+            //export
+            FileUtils.PickFileToOperate(path => File.WriteAllText(path, data.ToString(bulkCompactExport.isOn)), "bulkData.txt", "Save the Generated Matchup Data", "Save Data", new FileBrowser.Filter("Text File", ".txt"));
         }
 
         public override void Loop(InputData input)
         {
             menu.UpdateWheels(input);
             menu.Draw();
-
-            if (visualizing) 
-            { 
-                visualizer.UpdateInput(input.scr, input.mouse); 
-                visualizer.Draw(); 
-            }
         }
 
         public override void OnEnter()
