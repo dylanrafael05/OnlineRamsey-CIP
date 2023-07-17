@@ -80,6 +80,7 @@ public class ConstrainedRandomBuilder : Builder.Synchronous
             }
         );
 
-    public override string ToString()
-            => $"ConstrainedRandom({target})";
+    public override string GetStrategyName(bool compact)
+            => compact ? $"ConstrainedRandom({target})"
+                       : $"ConstrainedRandom(Node Constraint = {target})";
 }

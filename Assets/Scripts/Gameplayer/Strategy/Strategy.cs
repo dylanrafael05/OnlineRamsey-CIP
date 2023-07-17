@@ -31,7 +31,6 @@ namespace Ramsey.Gameplayer
         Task<IMove> GetMoveAsync(GameState gameState);
 
         void Reset();
-        string ToString(bool compact);
     }
 
     public static class Player 
@@ -83,7 +82,7 @@ namespace Ramsey.Gameplayer
         public abstract Task<BuilderMove> GetMoveAsync(GameState gameState);
         public abstract void Reset();
 
-        public abstract override string ToString();
+        public abstract string GetStrategyName(bool compact);
 
         public abstract class Synchronous : Builder
         {
@@ -93,7 +92,6 @@ namespace Ramsey.Gameplayer
             public abstract BuilderMove GetMove(GameState gameState);
         }
 
-        public abstract string ToString(bool compact);
     }
 
     public abstract class Painter : IPlayer
@@ -117,7 +115,7 @@ namespace Ramsey.Gameplayer
         public abstract Task<PainterMove> GetMoveAsync(GameState gameState);
         public abstract void Reset();
 
-        public abstract override string ToString();
+        public abstract string GetStrategyName(bool compact);
 
         public abstract class Synchronous : Painter
         {
@@ -126,7 +124,5 @@ namespace Ramsey.Gameplayer
             
             public abstract PainterMove GetMove(GameState gameState);
         }
-
-        public abstract string ToString(bool compact);
     }
 }

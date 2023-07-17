@@ -32,7 +32,8 @@ namespace Ramsey.Gameplayer
                 }
             );
 
-        public override string ToString()
-            => $"Alternating({lengthPerColor})";
+        public override string GetStrategyName(bool compact)
+            => compact ? $"Alternating({lengthPerColor})"
+                       : $"Alternating(Stride = {lengthPerColor})";
     }
 }

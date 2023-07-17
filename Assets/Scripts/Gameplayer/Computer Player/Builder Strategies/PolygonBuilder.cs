@@ -67,7 +67,8 @@ namespace Ramsey.Gameplayer
                 }
             );
 
-        public override string ToString()
-            => $"Polygon({sideCount})";
+        public override string GetStrategyName(bool compact)
+            => compact ? "Polygon({sideCount})"
+                       : $"Polygon(Side Count = {sideCount})";
     }
 }

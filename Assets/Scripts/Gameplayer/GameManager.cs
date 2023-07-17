@@ -69,7 +69,7 @@ namespace Ramsey.Gameplayer
 
             if(matchups.Count == 0) return null;
 
-            return MatchupResult.Average(target, builder.ToString(), painter.ToString(), matchups.Select(t => t.AverageGameLength).ToArray());
+            return MatchupResult.Average(target, builder.GetStrategyName(false), painter.GetStrategyName(false), builder.GetStrategyName(true), painter.GetStrategyName(true), matchups.Select(t => t.AverageGameLength).ToArray());
         }
         
         public MatchupData SimulateMany(int startTarget, int endTarget, int step, Builder builder, Painter painter, int attempts = 1)
@@ -192,7 +192,7 @@ namespace Ramsey.Gameplayer
         public MatchupResult? GetMatchupData()
         {
             if(State.GraphTooComplex) return null;
-            return new(State.TargetPathLength, State.TurnNum, builder.ToString(), painter.ToString(), builder.ToString(true), painter.ToString(true));
+            return new(State.TargetPathLength, State.TurnNum, builder.GetStrategyName(false), painter.GetStrategyName(false), builder.GetStrategyName(true), painter.GetStrategyName(true));
         }
 
         public void Cleanup()

@@ -59,8 +59,9 @@ namespace Ramsey.Gameplayer
                 new TextParameter { Name = "Isolated Weight", Verifier = new IInputVerifier.Float(0, 1), DefaultValue = "0.1" }
         );
 
-        public override string ToString()
-            => $"Random({pendantProb}; {internalProb}; {isolatedProb})";
+        public override string GetStrategyName(bool compact)
+            => compact ? $"Random({pendantProb}; {internalProb}; {isolatedProb})"
+                       : $"Random(Pendant Prob = {pendantProb}; Internal Prob = {internalProb}; Isolated Prob = {isolatedProb})";
     }
 }
 

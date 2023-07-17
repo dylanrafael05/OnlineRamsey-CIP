@@ -110,6 +110,6 @@ public class CapBuilder : Builder.Synchronous
     static CapBuilder()
         => StrategyInitializer.RegisterFor<CapBuilder>();
 
-    public override string ToString()
+    public override string GetStrategyName(bool compact)
         => "Cap";
 }

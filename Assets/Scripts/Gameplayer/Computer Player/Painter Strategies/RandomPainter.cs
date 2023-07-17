@@ -21,7 +21,7 @@ namespace Ramsey.Gameplayer
         static RandomPainter()
             => Utils.ForLength(2, (i) => StrategyInitializer.RegisterFor<RandomPainter>()); //Duplicate to look nice
 
-        public override string ToString()
+        public override string GetStrategyName(bool compact)
             => "Random";
     }
 }

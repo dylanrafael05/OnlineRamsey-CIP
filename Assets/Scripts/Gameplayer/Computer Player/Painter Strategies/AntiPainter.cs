@@ -28,7 +28,7 @@ namespace Ramsey.Gameplayer
                 }
             );
 
-        public override string ToString()
+        public override string GetStrategyName(bool compact)
             => "Anti";
     }
 }

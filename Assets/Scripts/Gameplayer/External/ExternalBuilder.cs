@@ -266,7 +266,7 @@ namespace Ramsey.Gameplayer
             api.Call("reset");
         }
 
-        public override string ToString()
+        public override string GetStrategyName(bool compact)
             => "External Builder " + api.ConsumerFilePath;
     }
 
@@ -293,7 +293,7 @@ namespace Ramsey.Gameplayer
             api.Call("reset");
         }
 
-        public override string ToString()
+        public override string GetStrategyName(bool compact)
             => "External Painter " + api.ConsumerFilePath;
     }
 }

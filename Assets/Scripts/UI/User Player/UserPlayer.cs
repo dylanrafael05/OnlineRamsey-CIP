@@ -58,7 +58,7 @@ namespace Ramsey.Gameplayer
         static UserBuilder()
             => StrategyInitializer.RegisterFor<UserBuilder>();
 
-        public override string ToString()
+        public override string GetStrategyName(bool compact)
             => "User Builder";
     }
 
@@ -96,7 +96,7 @@ namespace Ramsey.Gameplayer
         static UserPainter()
             => StrategyInitializer.RegisterFor<UserPainter>();
         
-        public override string ToString()
+        public override string GetStrategyName(bool compact)
             => "User Painter";
     }
 }
