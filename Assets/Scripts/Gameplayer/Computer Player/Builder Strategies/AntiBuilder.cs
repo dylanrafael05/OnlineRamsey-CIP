@@ -28,8 +28,8 @@ namespace Ramsey.Gameplayer
         static AntiBuilder()
             => StrategyInitializer.RegisterFor<AntiBuilder>();
 
-        public override string ToString(bool compact)
-            => "Anti Builder";
+        public override string GetStrategyName(bool compact)
+            => "Anti";
     }
 
 }

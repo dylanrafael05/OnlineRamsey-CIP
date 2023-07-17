@@ -29,6 +29,6 @@ namespace Ramsey.Gameplayer
             );
 
         public override string ToString()
-            => "Anti Painter";
+            => "Anti";
     }
 }

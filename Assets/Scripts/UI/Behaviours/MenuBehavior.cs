@@ -142,7 +142,12 @@ namespace Ramsey.UI
         public void InitAfterGather(MatchupData data)
         {
             //export
-            FileUtils.PickFileToOperate(path => File.WriteAllText(path, data.ToString(bulkCompactExport.isOn)), "bulkData.txt", "Save the Generated Matchup Data", "Save Data", new FileBrowser.Filter("Text File", ".txt"));
+            FileUtils.PickFileToOperate(
+                path => File.WriteAllText(path, data.ToString(bulkCompactExport.isOn)), 
+                "bulkData.txt", 
+                "Save the Generated Matchup Data", 
+                "Save Data", 
+                new FileBrowser.Filter("Text File", ".txt", ".csv"));
         }
 
         public override void Loop(InputData input)

@@ -68,6 +68,6 @@ namespace Ramsey.Gameplayer
             );
 
         public override string ToString()
-            => "Polygon Builder";
+            => $"Polygon({sideCount})";
     }
 }

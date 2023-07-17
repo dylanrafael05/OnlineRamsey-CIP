@@ -82,13 +82,12 @@ namespace Ramsey.Visualization
 
         public string ToString(bool compact = false)
         {
-            //jank
-            string s = "Matchup Data - "
+            string s = "// Matchup Data - " + (compact ? "Compact " : "Full ")
                 + results.Count + " Game" + (results.Count != 1 ? "s" : "") + " Run.  "
-                + "Step Size of " + metaParams.y + ".  "
+                + "Step Size of " + metaParams.z + ".  "
                 + "Start Target Path of " + metaParams.x + " End Target Path of " + metaParams.y + ".  "
                 + metaParams.w + " Attempts per Target Path."
-                + "\n \n";
+                + "\n\n";
 
             results.ForEach(m => s += m.ToString(compact) + "\n");
             s += "\n\n";
@@ -104,24 +103,28 @@ namespace Ramsey.Visualization
         public int SampleSize { get; }
         public string BuilderName { get; }
         public string PainterName { get; }
+        public string BuilderNameCompact { get; }
+        public string PainterNameCompact { get; }
 
-        public MatchupResult(int pathsize, float gamelen, string builderName = "UNKNOWN Builder", string painterName = "UNKNOWN Painter", string compactBuilderName = null, string compactPainterName = null, int samplesize = 1)
+        public MatchupResult(int pathsize, float gamelen, string builderName = "UNKNOWN", string painterName = "UNKNOWN", string compactBuilderName = null, string compactPainterName = null, int samplesize = 1)
         {
             PathSize = pathsize;
             AverageGameLength = gamelen;
             SampleSize = samplesize;
             BuilderName = builderName;
             PainterName = painterName;
+            BuilderNameCompact = compactBuilderName;
+            PainterNameCompact = compactPainterName;
         }
 
-        public static MatchupResult Average(int pathsize, string builderName, string painterName, params float[] games)
-            => new(pathsize, (float)games.Average(), builderName, painterName, games.Length);
+        public static MatchupResult Average(int pathsize, string builderName, string painterName, string compactBuilderName = null, string compactPainterName = null, params float[] games)
+            => new(pathsize, (float)games.Average(), builderName, painterName, compactBuilderName, compactPainterName, games.Length);
 
         public float2 Datapoint => float2(PathSize, AverageGameLength);
 
         public string ToString(bool compact = false)
-            => compact ? $"{BuilderName} and {PainterName} - ({PathSize}, {AverageGameLength}, {SampleSize})"
-                       : $"Using {BuilderName} and {PainterName}, Path Size of {PathSize}, Game Length of {AverageGameLength}, Sample Size of {SampleSize}";
+            => compact ? $"{BuilderNameCompact}, {PainterNameCompact}, {PathSize}, {AverageGameLength}, {SampleSize}"
+                       : $"Builder {BuilderName}, Painter {PainterName}, Path Size of {PathSize}, Game Length of {AverageGameLength}, Sample Size of {SampleSize}";
     }
 
     public static class MeshGenerator

@@ -33,6 +33,6 @@ namespace Ramsey.Gameplayer
             );
 
         public override string ToString()
-            => "Alternating Painter";
+            => $"Alternating({lengthPerColor})";
     }
 }

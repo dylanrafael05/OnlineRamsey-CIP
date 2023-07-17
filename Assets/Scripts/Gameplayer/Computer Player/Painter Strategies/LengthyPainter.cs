@@ -15,6 +15,6 @@ namespace Ramsey.Gameplayer
             => StrategyInitializer.RegisterFor<LengthyPainter>();
 
         public override string ToString()
-            => "Lengthy Painter";
+            => "Lengthy";
     }
 }

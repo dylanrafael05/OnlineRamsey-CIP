@@ -81,5 +81,5 @@ public class ConstrainedRandomBuilder : Builder.Synchronous
         );
 
     public override string ToString()
-            => "Constrained Random Builder";
+            => $"ConstrainedRandom({target})";
 }
