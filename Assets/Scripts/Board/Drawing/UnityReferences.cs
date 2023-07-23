@@ -75,7 +75,7 @@ namespace Ramsey.Drawing
             MenuBackground = GameObject.Find("Menu Background");
             MenuBackground.GetComponent<MeshRenderer>().material = BackgroundMenuMaterial;
 
-            BackgroundRenderer = GameObject.Find("Background").GetComponent<MeshRenderer>();
+            BackgroundRenderer = GameObject.Find("Board Background").GetComponent<MeshRenderer>();
             BackgroundRenderer.material = BackgroundMaterial;
 
             BoardLayer = LayerMask.NameToLayer("Board");
