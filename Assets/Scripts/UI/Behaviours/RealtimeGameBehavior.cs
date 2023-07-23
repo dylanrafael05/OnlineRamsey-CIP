@@ -13,6 +13,7 @@ namespace Ramsey.UI
     public class RealtimeGameBehavior : Behavior
     {
         bool gameOverShown;
+        bool updateSmoothing = true;
 
         public RealtimeGameBehavior()
         {
@@ -45,8 +46,17 @@ namespace Ramsey.UI
                 CheckMeantEscape.EscapePressed(this, input);
             }
 
+            if(input.tabd)
+            {
+                Utils.Toggle(ref updateSmoothing);
+            }
+
             Main.Game.UpdateGameplay();
-            NodeSmoothing.Update(Main.Board);
+
+            if(updateSmoothing)
+            {
+                NodeSmoothing.Update(Main.Board);
+            }
 
             DisplayText.Update(Main.Game.State);
 
