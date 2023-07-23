@@ -160,7 +160,13 @@ namespace Ramsey.Gameplayer
                     if (isBuilderTurn) 
                         board.MarkNewTurn();
                     
+                    Debug.Log("move");
+                    
                     break;
+                }
+                else 
+                {
+                    Debug.Log("invalid move");
                 }
             }
 

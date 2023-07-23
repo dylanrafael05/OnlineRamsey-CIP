@@ -12,6 +12,9 @@ namespace Ramsey.Utilities
 {
     public static class Utils
     {
+        public static void Toggle(ref bool value)
+            => value = !value;
+
         /// <summary>
         /// Get a random element in a thread safe manner 
         /// from the given list.
