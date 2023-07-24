@@ -1,5 +1,5 @@
 using Ramsey.Graph;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Ramsey.Utilities;
 using Ramsey.Board;
 using System.Linq;
@@ -12,7 +12,7 @@ namespace Ramsey.Gameplayer
     [NonAutomatedStrategy, UnsupportedInHeadless]
     public class UserBuilder : Builder, IUserMode<BoardManager>
     {
-        public override async Task<BuilderMove> GetMoveAsync(GameState gameState, CancellationToss cancel)
+        public override async UniTask<BuilderMove> GetMoveAsync(GameState gameState, CancellationToss cancel)
         {
             UserModeHandler<BoardManager>.AddMode(this);
             await Utils.WaitUntil(() => currNode != null && prevNode != null, cancel);
@@ -65,7 +65,7 @@ namespace Ramsey.Gameplayer
     [NonAutomatedStrategy, UnsupportedInHeadless]
     public class UserPainter : Painter, IUserMode<BoardManager>
     {
-        public override async Task<PainterMove> GetMoveAsync(GameState gameState, CancellationToss cancel)
+        public override async UniTask<PainterMove> GetMoveAsync(GameState gameState, CancellationToss cancel)
         {
             currEdgeType = Edge.NullType;
 

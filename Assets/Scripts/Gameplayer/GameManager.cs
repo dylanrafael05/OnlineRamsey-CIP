@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Ramsey.Board;
 using Ramsey.Gameplayer;
 using Ramsey.Graph;
@@ -29,7 +29,7 @@ namespace Ramsey.Gameplayer
         private Painter painter;
         private bool isBuilderTurn;
 
-        private Task currentTask;
+        private UniTask? currentTask;
 
         public float Delay { get; set; } = 1.5f;
 
@@ -106,10 +106,10 @@ namespace Ramsey.Gameplayer
         internal void RunUntilDone()
         {
             while(!board.GameState.IsGameDone)
-                RunMove(synchronous: true).Wait();
+                RunMove(synchronous: true).Forget();
         }
 
-        internal async Task RunMove(bool synchronous = false)
+        internal async UniTask RunMove(bool synchronous = false)
         {
             bool isBuilderTurnAtStart = isBuilderTurn;
             cancel.Retract();
@@ -127,12 +127,11 @@ namespace Ramsey.Gameplayer
             }
 
             // Get next move
-            async Task<IMove> GetMove(IPlayer player, CancellationToss cancel)
+            async UniTask<IMove> GetMove(IPlayer player, CancellationToss cancel)
             {
-                if(player.IsAutomated && !synchronous) await Task.Delay((int)(Delay * 1000));
+                if(player.IsAutomated && !synchronous) await UniTask.Delay((int)(Delay * 1000));
 
                 return await player.GetMoveAsync(State, cancel)
-                    .UnityReport()
                     .AssertSync(synchronous);
             }
             
@@ -148,11 +147,11 @@ namespace Ramsey.Gameplayer
                 {
                     if(isBuilderTurnAtStart)
                     {
-                        move = await GetMove(builder, cancel).UnityReport();
+                        move = await GetMove(builder, cancel);
                     }
                     else 
                     {
-                        move = await GetMove(painter, cancel).UnityReport();
+                        move = await GetMove(painter, cancel);
                     }
                 }
                 catch(GraphTooComplexException) 
@@ -174,8 +173,8 @@ namespace Ramsey.Gameplayer
                         board.MarkNewTurn();
                     
 
-                    // Wait for path task to complete
-                    await board.AwaitPathTask().AssertSync(synchronous);
+                    // Wait for path UniTask to complete
+                    await board.AwaitPathUniTask().AssertSync(synchronous);
                     
                     return;
                 }
@@ -186,9 +185,9 @@ namespace Ramsey.Gameplayer
         {
             if(InGame && board.IsCurrentTurn)
             {
-                if(currentTask is null || currentTask.IsCompleted)
+                if(currentTask is null || currentTask.Value.Status.IsCompleted())
                 {
-                    currentTask = RunMove().UnityReport();
+                    currentTask = RunMove();
                 }
             }
         }

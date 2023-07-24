@@ -4,7 +4,7 @@ using Ramsey.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Unity.Mathematics;
 using UnityEngine.Assertions;
 
@@ -28,7 +28,7 @@ namespace Ramsey.Gameplayer
         bool IsAutomated { get; }
         bool IsSupportedInHeadless { get; }
 
-        Task<IMove> GetMoveAsync(GameState gameState, CancellationToss cancel = null);
+        UniTask<IMove> GetMoveAsync(GameState gameState, CancellationToss cancel = null);
 
         void Reset();
     }
@@ -74,20 +74,20 @@ namespace Ramsey.Gameplayer
             IsSupportedInHeadless = Player.IsSupportedInHeadless(GetType());
         }
 
-        async Task<IMove> IPlayer.GetMoveAsync(GameState gameState, CancellationToss cancel)
+        async UniTask<IMove> IPlayer.GetMoveAsync(GameState gameState, CancellationToss cancel)
         {
             return await GetMoveAsync(gameState);
         }
 
-        public abstract Task<BuilderMove> GetMoveAsync(GameState gameState, CancellationToss cancel = null);
+        public abstract UniTask<BuilderMove> GetMoveAsync(GameState gameState, CancellationToss cancel = null);
         public abstract void Reset();
 
         public abstract string GetStrategyName(bool compact);
 
         public abstract class Synchronous : Builder
         {
-            public sealed override Task<BuilderMove> GetMoveAsync(GameState gameState, CancellationToss cancel)
-                => Task.FromResult(GetMove(gameState));
+            public sealed override UniTask<BuilderMove> GetMoveAsync(GameState gameState, CancellationToss cancel)
+                => UniTask.FromResult(GetMove(gameState));
             
             public abstract BuilderMove GetMove(GameState gameState);
         }
@@ -107,20 +107,20 @@ namespace Ramsey.Gameplayer
             IsSupportedInHeadless = Player.IsSupportedInHeadless(GetType());
         }
 
-        async Task<IMove> IPlayer.GetMoveAsync(GameState gameState, CancellationToss cancel)
+        async UniTask<IMove> IPlayer.GetMoveAsync(GameState gameState, CancellationToss cancel)
         {
             return await GetMoveAsync(gameState, cancel);
         }
 
-        public abstract Task<PainterMove> GetMoveAsync(GameState gameState, CancellationToss cancel = null);
+        public abstract UniTask<PainterMove> GetMoveAsync(GameState gameState, CancellationToss cancel = null);
         public abstract void Reset();
 
         public abstract string GetStrategyName(bool compact);
 
         public abstract class Synchronous : Painter
         {
-            public sealed override Task<PainterMove> GetMoveAsync(GameState gameState, CancellationToss cancel)
-                => Task.FromResult(GetMove(gameState));
+            public sealed override UniTask<PainterMove> GetMoveAsync(GameState gameState, CancellationToss cancel)
+                => UniTask.FromResult(GetMove(gameState));
             
             public abstract PainterMove GetMove(GameState gameState);
         }

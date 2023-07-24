@@ -2,7 +2,7 @@ using Ramsey.Board;
 using Ramsey.Gameplayer;
 using System.Collections.Generic;
 using Ramsey.Graph;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Ramsey.Utilities;
 using Ramsey.Utilities.UI;
 
@@ -61,7 +61,7 @@ public class ConstrainedRandomBuilder : Builder.Synchronous
         if(availablePairs.Count == 0)
             throw new GraphTooComplexException(state.Nodes.Count, $"{nameof(ConstrainedRandomBuilder)} of target {target} cannot expand graph any further!");
 
-        var i = ThreadSafeRandom.Range(0, availablePairs.Count);
+        var i = UnityEngine.Random.Range(0, availablePairs.Count);
 
         var (a, b) = availablePairs[i];
         availablePairs.RemoveAt(i);

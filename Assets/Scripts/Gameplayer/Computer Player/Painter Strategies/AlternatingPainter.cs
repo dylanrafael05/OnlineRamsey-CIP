@@ -1,6 +1,6 @@
 using Ramsey.Graph;
 using Ramsey.Board;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Ramsey.Utilities.UI;
 
 namespace Ramsey.Gameplayer

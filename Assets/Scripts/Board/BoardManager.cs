@@ -6,7 +6,7 @@ using Unity.Mathematics;
 using System;
 using Ramsey.Drawing;
 using Ramsey.Utilities;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using UnityEngine.Profiling;
 using System.Linq;
 
@@ -32,8 +32,8 @@ namespace Ramsey.Board
 
         public BoardPreferences Preferences { get; private set; }
 
-        public bool IsAwaitingPathTask => graphManager.IsAwaitingPathTask;
-        public Task AwaitPathTask() => graphManager.AwaitPathTask();
+        public bool IsAwaitingPathUniTask => graphManager.IsAwaitingPathUniTask;
+        public UniTask AwaitPathUniTask() => graphManager.AwaitPathUniTask();
 
         public IReadOnlyList<Node> Nodes => graphManager.Nodes;
         public IReadOnlyList<Edge> Edges => graphManager.Edges;
@@ -78,7 +78,7 @@ namespace Ramsey.Board
 
         public Node CreateNode(float2? position = default)
         {
-            var n = graphManager.CreateNode(position ?? new float2(ThreadSafeRandom.Range(-6f, 6f), ThreadSafeRandom.Range(-3f, 3f)));
+            var n = graphManager.CreateNode(position ?? new float2(UnityEngine.Random.Range(-6f, 6f), UnityEngine.Random.Range(-3f, 3f)));
 
             renderManager.IOInterface.AddNode(n);
 
@@ -130,7 +130,7 @@ namespace Ramsey.Board
         }
         public void RenderUI()
         {
-            RenderIO.SetLoading(graphManager.IsAwaitingPathTask);
+            RenderIO.SetLoading(graphManager.IsAwaitingPathUniTask);
             renderManager.ActionInterface.RenderUI();
         }
 

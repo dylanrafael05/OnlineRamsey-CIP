@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Assertions;
 using static Ramsey.Gameplayer.BuilderUtils;
@@ -57,7 +57,7 @@ namespace Ramsey.Gameplayer
 
                 var response = callFn(callArgs);
 
-                Call("response", response ?? "none");
+                Call("response", response ?? "none").Forget();
             };
 
             process.ErrorDataReceived += (sender, args) =>
@@ -81,17 +81,16 @@ namespace Ramsey.Gameplayer
         
         private string response;
 
-        public string Call(string call, params string[] args)
+        public async UniTask<string> Call(string call, params string[] args)
         {
             var txt = ExternalAPI.FormatOutgoing(call, args);
 
             response = null;
             process.StandardInput.WriteLine(txt);
 
-            var task = Utils.WaitUntil(() => response != null, timeout: 2000);
-            task.RunSynchronously();
+            var task = await Utils.WaitUntil(() => response != null, timeout: 2000);
 
-            if(!task.Result)
+            if(!task)
             {
                 Debug.LogError($"Call '{txt}' had no response!");
             }
@@ -241,7 +240,7 @@ namespace Ramsey.Gameplayer
             .Bind("makenode", p => "" + OperativeState.CreateNode().ID);
     }
 
-    public class ExternalBuilder : Builder.Synchronous
+    public class ExternalBuilder : Builder
     {
         public ExternalBuilder(string program)
         {
@@ -252,9 +251,9 @@ namespace Ramsey.Gameplayer
 
         ExternalAPIInstance api;
 
-        public override BuilderMove GetMove(GameState gameState)
+        public override async UniTask<BuilderMove> GetMoveAsync(GameState gameState, CancellationToss cancel)
         {
-            var move = api.Call("getmove");
+            var move = await api.Call("getmove");
             
             var split = move.Split(' ');
 
@@ -263,14 +262,14 @@ namespace Ramsey.Gameplayer
 
         public override void Reset()
         {
-            api.Call("reset");
+            api.Call("reset").Forget();
         }
 
         public override string GetStrategyName(bool compact)
             => "External Builder " + api.ConsumerFilePath;
     }
 
-    public class ExternalPainter : Painter.Synchronous
+    public class ExternalPainter : Painter
     {
         public ExternalPainter(string program)
         {
@@ -281,16 +280,16 @@ namespace Ramsey.Gameplayer
 
         ExternalAPIInstance api;
 
-        public override PainterMove GetMove(GameState gameState)
+        public override async UniTask<PainterMove> GetMoveAsync(GameState gameState, CancellationToss cancel)
         {
-            var move = api.Call("getmove");
+            var move = await api.Call("getmove");
 
             return new(gameState.NewestEdge, int.Parse(move));
         }
 
         public override void Reset()
         {
-            api.Call("reset");
+            api.Call("reset").Forget();
         }
 
         public override string GetStrategyName(bool compact)
