@@ -18,7 +18,8 @@ namespace Ramsey.Gameplayer
     public class GameManager
     {
         private readonly BoardManager board;
-        private readonly CancellationToss cancel;
+
+        private CancellationToss cancel;
 
         public bool InGame { get; private set; }
 
@@ -106,13 +107,12 @@ namespace Ramsey.Gameplayer
         internal void RunUntilDone()
         {
             while(!board.GameState.IsGameDone)
-                RunMove(synchronous: true).Forget();
+                RunMove(cancel, synchronous: true).Forget();
         }
 
-        internal async UniTask RunMove(bool synchronous = false)
+        internal async UniTask RunMove(CancellationToss cancel, bool synchronous = false)
         {
             bool isBuilderTurnAtStart = isBuilderTurn;
-            cancel.Retract();
 
             InGame = !State.IsGameDone;
 
@@ -187,7 +187,8 @@ namespace Ramsey.Gameplayer
             {
                 if(currentTask is null || currentTask.Value.Status.IsCompleted())
                 {
-                    currentTask = RunMove();
+                    cancel = new();
+                    currentTask = RunMove(cancel);
                 }
             }
         }
