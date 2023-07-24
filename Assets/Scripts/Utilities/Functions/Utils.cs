@@ -194,7 +194,7 @@ namespace Ramsey.Utilities
                 totalt += milliDelay;
             }
 
-            return totalt < timeout || IsCanceled();
+            return totalt < timeout && !IsCanceled();
         }
 
         /// <summary>
