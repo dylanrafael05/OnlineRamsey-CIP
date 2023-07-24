@@ -6,6 +6,7 @@ using System.Linq;
 using Unity.Mathematics;
 using static Unity.Mathematics.math;
 using Ramsey.UI;
+using System.Diagnostics;
 
 namespace Ramsey.Gameplayer
 {
@@ -70,7 +71,6 @@ namespace Ramsey.Gameplayer
             UserModeHandler<BoardManager>.AddMode(this);
             await Utils.WaitUntil(() => currEdge != null);
             UserModeHandler<BoardManager>.DelMode(this);
-
             return new PainterMove(currEdge, currEdgeType);
         }
 

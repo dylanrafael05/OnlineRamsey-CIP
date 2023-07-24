@@ -24,19 +24,19 @@ namespace Ramsey.UI
 
         public static void AddMode(IUserMode<D> mode)
         {
+            mode.Init(data);
+
             currentModes.Add(mode);
             activationStatuses.Add(true);
-
-            mode.Init(data);
         }
 
         public static void DelMode(IUserMode<D> mode)
         {
+            mode.End(data);
+
             int i = currentModes.FindIndex(m => m == mode);
             currentModes.RemoveAt(i);
             activationStatuses.RemoveAt(i);
-
-            mode.End(data);
         }
 
         public static void SetStatus(IUserMode<D> mode, bool status)

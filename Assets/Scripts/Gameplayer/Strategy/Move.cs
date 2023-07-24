@@ -49,7 +49,7 @@ namespace Ramsey.Gameplayer
         }
 
         bool IsValid(BoardManager board)
-            => IMove.Enable && edge.Type == Edge.NullType;
+            => IMove.Enable && edge.Type == Edge.NullType && type != Edge.NullType;
 
         public bool MakeMove(BoardManager board, bool synchronous = false)
         {
