@@ -1,7 +1,7 @@
 ﻿using Ramsey.Graph;
 using Ramsey.Board;
 using Ramsey.Gameplayer;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 
 using static Ramsey.Gameplayer.BuilderUtils;
 using System.Collections.Generic;
@@ -41,7 +41,7 @@ namespace Ramsey.Gameplayer
         public override BuilderMove GetMove(GameState state)
         {
             //Generate a random number and choose the substrategy based on the number generated and probability parameters
-            float r = ThreadSafeRandom.Range(0f, 1f);
+            float r = UnityEngine.Random.Range(0f, 1f);
             if (r <= pendantProb)
                 return RandomPendant(state);
             if (r <= pendantProb + internalProb)

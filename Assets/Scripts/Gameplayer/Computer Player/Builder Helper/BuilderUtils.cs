@@ -48,7 +48,7 @@ namespace Ramsey.Gameplayer
         {
             IReadOnlyList<Node> nodes = other == null ? state.Nodes : state.Nodes.Where(n => !n.Neighbors.Contains(other) && other != n).ToList();
             if (nodes.Count == 0) { state.CreateNode(); return RandomNode(other, state); }
-            return nodes[ThreadSafeRandom.Range(0, nodes.Count)];
+            return nodes[UnityEngine.Random.Range(0, nodes.Count)];
         }
 
         /// <summary>

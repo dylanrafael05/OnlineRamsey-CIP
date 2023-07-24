@@ -6,7 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Assertions;
 using static Ramsey.Gameplayer.BuilderUtils;
@@ -38,7 +38,7 @@ namespace Ramsey.Gameplayer
             var returnNode = startNode;
             var currentNode = startNode;
 
-            int nextStartNode = ThreadSafeRandom.Range(0, sideCount);
+            int nextStartNode = UnityEngine.Random.Range(0, sideCount);
             for (int i = 0; i < sideCount-1; i++)
             {
                 if (i == nextStartNode) startNode = currentNode;

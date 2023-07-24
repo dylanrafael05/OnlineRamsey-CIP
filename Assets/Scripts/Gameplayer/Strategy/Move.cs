@@ -1,6 +1,7 @@
 using Ramsey.Board;
 using Ramsey.Graph;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
+using UnityEngine;
 
 namespace Ramsey.Gameplayer
 {
@@ -53,6 +54,8 @@ namespace Ramsey.Gameplayer
 
         public bool MakeMove(BoardManager board, bool synchronous = false)
         {
+            Debug.Log("PAINTER MOVE");
+
             if (!IsValid(board))
                 return false;
 

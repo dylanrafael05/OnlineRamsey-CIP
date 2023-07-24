@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using Ramsey.Board;
 using Ramsey.Gameplayer;
 using Ramsey.Graph;
@@ -17,6 +18,7 @@ namespace Ramsey.Gameplayer
     public class GameManager
     {
         private readonly BoardManager board;
+        private readonly CancellationToss cancel;
 
         public bool InGame { get; private set; }
 
@@ -27,7 +29,7 @@ namespace Ramsey.Gameplayer
         private Painter painter;
         private bool isBuilderTurn;
 
-        private Task currentTask;
+        private UniTask? currentTask;
 
         public float Delay { get; set; } = 1.5f;
 
@@ -35,13 +37,14 @@ namespace Ramsey.Gameplayer
         {
             board.StartGame(target);
 
+            cancel.Request();
+            currentTask = null;
+
             this.builder = builder;
             this.painter = painter;
 
             isBuilderTurn = true;
             InGame = true;
-
-            currentTask = null;
 
             builder.Reset();
             painter.Reset();
@@ -91,6 +94,8 @@ namespace Ramsey.Gameplayer
 
             isBuilderTurn = true;
             InGame = false;
+
+            cancel = new();
         }
 
         public static GameManager CreateDefault()
@@ -101,11 +106,14 @@ namespace Ramsey.Gameplayer
         internal void RunUntilDone()
         {
             while(!board.GameState.IsGameDone)
-                RunMove(synchronous: true).Wait();
+                RunMove(synchronous: true).Forget();
         }
 
-        internal async Task RunMove(bool synchronous = false)
+        internal async UniTask RunMove(bool synchronous = false)
         {
+            bool isBuilderTurnAtStart = isBuilderTurn;
+            cancel.Retract();
+
             InGame = !State.IsGameDone;
 
             // Early exit if cannot update
@@ -119,29 +127,31 @@ namespace Ramsey.Gameplayer
             }
 
             // Get next move
-            async Task<IMove> GetMove(IPlayer player)
+            async UniTask<IMove> GetMove(IPlayer player, CancellationToss cancel)
             {
-                if(player.IsAutomated && !synchronous) await Task.Delay((int)(Delay * 1000));
+                if(player.IsAutomated && !synchronous) await UniTask.Delay((int)(Delay * 1000));
 
-                return await player.GetMoveAsync(State).AssertSync(synchronous);
+                return await player.GetMoveAsync(State, cancel)
+                    .AssertSync(synchronous);
             }
             
             // Repeat until move is valid
             while(true)
             {
                 IMove move;
-
-                await Utils.WaitUntil(() => board.IsCurrentTurn);
+                
+                if(cancel.IsRequested || !board.IsCurrentTurn) 
+                    return;
 
                 try 
                 {
-                    if(isBuilderTurn)
+                    if(isBuilderTurnAtStart)
                     {
-                        move = await GetMove(builder);
+                        move = await GetMove(builder, cancel);
                     }
                     else 
                     {
-                        move = await GetMove(painter);
+                        move = await GetMove(painter, cancel);
                     }
                 }
                 catch(GraphTooComplexException) 
@@ -149,8 +159,10 @@ namespace Ramsey.Gameplayer
                     board.MarkGraphTooComplex();
                     return;
                 }
-                
-                await Utils.WaitUntil(() => board.IsCurrentTurn);
+
+                if(cancel.IsRequested || !board.IsCurrentTurn) 
+                    return;
+
 
                 // Run move
                 if(move.MakeMove(board, synchronous))
@@ -160,29 +172,30 @@ namespace Ramsey.Gameplayer
                     if (isBuilderTurn) 
                         board.MarkNewTurn();
                     
-                    Debug.Log("move");
+
+                    // Wait for path UniTask to complete
+                    await board.AwaitPathUniTask().AssertSync(synchronous);
                     
-                    break;
-                }
-                else 
-                {
-                    Debug.Log("invalid move");
+                    return;
                 }
             }
-
-            // Wait for path task to complete
-            await board.AwaitPathTask().AssertSync(synchronous);
         }
 
         public void UpdateGameplay() 
         {
             if(InGame && board.IsCurrentTurn)
             {
-                if(currentTask is null || currentTask.IsCompleted)
+                if(currentTask is null || currentTask.Value.Status.IsCompleted())
                 {
                     currentTask = RunMove();
                 }
             }
+        }
+
+        public void Leave()
+        {
+            cancel.Request();
+            currentTask = null;
         }
 
         public void RenderBoard() 

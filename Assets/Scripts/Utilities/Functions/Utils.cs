@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using static Unity.Mathematics.math;
 using UnityEngine;
 using System.Collections.Concurrent;
@@ -20,7 +20,7 @@ namespace Ramsey.Utilities
         /// from the given list.
         /// </summary>
         public static T RandomElement<T>(this IReadOnlyList<T> L)
-            => L[ThreadSafeRandom.Range(0, L.Count)];
+            => L[UnityEngine.Random.Range(0, L.Count)];
 
         /// <summary>
         /// Parse a color from a hexadecimal string into a color object.
@@ -111,61 +111,42 @@ namespace Ramsey.Utilities
         }
 
         /// <summary>
-        /// Wrap a task so that errors generated within them
-        /// are correctly reported to the unity console.
-        /// </summary>
-        public static Task UnityReport(this Task task) 
-        {
-            return task.ContinueWith(t => 
-            {
-                if(t.IsFaulted)
-                {
-                    Debug.LogException(t.Exception);
-                }
-            });
-        }
-        /// <summary>
-        /// Wrap a task so that errors generated within them
-        /// are correctly reported to the unity console.
-        /// </summary>
-        public static async Task<T> UnityReport<T>(this Task<T> task) 
-        {
-            try 
-            {
-                return await task;
-            }
-            catch(Exception e) 
-            {
-                Debug.LogException(e);
-                throw;
-            }
-        }
-
-        /// <summary>
         /// Run code conditionally synchronously.
         /// </summary>
-        public static async Task Run(bool synchronous, Action action)
+        public static async UniTask RunOnThreadPool(bool synchronous, Action action)
         {
             if(synchronous) action();
-            else await Task.Run(action).UnityReport();
+            else await UniTask.RunOnThreadPool(action);
         }
         /// <summary>
         /// Run code conditionally synchronously.
         /// </summary>
-        public static async Task<T> Run<T>(bool synchronous, Func<T> func)
+        public static async UniTask<T> RunOnThreadPool<T>(bool synchronous, Func<T> func)
         {
             if(synchronous) return func();
-            else return await Task.Run(func).UnityReport();
+            else return await UniTask.RunOnThreadPool(func);
         }
 
         /// <summary>
-        /// Ensure that the given task is synchronous (i.e. already completed) if necessary.
+        /// Ensure that the given UniTask is synchronous (i.e. already completed) if necessary.
         /// </summary>
-        public static TaskT AssertSync<TaskT>(this TaskT t, bool synchronous) where TaskT : Task
+        public static UniTask AssertSync(this UniTask t, bool synchronous)
         {
-            if(synchronous && !t.IsCompleted)
+            if(synchronous && !t.Status.IsCompleted())
             {
-                Debug.LogError("Task asserted to be synchronous was not!");
+                Debug.LogError("UniTask asserted to be synchronous was not!");
+            }
+
+            return t;
+        }
+        /// <summary>
+        /// Ensure that the given UniTask is synchronous (i.e. already completed) if necessary.
+        /// </summary>
+        public static UniTask<T> AssertSync<T>(this UniTask<T> t, bool synchronous)
+        {
+            if(synchronous && !t.Status.IsCompleted())
+            {
+                Debug.LogError("UniTask asserted to be synchronous was not!");
             }
 
             return t;
@@ -192,23 +173,23 @@ namespace Ramsey.Utilities
             foreach (T elem in self)
                 action(elem);
         }
-        public static async void ForeachAsync<T>(this IEnumerable<T> self, Func<T, Task> action)
+        public static async void ForeachAsync<T>(this IEnumerable<T> self, Func<T, UniTask> action)
         {
             foreach (T elem in self)
                 await action(elem);
         }
 
-        public static async Task<bool> WaitUntil(Func<bool> func, int milliDelay = 10, int timeout = -1)
+        public static async UniTask<bool> WaitUntil(Func<bool> func, CancellationToss cancel = null, int milliDelay = 10, int timeout = -1)
         {
             var totalt = 0;
 
-            while (!func.Invoke() && (timeout < 0 || totalt < timeout))
+            while (!func.Invoke() && !cancel.IsRequested && (timeout < 0 || totalt < timeout))
             {
-                await Task.Delay(milliDelay);
+                await UniTask.Delay(milliDelay);
                 totalt += milliDelay;
             }
 
-            return totalt < timeout;
+            return totalt < timeout || cancel.IsRequested;
         }
 
         /// <summary>

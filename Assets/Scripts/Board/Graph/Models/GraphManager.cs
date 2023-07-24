@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Ramsey.Utilities;
 using Unity.Mathematics;
 using UnityEngine;
@@ -30,20 +30,20 @@ namespace Ramsey.Graph
             pathFinder.HandleFullGraph(graph);
         }
 
-        Task currentPathTask = null;
+        UniTask? currentPathUniTask = null;
 
         /// <summary>
         /// Check if the graph manager is waiting for path finding
         /// to complete.
         /// </summary>
-        public bool IsAwaitingPathTask => currentPathTask != null;
+        public bool IsAwaitingPathUniTask => currentPathUniTask != null;
         /// <summary>
         /// Wait for path finding to complete.
         /// </summary>
-        public async Task AwaitPathTask()
+        public async UniTask AwaitPathUniTask()
         {
-            if(IsAwaitingPathTask)
-                await currentPathTask;
+            if(IsAwaitingPathUniTask)
+                await currentPathUniTask.Value;
         }
 
         public IReadOnlyList<IPath> MaxPathsByType => pathFinder.MaxPathsByType;
@@ -90,14 +90,14 @@ namespace Ramsey.Graph
         /// path finding either in the background (synchronous = false)
         /// or immediately (synchronous = true).
         /// </summary>
-        public void PaintEdge(Edge e, int type, bool synchronous = false) //Will start background task
+        public void PaintEdge(Edge e, int type, bool synchronous = false) //Will start background UniTask
         {   
             graph.PaintEdge(e, type);
 
-            currentPathTask = Utils.Run(synchronous, delegate
+            currentPathUniTask = Utils.RunOnThreadPool(synchronous, delegate
             {
                 pathFinder.HandlePaintedEdge(e, graph); 
-                currentPathTask = null; 
+                currentPathUniTask = null; 
 
                 OnFinishPathCalculation?.Invoke();
             });
@@ -113,6 +113,7 @@ namespace Ramsey.Graph
         public void Clear()
         {
             graph.Clear();
+            
             pathFinder.Clear();
         }
 

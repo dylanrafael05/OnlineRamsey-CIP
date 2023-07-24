@@ -24,8 +24,6 @@ Moves returned from a strategy will be realized by the main `GameManager`. This 
 ### Gotchas
 Certain strategies will have qualities which may impact how the engine should best handle their execution, such as being non-deterministic or non-automatic. Such attributes must be conveyed to the program using attributes placed on the class. For instance, strategies which employ randomness must denote this fact using a `[NonDeterministicPlayer]` line before their class definition. This allows for optimizations to data analysis to be made by future developers.
 
-Furthermore, due to limitations with Unity's API, all retreivals of random numbers must be done through `ThreadSafeRandom`, provided by the Utilities package. Using the static functions available through this class mitigates the single-threaded nature of Unity's random number generator and thus avoids silent and often massively inconvenient errors.
-
 As will be explained later, the usage of static constructors is heavily employed by strategy classes, but in a way which does not align entirely with their intended usage. As such, static constructors of classes which implement `IPlayer` are guaranteed to be run after the assemblies of the Unity application have been loaded, despite the typical rules surrounding static construction of types in the CLR.
 
 ### `GameState` and other utils
@@ -48,7 +46,7 @@ Strategies are technically usable as soon as they implement their logic, but the
 One can create a strategy initializer that takes in no parameters and will construct the strategy using a parameterless constructor. This only requires the simple function call `StrategyInitializer.RegisterFor<MyStrategyType>();`
 
 ### Initialization via Parameterless Lambda
-One can create a strategy initializer that takes in menu parameters, but constructs a strategy without using a parameterless constructor using a lambda function returning an instance of the strategy type. For example, a strategy which employs this method would include the following line in its static constructor: `StrategyInitializer.RegisterFor(() => new MyStrategyType(ThreadSafeRandom.NextInt(1, 10)))`. 
+One can create a strategy initializer that takes in menu parameters, but constructs a strategy without using a parameterless constructor using a lambda function returning an instance of the strategy type. For example, a strategy which employs this method would include the following line in its static constructor: `StrategyInitializer.RegisterFor(() => new MyStrategyType(Random.NextInt(1, 10)))`. 
 
 ### Initialization via Lambda and `params TextParameter[]`
 Finally, one can create a strategy initializer that takes in parameters from the actual menu. This requires two things, a function which takes a list of preprocessed string parameters and constructs an instance of the desired strategy type, and a list of `TextParameter` structs declaring how each parameter should be retrieved and parsed from the text input on the menu. Each `TextParameter` must supply an `IInputVerifier` which converts a string to some type, providing error messages if the input is invalid. Predefined verifiers exist for common types, i.e. `IInputVerifier.Integer` for `int`, `IInputVerifier.Float` for `float`, and `IInputVerifier.None` for `string`.
