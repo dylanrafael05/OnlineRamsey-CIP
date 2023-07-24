@@ -151,9 +151,11 @@ namespace Ramsey.Drawing
                 data.EdgeTransforms.Clear();
                 data.EdgeColors.Clear();
                 data.EdgeHighlights.Clear();
+                data.EdgeReversal.Clear();
 
                 data.NodePositions.Clear();
                 data.NodeHighlights.Clear();
+                data.NodeTransforms.Clear();
             }
 
             public void ClearScreen()

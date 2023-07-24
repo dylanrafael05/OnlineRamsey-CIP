@@ -90,6 +90,8 @@ namespace Ramsey.UI
             UnityReferences.GoalText.gameObject.SetActive(false);
             UnityReferences.TurnText.gameObject.SetActive(false);
 
+            Main.Game.Leave();
+
             CameraControlMode.ReturnToStart();
             GameOverHandler.ForceStop();
 

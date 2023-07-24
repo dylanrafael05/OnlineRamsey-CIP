@@ -1,6 +1,7 @@
 using Ramsey.Board;
 using Ramsey.Graph;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Ramsey.Gameplayer
 {
@@ -49,10 +50,12 @@ namespace Ramsey.Gameplayer
         }
 
         bool IsValid(BoardManager board)
-            => IMove.Enable && edge.Type == Edge.NullType;
+            => IMove.Enable && edge.Type == Edge.NullType && type != Edge.NullType;
 
         public bool MakeMove(BoardManager board, bool synchronous = false)
         {
+            Debug.Log("PAINTER MOVE");
+
             if (!IsValid(board))
                 return false;
 

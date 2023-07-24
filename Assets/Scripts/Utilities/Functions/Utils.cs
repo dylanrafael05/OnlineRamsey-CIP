@@ -198,17 +198,17 @@ namespace Ramsey.Utilities
                 await action(elem);
         }
 
-        public static async Task<bool> WaitUntil(Func<bool> func, int milliDelay = 10, int timeout = -1)
+        public static async Task<bool> WaitUntil(Func<bool> func, CancellationToss cancel = null, int milliDelay = 10, int timeout = -1)
         {
             var totalt = 0;
 
-            while (!func.Invoke() && (timeout < 0 || totalt < timeout))
+            while (!func.Invoke() && !cancel.IsRequested && (timeout < 0 || totalt < timeout))
             {
                 await Task.Delay(milliDelay);
                 totalt += milliDelay;
             }
 
-            return totalt < timeout;
+            return totalt < timeout || cancel.IsRequested;
         }
 
         /// <summary>

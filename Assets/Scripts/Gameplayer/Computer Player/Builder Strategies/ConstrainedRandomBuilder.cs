@@ -29,7 +29,7 @@ public class ConstrainedRandomBuilder : Builder.Synchronous
 
         for(int i = 0; i < target; i++)
         {
-            for(int j = i; j < target; j++)
+            for(int j = i + 1; j < target; j++)
             {
                 availablePairs.Add((i, j));
             }

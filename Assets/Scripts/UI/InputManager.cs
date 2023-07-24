@@ -69,7 +69,10 @@ namespace Ramsey.UI
 
             data.scr = Input.mouseScrollDelta.y;
 
-            if (board is null) return data;
+            if (board is null) 
+            {
+                return data;
+            }
 
             lock(board)
             {

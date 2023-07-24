@@ -12,10 +12,10 @@ namespace Ramsey.Gameplayer
     [NonAutomatedStrategy, UnsupportedInHeadless]
     public class UserBuilder : Builder, IUserMode<BoardManager>
     {
-        public override async Task<BuilderMove> GetMoveAsync(GameState gameState)
+        public override async Task<BuilderMove> GetMoveAsync(GameState gameState, CancellationToss cancel)
         {
             UserModeHandler<BoardManager>.AddMode(this);
-            await Utils.WaitUntil(() => currNode != null && prevNode != null);
+            await Utils.WaitUntil(() => currNode != null && prevNode != null, cancel);
             UserModeHandler<BoardManager>.DelMode(this);
 
             return new BuilderMove(currNode, prevNode);
@@ -65,10 +65,12 @@ namespace Ramsey.Gameplayer
     [NonAutomatedStrategy, UnsupportedInHeadless]
     public class UserPainter : Painter, IUserMode<BoardManager>
     {
-        public override async Task<PainterMove> GetMoveAsync(GameState gameState)
+        public override async Task<PainterMove> GetMoveAsync(GameState gameState, CancellationToss cancel)
         {
+            currEdgeType = Edge.NullType;
+
             UserModeHandler<BoardManager>.AddMode(this);
-            await Utils.WaitUntil(() => currEdge != null);
+            await Utils.WaitUntil(() => currEdge != null, cancel);
             UserModeHandler<BoardManager>.DelMode(this);
 
             return new PainterMove(currEdge, currEdgeType);

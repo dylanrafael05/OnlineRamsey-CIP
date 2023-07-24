@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Ramsey.Board;
 using Ramsey.Gameplayer;
@@ -17,6 +18,7 @@ namespace Ramsey.Gameplayer
     public class GameManager
     {
         private readonly BoardManager board;
+        private readonly CancellationToss cancel;
 
         public bool InGame { get; private set; }
 
@@ -35,13 +37,14 @@ namespace Ramsey.Gameplayer
         {
             board.StartGame(target);
 
+            cancel.Request();
+            currentTask = null;
+
             this.builder = builder;
             this.painter = painter;
 
             isBuilderTurn = true;
             InGame = true;
-
-            currentTask = null;
 
             builder.Reset();
             painter.Reset();
@@ -91,6 +94,8 @@ namespace Ramsey.Gameplayer
 
             isBuilderTurn = true;
             InGame = false;
+
+            cancel = new();
         }
 
         public static GameManager CreateDefault()
@@ -106,6 +111,9 @@ namespace Ramsey.Gameplayer
 
         internal async Task RunMove(bool synchronous = false)
         {
+            bool isBuilderTurnAtStart = isBuilderTurn;
+            cancel.Retract();
+
             InGame = !State.IsGameDone;
 
             // Early exit if cannot update
@@ -119,29 +127,32 @@ namespace Ramsey.Gameplayer
             }
 
             // Get next move
-            async Task<IMove> GetMove(IPlayer player)
+            async Task<IMove> GetMove(IPlayer player, CancellationToss cancel)
             {
                 if(player.IsAutomated && !synchronous) await Task.Delay((int)(Delay * 1000));
 
-                return await player.GetMoveAsync(State).AssertSync(synchronous);
+                return await player.GetMoveAsync(State, cancel)
+                    .UnityReport()
+                    .AssertSync(synchronous);
             }
             
             // Repeat until move is valid
             while(true)
             {
                 IMove move;
-
-                await Utils.WaitUntil(() => board.IsCurrentTurn);
+                
+                if(cancel.IsRequested || !board.IsCurrentTurn) 
+                    return;
 
                 try 
                 {
-                    if(isBuilderTurn)
+                    if(isBuilderTurnAtStart)
                     {
-                        move = await GetMove(builder);
+                        move = await GetMove(builder, cancel).UnityReport();
                     }
                     else 
                     {
-                        move = await GetMove(painter);
+                        move = await GetMove(painter, cancel).UnityReport();
                     }
                 }
                 catch(GraphTooComplexException) 
@@ -149,8 +160,10 @@ namespace Ramsey.Gameplayer
                     board.MarkGraphTooComplex();
                     return;
                 }
-                
-                await Utils.WaitUntil(() => board.IsCurrentTurn);
+
+                if(cancel.IsRequested || !board.IsCurrentTurn) 
+                    return;
+
 
                 // Run move
                 if(move.MakeMove(board, synchronous))
@@ -160,18 +173,13 @@ namespace Ramsey.Gameplayer
                     if (isBuilderTurn) 
                         board.MarkNewTurn();
                     
-                    Debug.Log("move");
+
+                    // Wait for path task to complete
+                    await board.AwaitPathTask().AssertSync(synchronous);
                     
-                    break;
-                }
-                else 
-                {
-                    Debug.Log("invalid move");
+                    return;
                 }
             }
-
-            // Wait for path task to complete
-            await board.AwaitPathTask().AssertSync(synchronous);
         }
 
         public void UpdateGameplay() 
@@ -180,9 +188,15 @@ namespace Ramsey.Gameplayer
             {
                 if(currentTask is null || currentTask.IsCompleted)
                 {
-                    currentTask = RunMove();
+                    currentTask = RunMove().UnityReport();
                 }
             }
+        }
+
+        public void Leave()
+        {
+            cancel.Request();
+            currentTask = null;
         }
 
         public void RenderBoard() 

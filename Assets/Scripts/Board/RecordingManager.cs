@@ -37,7 +37,7 @@ namespace Ramsey.Board
 
             public void AddCurrentTurn()
             {
-                boardStates.Add((new BoardState(board.RenderIO.CreateDrawState())));
+                boardStates.Add(new(board.RenderIO.CreateDrawState()));
 
                 if (selectedID != boardStates.Count-2) return;
 
@@ -56,6 +56,14 @@ namespace Ramsey.Board
 
             public void OffsetTurn(int d) 
                 => LoadTurn(selectedID + d);
+
+            public void Clear()
+            {
+                selectedID = 0;
+                boardStates.Clear();
+
+                AddCurrentTurn();
+            }
         #endif
     }
 
