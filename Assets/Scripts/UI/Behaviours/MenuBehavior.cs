@@ -81,7 +81,7 @@ namespace Ramsey.UI
                 }
                 else 
                 {
-                    if(!InputBox.AllValid(standardCount))
+                    if(!InputBox.AllValid(standardCount, standardDelay))
                         return;
                     
                     visualizing = false;
