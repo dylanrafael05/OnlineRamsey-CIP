@@ -100,9 +100,7 @@ namespace Ramsey.Board
             renderManager.IOInterface.UpdateNodePosition(node);
         }
         public void PaintEdge(Edge edge, int type, bool synchronous = false)
-        {
-            Debug.Log("Painting with edge color " + type);
-            
+        {   
             GameState.NewestEdge = null;
             GameState.NewestPaint = type;
 

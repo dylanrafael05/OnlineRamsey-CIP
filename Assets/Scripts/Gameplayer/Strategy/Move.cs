@@ -54,8 +54,6 @@ namespace Ramsey.Gameplayer
 
         public bool MakeMove(BoardManager board, bool synchronous = false)
         {
-            Debug.Log("PAINTER MOVE");
-
             if (!IsValid(board))
                 return false;
 

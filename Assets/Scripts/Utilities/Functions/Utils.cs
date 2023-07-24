@@ -183,13 +183,18 @@ namespace Ramsey.Utilities
         {
             var totalt = 0;
 
-            while (!func.Invoke() && !cancel.IsRequested && (timeout < 0 || totalt < timeout))
+            bool IsCanceled()
+            {
+                return cancel != null && cancel.IsRequested;
+            }
+
+            while (!func.Invoke() && !IsCanceled() && (timeout < 0 || totalt < timeout))
             {
                 await UniTask.Delay(milliDelay);
                 totalt += milliDelay;
             }
 
-            return totalt < timeout || cancel.IsRequested;
+            return totalt < timeout || IsCanceled();
         }
 
         /// <summary>
