@@ -86,12 +86,12 @@ namespace Ramsey.Utilities.UI
 
                 if(Min != null && val < Min) 
                 {
-                    reason = "Must be greater than " + Min;
+                    reason = "Must be greater or equal to " + Min;
                     return false;
                 }
                 if(Max != null && val > Max) 
                 {
-                    reason = "Must be less than " + Max;
+                    reason = "Must be less than or equal to " + Max;
                     return false;
                 }
 

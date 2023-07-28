@@ -19,7 +19,7 @@ namespace Ramsey.Gameplayer
         public override void Reset() {}
 
         static RandomPainter()
-            => Utils.ForLength(2, (i) => StrategyInitializer.RegisterFor<RandomPainter>()); //Duplicate to look nice
+            => Utils.ForLength(2, (i) => StrategyInitializer.RegisterFor<RandomPainter>()); //Duplicate to look nice - if you don't care, just change from 2 to 1
 
         public override string GetStrategyName(bool compact)
             => "Random";

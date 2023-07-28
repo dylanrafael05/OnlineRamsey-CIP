@@ -15,12 +15,18 @@ namespace Ramsey.Gameplayer
     {
 
         //Will try to lose the game in an interesting way; most of the time, it'll extend the node located in the middle of the longest path
+        //This is basically the Random Builder but with horrible choices, feel free to make the hardcoded probabilities parameters just like we did in the Random Builder
         public override BuilderMove GetMove(GameState state)
         {
-            if (UnityEngine.Random.Range(0f, 1f) < 0.8f)
-                return Extend(state.MaxPath.Middle, state);
+            var mid = state.MaxPath != null ? state.MaxPath.Middle : state.CreateNode();
+
+            var r = UnityEngine.Random.Range(0f, 1f);
+            if (r < 0.42f)
+                return Extend(mid, state);
+            else if (r < 0.62f)
+                return RandomPair(state);
             else
-                return new BuilderMove(state.MaxPath.Middle, state.Nodes.RandomElement());
+                return new BuilderMove(mid, RandomNode(mid, state));
         }
 
         public override void Reset() { }

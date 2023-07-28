@@ -5,10 +5,13 @@ namespace Ramsey.UI
 {
     public interface IBehavior 
     {
+        static bool IsSwitching;
+
         public static void SwitchTo(IBehavior behavior)
         {
             IEnumerator Coro() 
             {
+                IsSwitching = true;
                 if(Active != null)
                 {
                     yield return Transition.HideScreen();
@@ -19,8 +22,9 @@ namespace Ramsey.UI
                 Active = behavior;
                 
                 yield return Transition.ShowScreen();
+                IsSwitching = false;
             }
-            
+
             Coroutines.Start(Coro);
         }
 

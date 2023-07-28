@@ -52,6 +52,18 @@ namespace Ramsey.Gameplayer
         }
 
         /// <summary>
+        /// Get a pair of two random nodes in the graph as a Builder move.
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public static BuilderMove RandomPair(GameState state)
+        {
+            var n1 = RandomNode(state);
+            var n2 = RandomNode(n1, state);
+            return new(n1, n2);
+        }
+
+        /// <summary>
         /// Get a random node in the graph.
         /// </summary>
         /// <param name="state"></param>
