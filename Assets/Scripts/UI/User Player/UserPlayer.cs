@@ -85,9 +85,9 @@ namespace Ramsey.Gameplayer
         public void Init(BoardManager board) => currEdge = null;
         public void Update(InputData input, BoardManager board)
         {
-            if(input.rmbp || input.lmbp)
+            if(!input.shift && input.rmbp || input.lmbp)
             {
-                currEdge = input.collidingEdges.FirstOrDefault();
+                currEdge = input.collidingEdges.Where(e => e.Type == Edge.NullType).FirstOrDefault();
                 currEdgeType = input.lmbp ? 0 : 1;
             }
         }

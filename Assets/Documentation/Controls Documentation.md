@@ -22,7 +22,8 @@ Every strategy besides User Builder and User Painter is automatic. There may be 
 |WASD| Move Camera|
 |Shift + WASD| Move Camera quickly|
 |Scroll Wheel| Zoom in and out|
-|R| Toggle the appearance of the Recorder|
+|R| Toggle the appearance of the Recorder. The recorder is fairly buggy in certain situations, but we didn't think it was too important to invest time to fix.|
+[Tab] Toggle physics|
 |Left/Right Arrow| Change the turn being displayed in the Recorder (called the Recorder because it records the turns). You cannot make any moves in past board states.|
 
 ### User Builder

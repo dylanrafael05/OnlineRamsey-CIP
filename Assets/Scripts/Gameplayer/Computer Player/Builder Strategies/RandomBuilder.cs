@@ -54,9 +54,9 @@ namespace Ramsey.Gameplayer
         static RandomBuilder()
             => StrategyInitializer.RegisterFor<RandomBuilder>(
                 p => new((float)p[0], (float)p[1], (float)p[2]),
-                new TextParameter { Name = "Pendant Weight", Verifier = new IInputVerifier.Float(0, 1), DefaultValue = "0.5" },
-                new TextParameter { Name = "Internal Weight", Verifier = new IInputVerifier.Float(0, 1), DefaultValue = "0.4" },
-                new TextParameter { Name = "Isolated Weight", Verifier = new IInputVerifier.Float(0, 1), DefaultValue = "0.1" }
+                new TextParameter { Name = "Pendant Weight", Verifier = new IInputVerifier.Float(0), DefaultValue = "0.5" },
+                new TextParameter { Name = "Internal Weight", Verifier = new IInputVerifier.Float(0), DefaultValue = "0.4" },
+                new TextParameter { Name = "Isolated Weight", Verifier = new IInputVerifier.Float(0), DefaultValue = "0.1" }
         );
 
         public override string GetStrategyName(bool compact)

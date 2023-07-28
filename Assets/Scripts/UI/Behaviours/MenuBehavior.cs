@@ -63,6 +63,7 @@ namespace Ramsey.UI
             goAhead.onClick.AddListener(() => 
             {
                 if(!menu.ValidParameters) return;
+                if (IBehavior.IsSwitching) return;
 
                 if(runBulk.isOn)
                 {

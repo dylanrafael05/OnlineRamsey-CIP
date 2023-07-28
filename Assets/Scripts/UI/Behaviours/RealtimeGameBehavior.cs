@@ -41,22 +41,16 @@ namespace Ramsey.UI
             UserModeHandler<BoardManager>.Update(input);
             CameraManager.Update();
 
-            if(input.escape)
-            {
+            if(!IBehavior.IsSwitching && input.escape)
                 CheckMeantEscape.EscapePressed(this, input);
-            }
 
             if(input.tabd)
-            {
                 Utils.Toggle(ref updateSmoothing);
-            }
 
             Main.Game.UpdateGameplay();
 
             if(updateSmoothing)
-            {
                 NodeSmoothing.Update(Main.Board);
-            }
 
             DisplayText.Update(Main.Game.State);
 
@@ -103,8 +97,6 @@ namespace Ramsey.UI
         }
 
         public override void OnCleanup()
-        {
-            Canvas.willRenderCanvases -= Main.Game.RenderUI;
-        }
+            => Canvas.willRenderCanvases -= Main.Game.RenderUI;
     }
 }
