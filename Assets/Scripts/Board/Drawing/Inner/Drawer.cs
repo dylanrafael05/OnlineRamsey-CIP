@@ -12,7 +12,8 @@ namespace Ramsey.Drawing
     {
 
         //
-        Camera camera;
+        Camera boardCamera;
+        Camera screenCamera;
 
         //
         DrawingStorage presentStorage;
@@ -23,12 +24,13 @@ namespace Ramsey.Drawing
         InfinitePropertyBlock edgeProps = new();
         InfinitePropertyBlock nodeProps = new();
 
-        public Drawer(DrawingStorage storage, DrawingPreferences preferences, Camera camera)
+        public Drawer(DrawingStorage storage, DrawingPreferences preferences, Camera boardCamera, Camera screenCamera)
         {
             UnityReferences.Initialize();
 
             //
-            this.camera = camera;
+            this.boardCamera = boardCamera;
+            this.screenCamera = screenCamera;
 
             //
             this.presentStorage = storage;
@@ -101,7 +103,7 @@ namespace Ramsey.Drawing
                     count, block, 
                     ShadowCastingMode.Off, false, 
                     UnityReferences.BoardLayer,
-                    camera
+                    boardCamera
                 );
 
             foreach(var (count, block) in nodeProps.GetRenderBlocks(currentStorage.NodeCount)) 
@@ -112,7 +114,7 @@ namespace Ramsey.Drawing
                     count, block, 
                     ShadowCastingMode.Off, false, 
                     UnityReferences.BoardLayer,
-                    camera
+                    boardCamera
                 );
 
             for(var i = 0; i < currentStorage.NodePositions.Count; i++) 
@@ -121,12 +123,17 @@ namespace Ramsey.Drawing
 
         public void DrawUI()
         {
-            Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.RecordingTransform.WorldMatrix(), UnityReferences.RecorderMaterial, UnityReferences.BoardLayer, camera);
+            Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.RecordingTransform.WorldMatrix(), UnityReferences.RecorderMaterial, UnityReferences.BoardLayer, boardCamera);
 
             if (presentStorage.IsLoading)
             {
-                Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.LoadingTransform.WorldMatrix(), UnityReferences.LoadingMaterial, UnityReferences.BoardLayer, camera);
+                DrawLoadingDirect();
             }
+        }
+
+        public void DrawLoadingDirect()
+        {
+            Graphics.DrawMesh(MeshUtils.QuadMesh, UnityReferences.LoadingTransform.WorldMatrix(), UnityReferences.LoadingMaterial, UnityReferences.BoardLayer, screenCamera);
         }
 
         public void Cleanup()

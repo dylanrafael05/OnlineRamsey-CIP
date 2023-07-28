@@ -39,6 +39,7 @@ namespace Ramsey.Gameplayer
             board.StartGame(target);
 
             cancel.Request();
+            cancel = new();
             currentTask = null;
 
             this.builder = builder;
@@ -51,23 +52,23 @@ namespace Ramsey.Gameplayer
             painter.Reset();
         }
 
-        public MatchupResult? SimulateGameOnce(int target, Builder builder, Painter painter) 
+        public async UniTask<MatchupResult?> SimulateGameOnce(int target, Builder builder, Painter painter) 
         {
             Assert.IsTrue(builder.IsAutomated, "Cannot simulate a game to its end with non-automated platers!");
             Assert.IsTrue(painter.IsAutomated, "Cannot simulate a game to its end with non-automated platers!");
 
             StartGame(target, builder, painter);
-            RunUntilDone();
+            await RunUntilDone();
             return GetMatchupData();
         }
 
-        public MatchupResult? SimulateGame(int target, Builder builder, Painter painter, int attempts = 1) 
+        public async UniTask<MatchupResult?> SimulateGame(int target, Builder builder, Painter painter, int attempts = 1) 
         {
             var matchups = new List<MatchupResult>(attempts);
 
             for(int i = 0; i < attempts; i++)
             {
-                if(SimulateGameOnce(target, builder, painter) is MatchupResult result)
+                if(await SimulateGameOnce(target, builder, painter) is MatchupResult result)
                     matchups.Add(result);
             }
 
@@ -76,14 +77,15 @@ namespace Ramsey.Gameplayer
             return MatchupResult.Average(target, builder.GetStrategyName(false), painter.GetStrategyName(false), builder.GetStrategyName(true), painter.GetStrategyName(true), matchups.Select(t => t.AverageGameLength).ToArray());
         }
         
-        public MatchupData SimulateMany(int startTarget, int endTarget, int step, Builder builder, Painter painter, int attempts = 1)
+        public async UniTask<MatchupData> SimulateMany(int startTarget, int endTarget, int step, Builder builder, Painter painter, int attempts = 1)
         {
             MatchupData matchupData = new(startTarget, endTarget, step, attempts);
 
             for(int t = startTarget; t <= endTarget; t += step)
             {
-                var s = SimulateGame(t, builder, painter, attempts);
-                if(s is MatchupResult i) matchupData.Add(i);
+                var result = await SimulateGame(t, builder, painter, attempts);
+
+                if(result is MatchupResult i) matchupData.Add(i);
             }
 
             return matchupData;
@@ -98,22 +100,32 @@ namespace Ramsey.Gameplayer
 
             cancel = new();
         }
-
-        public static GameManager CreateDefault()
-        {
-            return new(new(Camera.main, new(), new JobPathFinder()));
-        }
         
-        internal void RunUntilDone()
+        internal async UniTask RunUntilDone()
         {
-            while(!board.GameState.IsGameDone)
-                RunMove(cancel, synchronous: true).Forget();
+            cancel = new();
+
+            var accumDelay = 0.0;
+            var prevTime = (DateTime.UtcNow - DateTime.UnixEpoch).TotalMilliseconds;
+
+            while(!State.IsGameDone && !cancel.IsRequested)
+            {
+                var curTime = (DateTime.UtcNow - DateTime.UnixEpoch).TotalMilliseconds;
+                accumDelay += curTime - prevTime;
+                prevTime = curTime;
+
+                if(accumDelay > 10)
+                {
+                    accumDelay = 0;
+                    await UniTask.DelayFrame(1);
+                }
+                
+                await RunMove(cancel, synchronous: true);
+            }
         }
 
         internal async UniTask RunMove(CancellationToss cancel, bool synchronous = false)
         {
-            bool isBuilderTurnAtStart = isBuilderTurn;
-
             InGame = !State.IsGameDone;
 
             // Early exit if cannot update
@@ -127,12 +139,11 @@ namespace Ramsey.Gameplayer
             }
 
             // Get next move
-            async UniTask<IMove> GetMove(IPlayer player, CancellationToss cancel)
+            async UniTask<IMove> GetMove(IPlayer player)
             {
                 if(player.IsAutomated && !synchronous) await UniTask.Delay((int)(Delay * 1000));
 
-                return await player.GetMoveAsync(State, cancel)
-                    .AssertSync(synchronous);
+                return await player.GetMoveAsync(State, cancel);
             }
             
             // Repeat until move is valid
@@ -145,13 +156,13 @@ namespace Ramsey.Gameplayer
 
                 try 
                 {
-                    if(isBuilderTurnAtStart)
+                    if(isBuilderTurn)
                     {
-                        move = await GetMove(builder, cancel);
+                        move = await GetMove(builder);
                     }
                     else 
                     {
-                        move = await GetMove(painter, cancel);
+                        move = await GetMove(painter);
                     }
                 }
                 catch(GraphTooComplexException) 
@@ -163,7 +174,6 @@ namespace Ramsey.Gameplayer
                 if(cancel.IsRequested || !board.IsCurrentTurn) 
                     return;
 
-
                 // Run move
                 if(move.MakeMove(board, synchronous))
                 {
@@ -171,10 +181,9 @@ namespace Ramsey.Gameplayer
                     
                     if (isBuilderTurn) 
                         board.MarkNewTurn();
-                    
 
                     // Wait for path UniTask to complete
-                    await board.AwaitPathUniTask().AssertSync(synchronous);
+                    await board.AwaitPathTask();
                     
                     return;
                 }

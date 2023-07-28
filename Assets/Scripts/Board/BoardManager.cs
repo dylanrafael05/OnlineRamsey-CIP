@@ -32,8 +32,8 @@ namespace Ramsey.Board
 
         public BoardPreferences Preferences { get; private set; }
 
-        public bool IsAwaitingPathUniTask => graphManager.IsAwaitingPathUniTask;
-        public UniTask AwaitPathUniTask() => graphManager.AwaitPathUniTask();
+        public bool IsAwaitingPathTask => graphManager.IsAwaitingPathTask;
+        public UniTask AwaitPathTask() => graphManager.AwaitPathTask();
 
         public IReadOnlyList<Node> Nodes => graphManager.Nodes;
         public IReadOnlyList<Edge> Edges => graphManager.Edges;
@@ -41,10 +41,10 @@ namespace Ramsey.Board
 
         private readonly GameState gameState;
 
-        private BoardManager(Camera camera, BoardPreferences prefs, GraphManager graphManager)
+        private BoardManager(Camera boardCamera, Camera screenCamera, BoardPreferences prefs, GraphManager graphManager)
         {
             this.graphManager = graphManager;
-            renderManager = new(camera, prefs.drawingPreferences);
+            renderManager = new(boardCamera, screenCamera, prefs.drawingPreferences);
             recordingManager = new(this);
 
             Preferences = prefs;
@@ -64,13 +64,13 @@ namespace Ramsey.Board
             };
         }
 
-        public BoardManager(Camera camera, BoardPreferences prefs, IIncrementalPathFinder pathFinder) : this(camera, prefs, new GraphManager(pathFinder))
+        public BoardManager(Camera boardCamera, Camera screenCamera, BoardPreferences prefs, IIncrementalPathFinder pathFinder) : this(boardCamera, screenCamera, prefs, new GraphManager(pathFinder))
         { }
 
-        public static BoardManager UsingAlgorithm<TAlgo>(Camera camera, BoardPreferences prefs)
+        public static BoardManager UsingAlgorithm<TAlgo>(Camera boardCamera, Camera screenCamera, BoardPreferences prefs)
             where TAlgo : IIncrementalPathFinder, new()
         {
-            return new BoardManager(camera, prefs, GraphManager.UsingAlgorithm<TAlgo>());
+            return new BoardManager(boardCamera, screenCamera, prefs, GraphManager.UsingAlgorithm<TAlgo>());
         }
 
         public void LoadGraph(IGraph graph)
@@ -128,8 +128,12 @@ namespace Ramsey.Board
         }
         public void RenderUI()
         {
-            RenderIO.SetLoading(graphManager.IsAwaitingPathUniTask);
+            RenderIO.SetLoading(graphManager.IsAwaitingPathTask);
             renderManager.ActionInterface.RenderUI();
+        }
+        public void RenderLoadingDirect()
+        {
+            renderManager.ActionInterface.RenderLoadingDirect();
         }
 
         public void Cleanup()

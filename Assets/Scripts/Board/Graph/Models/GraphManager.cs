@@ -36,13 +36,13 @@ namespace Ramsey.Graph
         /// Check if the graph manager is waiting for path finding
         /// to complete.
         /// </summary>
-        public bool IsAwaitingPathUniTask => currentPathUniTask != null;
+        public bool IsAwaitingPathTask => currentPathUniTask != null;
         /// <summary>
         /// Wait for path finding to complete.
         /// </summary>
-        public async UniTask AwaitPathUniTask()
+        public async UniTask AwaitPathTask()
         {
-            if(IsAwaitingPathUniTask)
+            if(IsAwaitingPathTask)
                 await currentPathUniTask.Value;
         }
 
@@ -101,6 +101,11 @@ namespace Ramsey.Graph
 
                 OnFinishPathCalculation?.Invoke();
             });
+
+            if(currentPathUniTask.Value.Status.IsCompleted())
+            {
+                currentPathUniTask = null; 
+            }
         }
 
         /// <inheritdoc cref="Graph.MoveNode(Node, float2)"/>

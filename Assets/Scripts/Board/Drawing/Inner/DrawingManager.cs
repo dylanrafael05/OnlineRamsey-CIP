@@ -8,7 +8,7 @@ namespace Ramsey.Drawing
         public DrawingIOInterface IOInterface { get; private set; }
 
         #if HEADLESS
-            public DrawingManager(Camera _, DrawingPreferences _)
+            public DrawingManager(Camera _, Camera _, DrawingPreferences _)
             {
                 ActionInterface = new();
                 IOInterface = new();
@@ -17,11 +17,11 @@ namespace Ramsey.Drawing
             DrawingStorage data;
             Drawer drawer;
 
-            public DrawingManager(Camera camera, DrawingPreferences preferences)
+            public DrawingManager(Camera boardCamera, Camera screenCamera, DrawingPreferences preferences)
             {
 
                 data = new();
-                drawer = new(data, preferences, camera);
+                drawer = new(data, preferences, boardCamera, screenCamera);
 
                 ActionInterface = new(drawer, data);
                 IOInterface = new(data, preferences, drawer);

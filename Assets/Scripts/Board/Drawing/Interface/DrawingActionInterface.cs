@@ -21,6 +21,8 @@ namespace Ramsey.Drawing
                 => drawer.DrawBoard();
             public void RenderUI()
                 => drawer.DrawUI();
+            public void RenderLoadingDirect()
+                => drawer.DrawLoadingDirect();
             public void Cleanup()
                 => drawer.Cleanup();
         #endif

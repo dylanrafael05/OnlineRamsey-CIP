@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using Ramsey.Drawing;
 using Ramsey.Gameplayer;
 using Ramsey.Screen;
@@ -23,6 +24,7 @@ namespace Ramsey.UI
         readonly Visualizer visualizer;
         bool visualizing = false;
         bool prevCouldSetDelay = false;
+        bool isBulkRunning = false;
 
         //
         readonly MenuManager menu;
@@ -66,18 +68,13 @@ namespace Ramsey.UI
 
                 if(runBulk.isOn)
                 {
+                    if(isBulkRunning)
+                        return;
                     if(!InputBox.AllValid(bulkStart, bulkEnd, bulkStep, bulkAtt))
                         return;
-
-                    visualizing = true;
-                    InitAfterGather(Main.Game.SimulateMany(
-                        (int)bulkStart.Input,
-                        (int)bulkEnd.Input,
-                        (int)bulkStep.Input,
-                        menu.ConstructBuilder(),
-                        menu.ConstructPainter(),
-                        (int)bulkAtt.Input
-                    ));
+                    
+                    isBulkRunning = true;
+                    BulkRun().Forget();
                 }
                 else 
                 {
@@ -129,6 +126,22 @@ namespace Ramsey.UI
             };
         }
 
+        public async UniTaskVoid BulkRun()
+        {
+            var result = await Main.Game.SimulateMany(
+                (int)bulkStart.Input,
+                (int)bulkEnd.Input,
+                (int)bulkStep.Input,
+                menu.ConstructBuilder(),
+                menu.ConstructPainter(),
+                (int)bulkAtt.Input
+            );
+
+            InitAfterGather(result);
+            
+            isBulkRunning = false;
+        }
+
         public void Init()
         {
             
@@ -160,12 +173,24 @@ namespace Ramsey.UI
         {
             menuObj.SetActive(true);
             menu.ShowActiveTextInputs();
+
+            Canvas.willRenderCanvases += RenderUI;
         }
 
         public override void OnExit()
         {
             menuObj.SetActive(false);
             menu.HideAllTextInputs();
+            
+            Canvas.willRenderCanvases -= RenderUI;
+        }
+
+        public void RenderUI()
+        {
+            if(isBulkRunning)
+            {
+                Main.Game.Board.RenderLoadingDirect();
+            }
         }
     }
 }

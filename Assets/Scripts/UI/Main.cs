@@ -64,7 +64,7 @@ namespace Ramsey
                 RunPyScript(vargs);
             }
 
-            Board = BoardManager.UsingAlgorithm<JobPathFinder>(CameraManager.BoardCamera, new BoardPreferences
+            Board = BoardManager.UsingAlgorithm<JobPathFinder>(CameraManager.BoardCamera, CameraManager.ScreenCamera, new BoardPreferences
             {
                 drawingPreferences = new DrawingPreferences
                 {
